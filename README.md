@@ -1,4 +1,4 @@
-# TerraLens 🛰️
+# TerraLens 
 ### Unsupervised Land-Type Grouping of Satellite Image Patches Using Clustering
 
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
@@ -20,7 +20,7 @@
 
 ---
 
-## 📑 Table of Contents
+## Table of Contents
 1. [Executive Summary & Problem Statement](#-executive-summary--problem-statement)
 2. [Team Contributions & Roles](#-team-contributions--roles)
 3. [System Architecture & Data Flow](#-system-architecture--data-flow)
@@ -39,7 +39,7 @@
 
 ---
 
-## 🌍 Executive Summary & Problem Statement
+## Executive Summary & Problem Statement
 
 Earth-observation satellites such as the European Space Agency's **Copernicus Sentinel-2** constellation beam down hundreds of gigabytes of multispectral imagery every hour. While deep supervised classifiers can label satellite scenes when given massive amounts of human annotations, obtaining ground-truth labels for every corner of the Earth is economically prohibitive, operationally slow, and geographically biased.
 
@@ -74,7 +74,7 @@ External EuroSAT Alignment: ARI = 0.299, NMI = 0.429
 
 ---
 
-## 👥 Team Contributions & Roles
+## Team Contributions & Roles
 
 Our team divided the work equally (exact 33.3% share each) across all phases of the project lifecycle:
 
@@ -86,7 +86,7 @@ Our team divided the work equally (exact 33.3% share each) across all phases of 
 
 ---
 
-## 🏗️ System Architecture & Data Flow
+## System Architecture & Data Flow
 
 ![System Architecture](docs/diagrams/pipeline-architecture.svg)
 
@@ -121,7 +121,7 @@ sequenceDiagram
 
 ---
 
-## 🔒 Data Hygiene & Cryptographic Label-Quarantine Protocol
+## Data Hygiene & Cryptographic Label-Quarantine Protocol
 
 ![Label Quarantine Protocol](docs/diagrams/label-quarantine.svg)
 
@@ -146,7 +146,7 @@ To guarantee complete scientific integrity, our pipeline in [`backend/terralens/
 
 ---
 
-## 🔬 Domain-Specific Feature Engineering (78 Descriptors)
+## Domain-Specific Feature Engineering (78 Descriptors)
 
 ![Feature Engineering Hierarchy](docs/diagrams/feature-engineering.svg)
 
@@ -195,7 +195,7 @@ Differentiates organic natural land covers from linear human-engineered infrastr
 
 ---
 
-## 📉 Dimensionality Reduction: PCA & t-SNE Manifold Learning
+## Dimensionality Reduction: PCA & t-SNE Manifold Learning
 
 ![PCA Scree Plot and Retained Variance](docs/diagrams/pca-variance-scree.svg)
 
@@ -226,7 +226,7 @@ While PCA preserves global variance, non-linear manifold learning via **t-SNE** 
 
 ---
 
-## 🎯 Unsupervised Clustering & Scientific Validation
+## Unsupervised Clustering & Scientific Validation
 
 ### 1. K-Means++ in 28-Dimensional Space
 Clustering is executed directly in the **28-dimensional PCA feature space** (not in 2D):
@@ -261,7 +261,7 @@ Cluster 01           PermanentCrop & Pasture       74.3%         Moderate greenn
 
 ---
 
-## 🖥️ Interactive Research Workbench (UI Walkthrough)
+## Interactive Research Workbench (UI Walkthrough)
 
 The TerraLens frontend is a high-performance, single-page application built with **React 18, TypeScript, and Tailwind CSS**, communicating with the Python backend via typed JSON endpoints.
 
@@ -325,7 +325,7 @@ The TerraLens frontend is a high-performance, single-page application built with
 
 ---
 
-## 💻 Prerequisites & System Requirements
+## Prerequisites & System Requirements
 
 | Requirement | Minimum Specification | Recommended Specification |
 | :--- | :--- | :--- |
@@ -338,7 +338,7 @@ The TerraLens frontend is a high-performance, single-page application built with
 
 ---
 
-## 🚀 Installation & Setup Instructions
+## Installation & Setup Instructions
 
 ### Option A: One-Click Automated Setup (Recommended)
 
@@ -405,7 +405,7 @@ Open <http://localhost:5173>.
 
 ---
 
-## 🔄 Execution & Reproduction Guide
+## Execution & Reproduction Guide
 
 ### 1. Full Dataset Download & Study Reproduction
 To download the original 27,000-image EuroSAT archive from Zenodo, extract all 78 descriptors, fit the models, and regenerate all artifacts from scratch:
@@ -453,7 +453,7 @@ Submission packages will be created in `output/submission/`:
 
 ---
 
-## 🧪 Testing & Scientific Verification
+## Testing & Scientific Verification
 
 The project includes an automated test suite verifying feature determinism, label isolation, and mathematical invariants:
 
@@ -476,7 +476,7 @@ PYTHONPATH=backend .venv/bin/python -m pytest -v
 
 ---
 
-## 🌐 REST API Reference
+## REST API Reference
 
 The FastAPI backend exposes typed JSON endpoints for exploration and real-time experimentation:
 
@@ -493,7 +493,7 @@ The FastAPI backend exposes typed JSON endpoints for exploration and real-time e
 
 ---
 
-## 📂 Repository Directory Structure
+## Repository Directory Structure
 
 ```text
 terralens/
@@ -542,7 +542,7 @@ terralens/
 
 ---
 
-## 📚 Academic Disclosures & Citations
+## Academic Disclosures & Citations
 
 ### Dataset Citation
 * **EuroSAT Benchmark:**  
