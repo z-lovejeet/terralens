@@ -47,7 +47,7 @@ Earth-observation satellites such as the European Space Agency's **Copernicus Se
 * **Input:** 27,000 raw $64 \times 64 \times 3$ RGB satellite image patches across Europe from the open EuroSAT benchmark.
 * **Challenge:** Group these satellite patches into natural, physically coherent land-cover types **without showing the models a single ground-truth class label or folder name during training**.
 * **Methodology:** We engineered **78 rotation-invariant, domain-specific visual descriptors** (colour moments, GLCM textures, local binary patterns, and Sobel gradient metrics), partitioned the dataset under an **80/20 train/holdout protocol** (21,600 study vs 5,400 holdout patches), compressed the space using a **95% Scree Rule PCA model** (reducing 78 dimensions down to 28 principal components), and discovered $K=10$ natural land-cover clusters via **K-Means++**.
-* **Verification:** Intrinsic geometric validation (**Silhouette = 0.245, Davies-Bouldin = 1.42, Multi-seed Stability ARI = 0.824**), followed by a sealed, double-blind **Post-Hoc Reference Audit** (**ARI = 0.299, NMI = 0.429** against all 10 EuroSAT reference classes).
+* **Verification:-** Intrinsic geometric validation (**Silhouette = 0.245, Davies-Bouldin = 1.42, Multi-seed Stability ARI = 0.824**), followed by a sealed, double-blind **Post-Hoc Reference Audit** (**ARI = 0.299, NMI = 0.429** against all 10 EuroSAT reference classes).
 
 ```
 Raw Images (27,000 × 12,288 Pixels)
