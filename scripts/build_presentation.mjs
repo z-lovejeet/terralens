@@ -235,17 +235,16 @@ await fs.mkdir(BUILD,{recursive:true}); await fs.mkdir(OUT,{recursive:true});
   tx(q,"Discovers 10 physical land covers completely label-blind: water, forest, urban, crops, pasture.",64,595,1152,45,25,{color:MUTED});
 }
 
-// SLIDE 12"); // SLIDE 12: Feature Contributions and Ablation Evidence (Replaces broken team roles slide)
+// SLIDE 12: Individual Contributions of All Group Members
 {
-  const q=slide("Feature contributions and ablation evidence",`[Presenter: Reshu Kumar] Feature ablations confirm that standardisation and spatial texture features are strictly necessary. Unscaled features produce an artificial silhouette of 0.448 in their own distorted space, but collapse to 0.082 in common space because high-magnitude GLCM properties dominate. Colour-only features lose urban and forest canopy distinction.`);
-  tab(q,[["Representation","Own silhouette","Common silhouette","Scientific impact"],["Standardized PCA95 (28 PCs)","0.245","0.245","Selected baseline: optimal balance of variance and compactness"],["Unscaled features","0.448","0.082","High-magnitude features dominate; collapses in common space"],["Colour-only features","0.281","0.178","Loses urban street grid and forest canopy texture distinctions"]],64,155,1152,240,[300,180,200,472],21);
-  tx(q,"Physical Remote Sensing Loadings (Top Principal Components)",64,420,1152,35,26,{bold:true});
-  lines(q,[
-    "• PC 1 (40.8%): Surface Albedo & Radiant Energy (RGB means +0.18, HSV value +0.17)",
-    "• PC 2 (8.6%): Chlorophyll Greenness vs Water Absorption (Green moments +0.22, Saturation +0.19)",
-    "• PC 3 (6.6%): Spatial Texture Roughness & Urban Grids (GLCM contrast +0.24, Sobel magnitude +0.21)"
-  ],64,465,1152,21,48,INK);
-  tx(q,"Standardisation (z = (x - μ)/σ) is mathematically indispensable in heterogeneous remote sensing.",64,625,1152,30,22,{color:MUTED});
+  const q=slide("Individual contributions and completed work",`[Presenter: Reshu Kumar] As mandated by our curriculum, our team divided responsibilities equally across all objectives. Lovejeet Singh led data hygiene, colour descriptors, StandardScaler, and the 28-PC model. Mohammad Asim engineered texture and edge features, implemented t-SNE manifold learning, and built the FastAPI backend and React workbench. I led the 80/20 partition protocol, K-Means clustering, triangulated validation, and the post-selection external audit. Individual contributions are assessed separately in our verified deliverables.`);
+  tab(q,[
+    ["Member / Registration", "Assigned specialization & objective", "Verified completed deliverables"],
+    ["Lovejeet Singh\n12521613\n(Presenter 1)", "Machine Learning Architecture &\nDimensionality Reduction\n[Objectives 1 & 2 · CO2, CO4]", "• Data hygiene audit (0 missing, 0 duplicates, 0 constant features)\n• 47 colour descriptors (RGB moments, HSV stats, circular hue bins)\n• Study-fitted StandardScaler (z = (x - μ)/σ) & 28-PC model (95% Scree rule)\n• Remote-sensing PC loadings & generalization (<0.75% MSE delta)\n• Automated numerical test suites (29 tests)"],
+    ["Mohammad Asim\n12518421\n(Presenter 2)", "Manifold Learning & Full-Stack\nPlatform Engineering\n[Objective 2 · CO4]", "• 23 texture & 8 edge descriptors (GLCM d=1,3, Uniform LBP, Sobel gradients)\n• t-SNE manifold learning pipeline & perplexity tuning (10, 30, 50)\n• 10-neighbor trustworthiness evaluation (0.771)\n• Asynchronous FastAPI backend server & live inference (POST /api/analyze)\n• React/TypeScript UI with 27k Class Distribution ribbon & custom controls"],
+    ["Reshu Kumar\n12508208\n(Presenter 3)", "Unsupervised Clustering, Evaluation\n& Scientific Audit\n[Objectives 2 & 3 · CO4, CO5]", "• 80/20 train/holdout protocol (21,600 study vs 5,400 holdout patches)\n• Cryptographic SHA-256 archive verification & label quarantine\n• K-Means++ clustering (K=10, 10 restarts) across 28-PC space\n• Triangulated validation (Silhouette 0.245, DB 1.42, Multi-seed ARI 0.824)\n• Sealed post-selection external audit against EuroSAT (ARI 0.299, NMI 0.429)"]
+  ], 64, 150, 1152, 450, [260, 310, 582], 18);
+  tx(q, "Equal 33.3% contribution across all phases. Individual contributions are verified and assessed separately.", 64, 620, 1152, 35, 22, {color:MUTED});
 }
 
 // SLIDE 13"); // SLIDE 13: Measured Results and Generalization
