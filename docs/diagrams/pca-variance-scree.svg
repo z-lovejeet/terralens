@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 520" width="100%" height="100%" style="background:#090d16; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <linearGradient id="barGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <linearGradient id="curveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Title -->
+  <text x="50" y="45" fill="#38bdf8" font-size="12" font-weight="700" letter-spacing="1.5">DIMENSIONALITY REDUCTION AUDIT</text>
+  <text x="50" y="75" fill="#f8fafc" font-size="22" font-weight="700">PCA Scree Plot &amp; Cumulative Retained Variance</text>
+  <text x="50" y="98" fill="#94a3b8" font-size="13">Pruned 50 redundant dimensions (64.1% reduction) while preserving 95.006% of total feature variance.</text>
+
+  <!-- Main Chart Canvas -->
+  <g transform="translate(60, 130)">
+    <!-- Grid Lines -->
+    <line x1="50" y1="300" x2="880" y2="300" stroke="#1e293b" stroke-width="1.5"/>
+    <line x1="50" y1="225" x2="880" y2="225" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,4"/>
+    <line x1="50" y1="150" x2="880" y2="150" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,4"/>
+    <line x1="50" y1="75" x2="880" y2="75" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,4"/>
+    <line x1="50" y1="15" x2="880" y2="15" stroke="#059669" stroke-width="1.5" stroke-dasharray="6,4"/>
+
+    <!-- Y-Axis Labels -->
+    <text x="40" y="305" fill="#64748b" font-size="11" text-anchor="end">0%</text>
+    <text x="40" y="230" fill="#64748b" font-size="11" text-anchor="end">25%</text>
+    <text x="40" y="155" fill="#64748b" font-size="11" text-anchor="end">50%</text>
+    <text x="40" y="80" fill="#64748b" font-size="11" text-anchor="end">75%</text>
+    <text x="40" y="20" fill="#34d399" font-size="11" font-weight="700" text-anchor="end">95%</text>
+
+    <!-- 95% Cutoff Label -->
+    <text x="880" y="10" fill="#34d399" font-size="11" font-weight="700" text-anchor="end">95% Scree Threshold (k = 28)</text>
+
+    <!-- Selected k=28 Vertical Line -->
+    <line x1="380" y1="15" x2="380" y2="300" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4,4"/>
+
+    <!-- Sample Individual Bars (PC 1 to 28) -->
+    <!-- PC1: 40.8% = 122px height -->
+    <rect x="65" y="178" width="12" height="122" rx="2" fill="url(#barGrad)"/>
+    <!-- PC2: 8.6% = 26px -->
+    <rect x="85" y="274" width="12" height="26" rx="2" fill="url(#barGrad)"/>
+    <!-- PC3: 6.6% = 20px -->
+    <rect x="105" y="280" width="12" height="20" rx="2" fill="url(#barGrad)"/>
+    <!-- PC4: 4.7% = 14px -->
+    <rect x="125" y="286" width="12" height="14" rx="2" fill="url(#barGrad)"/>
+    <!-- PC5: 3.8% = 11px -->
+    <rect x="145" y="289" width="12" height="11" rx="2" fill="url(#barGrad)"/>
+    <!-- Other small bars trailing off -->
+    <rect x="165" y="291" width="10" height="9" rx="1" fill="#334155"/>
+    <rect x="180" y="293" width="10" height="7" rx="1" fill="#334155"/>
+    <rect x="195" y="294" width="10" height="6" rx="1" fill="#334155"/>
+    <rect x="210" y="295" width="10" height="5" rx="1" fill="#334155"/>
+    <rect x="225" y="296" width="10" height="4" rx="1" fill="#334155"/>
+    <rect x="240" y="296.5" width="10" height="3.5" rx="1" fill="#334155"/>
+    <rect x="270" y="297" width="10" height="3" rx="1" fill="#334155"/>
+    <rect x="300" y="297.5" width="10" height="2.5" rx="1" fill="#334155"/>
+    <rect x="330" y="298" width="10" height="2" rx="1" fill="#334155"/>
+    <rect x="360" y="298.5" width="10" height="1.5" rx="1" fill="#334155"/>
+    <rect x="375" y="298.8" width="10" height="1.2" rx="1" fill="#f59e0b"/>
+
+    <!-- Cumulative Curve -->
+    <path d="M 71 178 Q 120 120, 200 65 T 380 15 Q 500 5, 870 1" fill="none" stroke="url(#curveGrad)" stroke-width="3.5"/>
+
+    <!-- Cutoff Point Marker -->
+    <circle cx="380" cy="15" r="6" fill="#f59e0b" stroke="#090d16" stroke-width="2"/>
+
+    <!-- Callout Card on Cutoff -->
+    <g transform="translate(400, 25)" filter="url(#shadow)">
+      <rect width="260" height="110" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="15" y="25" fill="#f59e0b" font-size="12" font-weight="700">OPTIMAL OPERATING POINT</text>
+      <text x="15" y="47" fill="#f8fafc" font-size="13" font-weight="700">Components: 28 of 78</text>
+      <text x="15" y="68" fill="#34d399" font-size="12" font-weight="600">Variance Retained: 95.006%</text>
+      <text x="15" y="88" fill="#94a3b8" font-size="11">Pruned 50 redundant dimensions</text>
+      <text x="15" y="103" fill="#cbd5e1" font-size="10.5">Linear holdout MSE delta &lt; 0.75%</text>
+    </g>
+
+    <!-- X-Axis Labels -->
+    <text x="71" y="325" fill="#94a3b8" font-size="11" text-anchor="middle">PC 1</text>
+    <text x="145" y="325" fill="#94a3b8" font-size="11" text-anchor="middle">PC 5</text>
+    <text x="225" y="325" fill="#94a3b8" font-size="11" text-anchor="middle">PC 10</text>
+    <text x="315" y="325" fill="#94a3b8" font-size="11" text-anchor="middle">PC 20</text>
+    <text x="380" y="325" fill="#f59e0b" font-size="12" font-weight="700" text-anchor="middle">PC 28</text>
+    <text x="550" y="325" fill="#94a3b8" font-size="11" text-anchor="middle">PC 45</text>
+    <text x="870" y="325" fill="#94a3b8" font-size="11" text-anchor="middle">PC 78</text>
+  </g>
+
+  <!-- Legend -->
+  <g transform="translate(110, 485)">
+    <rect x="0" y="0" width="14" height="14" rx="2" fill="url(#barGrad)"/>
+    <text x="22" y="12" fill="#e2e8f0" font-size="11.5">Individual PC Variance</text>
+
+    <line x1="200" y1="7" x2="230" y2="7" stroke="#10b981" stroke-width="3"/>
+    <text x="238" y="12" fill="#e2e8f0" font-size="11.5">Cumulative Explained Variance</text>
+
+    <line x1="450" y1="7" x2="480" y2="7" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4,4"/>
+    <text x="488" y="12" fill="#e2e8f0" font-size="11.5">Selected 95% Cutoff (k=28)</text>
+  </g>
+</svg>

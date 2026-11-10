@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 520" width="100%" height="100%" style="background:#090d16; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <linearGradient id="cardBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#151d2f"/>
+      <stop offset="100%" stop-color="#0e1424"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Title -->
+  <text x="40" y="45" fill="#38bdf8" font-size="12" font-weight="700" letter-spacing="1.5">DOMAIN-SPECIFIC FEATURE EXTRACTION PIPELINE</text>
+  <text x="40" y="75" fill="#f8fafc" font-size="22" font-weight="700">78 Deterministic Visual Descriptors (backend/terralens/features.py)</text>
+  <text x="40" y="98" fill="#94a3b8" font-size="13">Pruned 12,288 raw pixels down to 78 rotation-invariant, physically interpretable remote sensing features.</text>
+
+  <!-- Column 1: Colour Descriptors -->
+  <g transform="translate(40, 125)" filter="url(#shadow)">
+    <rect width="320" height="355" rx="12" fill="url(#cardBg)" stroke="#059669" stroke-width="2"/>
+    <rect x="0" y="0" width="320" height="48" rx="12" fill="#064e3b"/>
+    <text x="20" y="30" fill="#34d399" font-size="15" font-weight="700">47 COLOUR DESCRIPTORS</text>
+    <text x="270" y="30" fill="#a7f3d0" font-size="12" font-weight="600">60.3%</text>
+
+    <text x="20" y="75" fill="#f8fafc" font-size="13" font-weight="700">15 RGB Moments (5 stats × 3 channels)</text>
+    <text x="20" y="95" fill="#94a3b8" font-size="11.5">Mean, Std, p10 (shadow baseline),</text>
+    <text x="20" y="112" fill="#94a3b8" font-size="11.5">Median (p50), p90 (highlight peaks).</text>
+    <text x="20" y="130" fill="#38bdf8" font-size="10.5" font-family="monospace">red_mean, green_std, blue_p90, ...</text>
+
+    <line x1="20" y1="145" x2="300" y2="145" stroke="#1e293b" stroke-width="1.5"/>
+
+    <text x="20" y="170" fill="#f8fafc" font-size="13" font-weight="700">4 HSV Summary Statistics</text>
+    <text x="20" y="190" fill="#94a3b8" font-size="11.5">Saturation mean/std &amp; Value mean/std.</text>
+    <text x="20" y="208" fill="#94a3b8" font-size="11">Separates shadow illumination from chromaticity.</text>
+
+    <line x1="20" y1="222" x2="300" y2="222" stroke="#1e293b" stroke-width="1.5"/>
+
+    <text x="20" y="247" fill="#f8fafc" font-size="13" font-weight="700">12 Circular Hue Bins (30° intervals)</text>
+    <text x="20" y="267" fill="#94a3b8" font-size="11.5">Eliminates 0°/360° red wraparound singularity</text>
+    <text x="20" y="284" fill="#94a3b8" font-size="11">via circular trigonometry histogram.</text>
+
+    <line x1="20" y1="298" x2="300" y2="298" stroke="#1e293b" stroke-width="1.5"/>
+
+    <text x="20" y="323" fill="#f8fafc" font-size="13" font-weight="700">16 Saturation &amp; Brightness Bins</text>
+    <text x="20" y="342" fill="#94a3b8" font-size="11.5">8 Saturation bins + 8 Value distribution bins.</text>
+  </g>
+
+  <!-- Column 2: Texture Descriptors -->
+  <g transform="translate(390, 125)" filter="url(#shadow)">
+    <rect width="320" height="355" rx="12" fill="url(#cardBg)" stroke="#0284c7" stroke-width="2"/>
+    <rect x="0" y="0" width="320" height="48" rx="12" fill="#0c4a6e"/>
+    <text x="20" y="30" fill="#38bdf8" font-size="15" font-weight="700">23 TEXTURE DESCRIPTORS</text>
+    <text x="270" y="30" fill="#bae6fd" font-size="12" font-weight="600">29.5%</text>
+
+    <text x="20" y="75" fill="#f8fafc" font-size="13" font-weight="700">12 GLCM Properties (Haralick)</text>
+    <text x="20" y="95" fill="#94a3b8" font-size="11.5">Gray-Level Co-occurrence Matrix (16 levels)</text>
+    <text x="20" y="112" fill="#94a3b8" font-size="11.5">Averaged across 4 angles (0°, 45°, 90°, 135°)</text>
+    <text x="20" y="130" fill="#94a3b8" font-size="11.5">Distances: <tspan fill="#38bdf8" font-weight="600">d = 1 px</tspan> &amp; <tspan fill="#38bdf8" font-weight="600">d = 3 px</tspan></text>
+    <text x="20" y="148" fill="#cbd5e1" font-size="10.5">Contrast, Dissimilarity, Homogeneity,</text>
+    <text x="20" y="163" fill="#cbd5e1" font-size="10.5">Energy, Correlation, Angular Second Moment (ASM)</text>
+
+    <line x1="20" y1="180" x2="300" y2="180" stroke="#1e293b" stroke-width="1.5"/>
+
+    <text x="20" y="205" fill="#f8fafc" font-size="13" font-weight="700">10 Uniform Local Binary Patterns (LBP)</text>
+    <text x="20" y="225" fill="#94a3b8" font-size="11.5">P = 8 sampling points, Radius R = 1 px.</text>
+    <text x="20" y="242" fill="#94a3b8" font-size="11.5">Detects micro-texture (spots, edges, corners)</text>
+    <text x="20" y="260" fill="#34d399" font-size="11" font-weight="600">Strictly rotation-invariant representation.</text>
+
+    <line x1="20" y1="275" x2="300" y2="275" stroke="#1e293b" stroke-width="1.5"/>
+
+    <text x="20" y="300" fill="#f8fafc" font-size="13" font-weight="700">1 Shannon Greyscale Entropy</text>
+    <text x="20" y="320" fill="#94a3b8" font-size="11.5">Statistical information entropy over 32 grey bins.</text>
+    <text x="20" y="338" fill="#fbbf24" font-size="11">Differentiates noisy forests from smooth lakes.</text>
+  </g>
+
+  <!-- Column 3: Edge Descriptors -->
+  <g transform="translate(740, 125)" filter="url(#shadow)">
+    <rect width="320" height="355" rx="12" fill="url(#cardBg)" stroke="#9333ea" stroke-width="2"/>
+    <rect x="0" y="0" width="320" height="48" rx="12" fill="#4a044e"/>
+    <text x="20" y="30" fill="#e879f9" font-size="15" font-weight="700">8 EDGE DESCRIPTORS</text>
+    <text x="270" y="30" fill="#f5d0fe" font-size="12" font-weight="600">10.2%</text>
+
+    <text x="20" y="75" fill="#f8fafc" font-size="13" font-weight="700">4 Sobel Gradient Magnitude Stats</text>
+    <text x="20" y="95" fill="#94a3b8" font-size="11.5">Derived from horizontal &amp; vertical Sobel filters:</text>
+    <text x="20" y="113" fill="#38bdf8" font-size="11" font-family="monospace">gx = Sobel(axis=1), gy = Sobel(axis=0)</text>
+    <text x="20" y="131" fill="#38bdf8" font-size="11" font-family="monospace">magnitude = hypot(gx, gy)</text>
+    <text x="20" y="153" fill="#cbd5e1" font-size="11.5">• <tspan font-weight="600">edge_mean:</tspan> Average boundary gradient</text>
+    <text x="20" y="171" fill="#cbd5e1" font-size="11.5">• <tspan font-weight="600">edge_std:</tspan> Spatial gradient variance</text>
+    <text x="20" y="189" fill="#cbd5e1" font-size="11.5">• <tspan font-weight="600">edge_p90:</tspan> 90th percentile peak edge</text>
+    <text x="20" y="207" fill="#cbd5e1" font-size="11.5">• <tspan font-weight="600">edge_density:</tspan> Fraction with magnitude &gt; 0.1</text>
+
+    <line x1="20" y1="225" x2="300" y2="225" stroke="#1e293b" stroke-width="1.5"/>
+
+    <text x="20" y="250" fill="#f8fafc" font-size="13" font-weight="700">4 Directional Orientation Bins</text>
+    <text x="20" y="270" fill="#94a3b8" font-size="11.5">Gradient-weighted histogram in unoriented</text>
+    <text x="20" y="288" fill="#94a3b8" font-size="11.5">angle bins over [0, π]:</text>
+    <text x="20" y="310" fill="#e2e8f0" font-size="11">• 0° (horizontal), 45°, 90° (vertical), 135°</text>
+    <text x="20" y="333" fill="#34d399" font-size="11" font-weight="600">Captures roads, runways &amp; industrial grids.</text>
+  </g>
+</svg>
