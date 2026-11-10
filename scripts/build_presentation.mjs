@@ -237,14 +237,14 @@ await fs.mkdir(BUILD,{recursive:true}); await fs.mkdir(OUT,{recursive:true});
 
 // SLIDE 12: Individual Contributions of All Group Members
 {
-  const q=slide("Individual contributions and completed work",`[Presenter: Reshu Kumar] As mandated by our curriculum, our team divided responsibilities equally across all objectives. Lovejeet Singh led data hygiene, colour descriptors, StandardScaler, and the 28-PC model. Mohammad Asim engineered texture and edge features, implemented t-SNE manifold learning, and built the FastAPI backend and React workbench. I led the 80/20 partition protocol, K-Means clustering, triangulated validation, and the post-selection external audit. Individual contributions are assessed separately in our verified deliverables.`);
+  const q=slide("Individual contributions and completed work",`[Presenter: Reshu Kumar] As mandated by our curriculum, our team divided responsibilities equally across all objectives. Lovejeet Singh led data hygiene, colour descriptors, and the 28-PC PCA model. Mohammad Asim engineered texture and edge features, implemented t-SNE, and built the full-stack platform. I led the 80/20 protocol, K-Means clustering, triangulated validation, and the post-selection audit. Individual contributions are assessed separately in our verified deliverables.`);
   tab(q,[
-    ["Member / Registration", "Assigned specialization & objective", "Verified completed deliverables"],
-    ["Lovejeet Singh\n12521613\n(Presenter 1)", "Machine Learning Architecture &\nDimensionality Reduction\n[Objectives 1 & 2 · CO2, CO4]", "• Data hygiene audit (0 missing, 0 duplicates, 0 constant features)\n• 47 colour descriptors (RGB moments, HSV stats, circular hue bins)\n• Study-fitted StandardScaler (z = (x - μ)/σ) & 28-PC model (95% Scree rule)\n• Remote-sensing PC loadings & generalization (<0.75% MSE delta)\n• Automated numerical test suites (29 tests)"],
-    ["Mohammad Asim\n12518421\n(Presenter 2)", "Manifold Learning & Full-Stack\nPlatform Engineering\n[Objective 2 · CO4]", "• 23 texture & 8 edge descriptors (GLCM d=1,3, Uniform LBP, Sobel gradients)\n• t-SNE manifold learning pipeline & perplexity tuning (10, 30, 50)\n• 10-neighbor trustworthiness evaluation (0.771)\n• Asynchronous FastAPI backend server & live inference (POST /api/analyze)\n• React/TypeScript UI with 27k Class Distribution ribbon & custom controls"],
-    ["Reshu Kumar\n12508208\n(Presenter 3)", "Unsupervised Clustering, Evaluation\n& Scientific Audit\n[Objectives 2 & 3 · CO4, CO5]", "• 80/20 train/holdout protocol (21,600 study vs 5,400 holdout patches)\n• Cryptographic SHA-256 archive verification & label quarantine\n• K-Means++ clustering (K=10, 10 restarts) across 28-PC space\n• Triangulated validation (Silhouette 0.245, DB 1.42, Multi-seed ARI 0.824)\n• Sealed post-selection external audit against EuroSAT (ARI 0.299, NMI 0.429)"]
-  ], 64, 150, 1152, 450, [260, 310, 582], 18);
-  tx(q, "Equal 33.3% contribution across all phases. Individual contributions are verified and assessed separately.", 64, 620, 1152, 35, 22, {color:MUTED});
+    ["Member / Registration", "Assigned role & objective", "Key completed deliverables"],
+    ["Lovejeet Singh\n12521613\n(Presenter 1)", "ML Architecture & PCA\n[Objectives 1 & 2 · CO2, CO4]", "• Engineered 47 colour descriptors (RGB/HSV moments & circular hue bins)\n• Fitted 28-PC PCA model (95% variance) with <0.75% generalization delta"],
+    ["Mohammad Asim\n12518421\n(Presenter 2)", "Manifold Learning & Full-Stack\n[Objective 2 · CO4]", "• Engineered 23 texture & 8 edge descriptors (GLCM, LBP, Sobel gradients)\n• Implemented t-SNE manifold (trustworthiness 0.771) and FastAPI/React platform"],
+    ["Reshu Kumar\n12508208\n(Presenter 3)", "Clustering, Validation & Audit\n[Objectives 2 & 3 · CO4, CO5]", "• Implemented 80/20 train/holdout protocol & K-Means++ clustering (K=10)\n• Triangulated validation (Silhouette 0.245, DB 1.42) & sealed post-hoc audit"]
+  ], 64, 155, 1152, 340, [260, 310, 582], 19);
+  tx(q, "Equal 33.3% contribution across all phases. Individual contributions are verified and assessed separately.", 64, 550, 1152, 35, 22, {color:MUTED});
 }
 
 // SLIDE 13"); // SLIDE 13: Measured Results and Generalization
