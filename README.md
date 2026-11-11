@@ -344,6 +344,7 @@ The TerraLens frontend is a high-performance, single-page application built with
 
 Clone the repository and run the automated bootstrap scripts:
 
+#### macOS / Linux / WSL:
 ```bash
 # 1. Clone the repository
 git clone https://github.com/z-lovejeet/terralens.git
@@ -354,6 +355,19 @@ cd terralens
 
 # 3. Start the application
 ./scripts/start.sh
+```
+
+#### Windows (Command Prompt / PowerShell):
+```cmd
+# 1. Clone the repository
+git clone https://github.com/z-lovejeet/terralens.git
+cd terralens
+
+# 2. Run the automated setup script
+scripts\setup.bat
+
+# 3. Start the application
+scripts\start.bat
 ```
 * **Frontend & API:** Open your browser to <http://127.0.0.1:8000>
 * **Interactive Swagger API Docs:** <http://127.0.0.1:8000/docs>
@@ -516,8 +530,10 @@ terralens/
 │   ├── package.json              # Frontend package configuration
 │   └── vite.config.ts            # Vite bundler & API proxy configuration
 ├── scripts/
-│   ├── setup.sh                  # One-click automated environment setup
-│   ├── start.sh                  # Application launch script
+│   ├── setup.sh                  # One-click automated environment setup (Linux/macOS)
+│   ├── setup.bat                 # One-click automated environment setup (Windows)
+│   ├── start.sh                  # Application launch script (Linux/macOS)
+│   ├── start.bat                 # Application launch script (Windows)
 │   ├── prepare_study.py          # Dataset downloader & study reproduction script
 │   ├── build_deliverables.py     # 28-page academic report PDF generator
 │   ├── build_study_guide_pdf.py  # 14-page master viva study guide PDF generator
