@@ -72,6 +72,15 @@ Multi-Seed Stability ARI: 0.824        Trustworthiness: 0.771
 External EuroSAT Alignment: ARI = 0.299, NMI = 0.429
 ```
 
+### 🌐 Real-World Problem Solving & Operational Applications
+
+Moving beyond static dataset evaluation, TerraLens provides direct operational value for environmental and geospatial decision support:
+
+* 🌲 **Deforestation & Canopy Depletion Tracking:** Unsupervised clustering detects shifts from dense forest canopies (Cluster 02) to cleared soil or scrubland without requiring pre-labeled training data from the local region.
+* 💧 **Reservoir & Water Body Monitoring:** Tracks seasonal shrinkage or drought depletion in surface water bodies (Cluster 04) by measuring acreage distribution percentages across multi-temporal satellite passes.
+* 🌾 **Agricultural Land-Use & Crop Field Mapping:** Distinguishes active crop cultivation (Cluster 01) from fallow pastures and wetlands to aid regional food security and agricultural planning.
+* 🏙️ **Urban Sprawl & Infrastructure Expansion:** Identifies expanding residential and commercial corridors (Cluster 10) and linear transport networks (Cluster 09) across vast unmapped territories.
+
 ---
 
 ## Team Contributions & Roles
@@ -454,7 +463,7 @@ PYTHONPATH=backend .venv/bin/python scripts/build_deliverables.py
 PYTHONPATH=backend .venv/bin/python scripts/build_study_guide_pdf.py
 
 # 3. Generate 16-Slide Presentation Deck (PPTX & PDF)
-node scripts/build_presentation.mjs
+PYTHONPATH=backend .venv/bin/python scripts/update_presentation_applied.py
 
 # 4. Package byte-identical submission ZIPs for all 3 teammates
 PYTHONPATH=backend .venv/bin/python scripts/package_submission.py --final
