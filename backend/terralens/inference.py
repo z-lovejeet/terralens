@@ -157,6 +157,16 @@ def analyze_image(image: Image.Image, artifacts_dir: Path, *, comparison: bool =
     if percentile >= 98:
         warnings.append(f"Visual distance from centroid is at the {percentile:.1f}th percentile of reference group patches.")
 
+    is_anomaly = percentile >= 95.0
+    anomaly_status = "ANOMALY_DETECTED" if percentile >= 95.0 else "BORDERLINE" if percentile >= 85.0 else "NORMAL"
+    anomaly_description = (
+        "Spectral and structural signature deviates significantly from reference European terrain (distance exceeds 95% of cohort)."
+        if is_anomaly else
+        "Moderate distance from cluster centroid. Within typical transition boundaries."
+        if percentile >= 85.0 else
+        "Standard land signature consistent with typical European satellite patches."
+    )
+
     result = {
         "run_id": model["reference_run_id"],
         "cluster": cluster_id,
@@ -168,6 +178,12 @@ def analyze_image(image: Image.Image, artifacts_dir: Path, *, comparison: bool =
         "margin": alternate_distance - distance if alternate_distance is not None else None,
         "relative_distance": distance / median if median > 0 else None,
         "reference_percentile": percentile,
+        "anomaly": {
+            "is_anomaly": is_anomaly,
+            "status": anomaly_status,
+            "score": round(percentile, 1),
+            "description": anomaly_description,
+        },
         "representatives": model["representatives"][cluster_id],
         "neighbors": neighbors,
         "neighbor_scope": len(group.ids) if group is not None else 0,
