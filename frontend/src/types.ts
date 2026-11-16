@@ -1,8 +1,75 @@
-export type View = 'observatory' | 'projections' | 'clusters' | 'experiments' | 'analyzer' | 'evidence';
+export type View = 'observatory' | 'scanner' | 'changes' | 'analyzer' | 'clusters' | 'diagnostics';
 export interface PatchContext { runId: string; clusterId?: number; run?: Run; point?: Point; source?: 'live' }
 export type XY = [number, number];
 export interface Point { id: string; pca: XY; tsne?: XY; cluster: number }
 export interface Feature { name: string; value: number; zscore: number }
+
+export interface ScannerTile {
+  row: number;
+  col: number;
+  cluster_id: number;
+  cluster_name: string;
+  color: string;
+  confidence: number;
+  distance: number;
+  pca: XY;
+  summary: string;
+}
+
+export interface LandDistribution {
+  cluster_id: number;
+  name: string;
+  count: number;
+  percentage: number;
+  color: string;
+}
+
+export interface ScannerResult {
+  grid_size: number;
+  total_tiles: number;
+  input_dimensions: [number, number];
+  scanned_dimensions: [number, number];
+  tiles: ScannerTile[];
+  distribution: LandDistribution[];
+  assessment: string;
+  image_base64: string;
+}
+
+export interface ChangeAlert {
+  level: 'CRITICAL' | 'WARNING' | 'INFO' | 'STABLE';
+  title: string;
+  narrative: string;
+  recommendation: string;
+}
+
+export interface ChangePass {
+  cluster: number;
+  cluster_name: string;
+  color: string;
+  distance: number;
+  pca: XY;
+  image_base64: string;
+}
+
+export interface ChangeResult {
+  before: ChangePass;
+  after: ChangePass;
+  pca_distance: number;
+  alert: ChangeAlert;
+  deltas: {
+    greenness: number;
+    albedo: number;
+    contrast: number;
+    entropy: number;
+  };
+}
+
+export interface AnomalyInfo {
+  is_anomaly: boolean;
+  status: 'NORMAL' | 'BORDERLINE' | 'ANOMALY_DETECTED';
+  score: number;
+  description: string;
+}
 export interface Metrics {
   silhouette: number | null;
   davies_bouldin: number | null;
@@ -83,6 +150,7 @@ export interface Analysis {
   distance: number;
   relative_distance: number | null;
   reference_percentile: number;
+  anomaly?: AnomalyInfo;
   alternate_cluster?: number | null;
   alternate_distance?: number | null;
   margin?: number | null;
