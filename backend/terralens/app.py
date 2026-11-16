@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 
 from terralens import __version__
-from terralens.api import analyzer, experiments, reference
+from terralens.api import analyzer, applied, experiments, reference
 from terralens.api.resources import AppResources
 from terralens.settings import ARTIFACTS, FRONTEND, MAX_UPLOAD_ENVELOPE, RUNTIME
 from terralens.uploads import UploadBodyLimitMiddleware
@@ -59,6 +59,7 @@ async def response_headers(request: Request, call_next):
 app.include_router(reference.router, prefix="/api")
 app.include_router(experiments.router, prefix="/api")
 app.include_router(analyzer.router, prefix="/api")
+app.include_router(applied.router, prefix="/api")
 
 
 @app.api_route("/{path:path}", methods=["GET", "HEAD"], include_in_schema=False)
