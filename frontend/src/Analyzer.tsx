@@ -158,12 +158,13 @@ export default function Analyzer({ study, run, capabilities, selectPatch }: Anal
       <div className="analyzer-presets-bar" style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '8px',
+        gap: '10px',
         flexWrap: 'wrap',
-        marginBottom: '16px',
-        padding: '10px 14px',
+        marginBottom: '28px',
+        padding: '12px 18px',
         backgroundColor: '#E5EADF',
-        borderRadius: '8px'
+        borderRadius: '8px',
+        border: '1px solid rgba(14, 58, 47, 0.15)'
       }}>
         <span style={{ fontSize: '12px', fontWeight: 700, color: '#0E3A2F', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           Instant Test Presets:
