@@ -1,38 +1,43 @@
-export type View = 'observatory' | 'scanner' | 'changes' | 'analyzer' | 'clusters' | 'diagnostics';
+export type View = 'observatory' | 'disaster' | 'analyzer' | 'clusters' | 'diagnostics';
 export interface PatchContext { runId: string; clusterId?: number; run?: Run; point?: Point; source?: 'live' }
 export type XY = [number, number];
 export interface Point { id: string; pca: XY; tsne?: XY; cluster: number }
 export interface Feature { name: string; value: number; zscore: number }
 
-export interface ScannerTile {
-  row: number;
-  col: number;
-  cluster_id: number;
-  cluster_name: string;
-  color: string;
-  confidence: number;
-  distance: number;
-  pca: XY;
-  summary: string;
+export interface DisasterPreset {
+  id: string;
+  title: string;
+  location: string;
+  type: string;
+  description: string;
+  image_path?: string;
 }
 
-export interface LandDistribution {
-  cluster_id: number;
-  name: string;
-  count: number;
-  percentage: number;
-  color: string;
+export interface DisasterCrisisReport {
+  disaster_type: string;
+  severity_level: 'CRITICAL' | 'HIGH' | 'MODERATE' | 'STABLE';
+  severity_score: number;
+  affected_area_percentage: number;
+  confidence_score: number;
+  headline: string;
+  damage_assessment: string;
+  spectral_anomalies: {
+    thermal_albedo_shift: string;
+    chlorophyll_depletion: string;
+    moisture_delta: string;
+    texture_entropy: string;
+  };
+  detected_features: string[];
+  operational_dispatch: string;
+  engine?: string;
 }
 
-export interface ScannerResult {
-  grid_size: number;
-  total_tiles: number;
-  input_dimensions: [number, number];
-  scanned_dimensions: [number, number];
-  tiles: ScannerTile[];
-  distribution: LandDistribution[];
-  assessment: string;
+export interface DisasterResult {
+  preset_id?: string | null;
   image_base64: string;
+  dimensions: [number, number];
+  crisis_report: DisasterCrisisReport;
+  engine: string;
 }
 
 export interface ChangeAlert {
