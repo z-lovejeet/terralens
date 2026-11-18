@@ -139,52 +139,53 @@ async function main() {
     console.log("  Stats bar content:", obsStats?.slice(0, 80));
     await capture("test-1-observatory.jpg");
 
-    // --- TEST 2: REGIONAL SCENE SCANNER ---
-    console.log("\n--- TEST 2: Regional Scene Scanner ---");
-    await evaluate("window.location.hash = 'scanner'");
-    await sleep(2500);
-    const tileCount = await evaluate("document.querySelectorAll('.scanner-tile').length");
-    console.log(`  Rendered tiles count: ${tileCount} (Expected: 16)`);
-    if (tileCount !== 16) throw new Error(`Expected 16 tiles in scanner, got ${tileCount}`);
-
-    const assessmentText = await evaluate("document.querySelector('.assessment-body')?.textContent");
-    console.log("  Ecological assessment:", assessmentText);
-
-    // Click on tile 3
-    console.log("  Clicking tile 3 to inspect...");
-    await evaluate("document.querySelectorAll('.scanner-tile')[2]?.click()");
-    await sleep(500);
-    const selectedClass = await evaluate("document.querySelector('.tile-class-name')?.textContent");
-    console.log("  Selected tile class:", selectedClass);
-    await capture("test-2-scanner.jpg");
-
-    // --- TEST 3: TEMPORAL CHANGE DETECTOR ---
-    console.log("\n--- TEST 3: Temporal Change & Deforestation Detector ---");
-    await evaluate("window.location.hash = 'changes'");
-    await sleep(2500);
+    // --- TEST 2: NATURAL DISASTER & CRISIS RECONNAISSANCE ---
+    console.log("\n--- TEST 2: Natural Disaster & Crisis Reconnaissance (Gemini Vision) ---");
+    await evaluate("window.location.hash = 'disaster'");
+    
+    // Wait for disaster analysis to complete
+    let disasterReady = false;
+    for (let i = 0; i < 60; i++) {
+      disasterReady = await evaluate("!!document.querySelector('.alert-headline')");
+      if (disasterReady) break;
+      await sleep(1000);
+    }
     const alertLevel = await evaluate("document.querySelector('.alert-level-pill')?.textContent");
+    const disasterHeadline = await evaluate("document.querySelector('.alert-headline')?.textContent");
     console.log("  Detected status:", alertLevel);
-    const deltas = await evaluate("Array.from(document.querySelectorAll('.drift-metric-card')).map(c => c.textContent.trim()).join(' | ')");
-    console.log("  Drift telemetry:", deltas);
-    await capture("test-3-changes.jpg");
+    console.log("  Disaster headline:", disasterHeadline);
+    const anomalies = await evaluate("Array.from(document.querySelectorAll('.drift-metric-card')).map(c => c.textContent.trim()).join(' | ')");
+    console.log("  Spectral anomaly telemetry:", anomalies);
+    await capture("test-2-disaster-wildfire.jpg");
 
-    // Switch to Drought Preset
-    console.log("  Testing 'Reservoir & Riverbed Shrinkage (Drought)' preset...");
-    await evaluate("Array.from(document.querySelectorAll('.preset-chip')).find(c => c.textContent.includes('Drought'))?.click()");
+    // Switch to Tsunami Preset
+    console.log("  Testing 'Coastal Surge & Tsunami Inundation' preset...");
+    await evaluate("Array.from(document.querySelectorAll('.preset-chip')).find(c => c.textContent.includes('Tsunami'))?.click()");
     await sleep(2000);
-    const droughtAlert = await evaluate("document.querySelector('.alert-level-pill')?.textContent");
-    console.log("  Drought status:", droughtAlert);
-    await capture("test-3-changes-drought.jpg");
+    for (let i = 0; i < 60; i++) {
+      const isAnalyzing = await evaluate("document.querySelector('.button-primary')?.textContent?.includes('Analyzing')");
+      if (!isAnalyzing) break;
+      await sleep(1000);
+    }
+    const tsunamiAlert = await evaluate("document.querySelector('.alert-level-pill')?.textContent");
+    const tsunamiHeadline = await evaluate("document.querySelector('.alert-headline')?.textContent");
+    console.log("  Tsunami status:", tsunamiAlert);
+    console.log("  Tsunami headline:", tsunamiHeadline);
+    await capture("test-2-disaster-tsunami.jpg");
 
-    // --- TEST 4: PATCH ANALYZER ---
-    console.log("\n--- TEST 4: Patch Analyzer with Presets & Radar ---");
+    // --- TEST 3: PATCH ANALYZER ---
+    console.log("\n--- TEST 3: Patch Analyzer with Presets & Radar ---");
     await evaluate("window.location.hash = 'analyzer'");
     await sleep(2000);
+    for (let i = 0; i < 40; i++) {
+      if (await evaluate("!!document.querySelector('.analyzer-presets-bar button')")) break;
+      await sleep(500);
+    }
 
     // Click instant preset 'Dense Forest'
     console.log("  Clicking instant preset: 'Dense Forest'...");
     await evaluate("Array.from(document.querySelectorAll('.analyzer-presets-bar button')).find(b => b.textContent.includes('Dense Forest'))?.click()");
-    await sleep(2500);
+    await sleep(2000);
 
     const assignedGroup = await evaluate("document.querySelector('.assignment-heading h3')?.textContent");
     console.log("  Assigned group:", assignedGroup);
@@ -198,29 +199,36 @@ async function main() {
     await sleep(1000);
     const dossierTitle = await evaluate("document.querySelector('.dossier-dialog h2')?.textContent");
     console.log("  Dossier modal opened:", dossierTitle);
-    await capture("test-4-analyzer-dossier.jpg");
+    await capture("test-3-analyzer-dossier.jpg");
 
     // Close dossier
     await evaluate("document.querySelector('.dossier-dialog button')?.click()");
     await sleep(500);
 
-    // --- TEST 5: CLUSTER ATLAS ---
-    console.log("\n--- TEST 5: Cluster Atlas ---");
+    // --- TEST 4: CLUSTER ATLAS ---
+    console.log("\n--- TEST 4: Cluster Atlas ---");
     await evaluate("window.location.hash = 'clusters'");
-    await sleep(2000);
+    for (let i = 0; i < 30; i++) {
+      const cCount = await evaluate("document.querySelectorAll('.cluster-card').length");
+      if (cCount === 10) break;
+      await sleep(300);
+    }
     const clusterCardCount = await evaluate("document.querySelectorAll('.cluster-card').length");
     console.log(`  Atlas cluster cards count: ${clusterCardCount} (Expected: 10)`);
-    await capture("test-5-clusters.jpg");
+    await capture("test-4-clusters.jpg");
 
-    // --- TEST 6: MODEL LAB & DIAGNOSTICS ---
-    console.log("\n--- TEST 6: Model Lab & Diagnostics ---");
+    // --- TEST 5: MODEL LAB & DIAGNOSTICS ---
+    console.log("\n--- TEST 5: Model Lab & Diagnostics ---");
     await evaluate("window.location.hash = 'diagnostics'");
-    await sleep(2500);
+    for (let i = 0; i < 30; i++) {
+      if (await evaluate("!!document.querySelector('.subnav-pill')")) break;
+      await sleep(300);
+    }
 
     // Subtab 1: Manifolds
     const manifoldCanvases = await evaluate("document.querySelectorAll('.projection-canvas-container, .scatter-plot').length");
     console.log("  Manifolds scatter canvases:", manifoldCanvases);
-    await capture("test-6-diagnostics-manifolds.jpg");
+    await capture("test-5-diagnostics-manifolds.jpg");
 
     // Subtab 2: Benchmarks
     console.log("  Switching to Clustering Benchmarks sub-tab...");
@@ -228,13 +236,13 @@ async function main() {
     await sleep(2000);
     const benchmarkSliders = await evaluate("document.querySelectorAll('.experiment-controls, .controls-grid').length");
     console.log("  Benchmark controls rendered:", benchmarkSliders > 0);
-    await capture("test-6-diagnostics-benchmarks.jpg");
+    await capture("test-5-diagnostics-benchmarks.jpg");
 
     // Subtab 3: Reference Audit
     console.log("  Switching to Methodology & Reference Audit sub-tab...");
     await evaluate("document.querySelectorAll('.subnav-pill')[2]?.click()");
     await sleep(2000);
-    await capture("test-6-diagnostics-audit.jpg");
+    await capture("test-5-diagnostics-audit.jpg");
 
     // Check for runtime errors
     const errors = consoleLogs.filter(l => l.type === 'error');
