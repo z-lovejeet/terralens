@@ -74,8 +74,9 @@ External EuroSAT Alignment: ARI = 0.299, NMI = 0.429
 
 ### 🌐 Real-World Problem Solving & Operational Applications
 
-Moving beyond static dataset evaluation, TerraLens provides direct operational value for environmental and geospatial decision support:
+Moving beyond static dataset evaluation, TerraLens provides direct operational value for environmental decision support, emergency response, and geospatial monitoring:
 
+* 🚨 **Natural Disaster & Crisis Reconnaissance (Crisis Radar):** Combines multi-spectral anomaly telemetry with zero-shot vision foundation intelligence (Gemini 3.5 Flash-Lite Vision) to detect active wildfires, thermal burn scars, tsunami aftermath, river levee breaches, deforestation frontiers, and drought desiccation.
 * 🌲 **Deforestation & Canopy Depletion Tracking:** Unsupervised clustering detects shifts from dense forest canopies (Cluster 02) to cleared soil or scrubland without requiring pre-labeled training data from the local region.
 * 💧 **Reservoir & Water Body Monitoring:** Tracks seasonal shrinkage or drought depletion in surface water bodies (Cluster 04) by measuring acreage distribution percentages across multi-temporal satellite passes.
 * 🌾 **Agricultural Land-Use & Crop Field Mapping:** Distinguishes active crop cultivation (Cluster 01) from fallow pastures and wetlands to aid regional food security and agricultural planning.
@@ -334,6 +335,16 @@ The TerraLens frontend is a high-performance, single-page application built with
 
 ---
 
+### Application 6: Crisis Radar (Natural Disaster Reconnaissance)
+*Rapid emergency reconnaissance detecting wildfires, burn scars, tsunamis, floods, and droughts.*
+
+* **Key Features:**
+  * **Verified Disaster Passes:** Instant presets for active wildfire fronts, coastal tsunami surges, Amazon clear-cutting, alluvial levee breaches, and reservoir drought desiccation.
+  * **Multi-Spectral Anomaly Telemetry:** Measures 4 physical shift vectors—Thermal Albedo Shift, Photosynthetic Loss, Moisture Deficit/Delta, and Structural Entropy $\Delta$.
+  * **Zero-Shot Foundation Core:** Powered by Gemini 3.5 Flash-Lite Vision with fallback resilience, returning emergency severity ratings (0–100), visual signatures, and tactical operational dispatch guidance.
+
+---
+
 ## Prerequisites & System Requirements
 
 | Requirement | Minimum Specification | Recommended Specification |
@@ -512,6 +523,9 @@ The FastAPI backend exposes typed JSON endpoints for exploration and real-time e
 | `POST` | `/api/experiments` | Submit a bounded asynchronous clustering job ($K$, variance, perplexity) | `{"job_id": "exp_7f8a12", "status": "queued"}` |
 | `GET` | `/api/experiments/{id}`| Poll the status and retrieve results of an experiment job | `{"status": "completed", "result": {"silhouette": 0.238, ...}}` |
 | `POST` | `/api/analyze` | Upload a satellite patch (multipart/form-data) for live 10-group classification | `{"cluster": 4, "distance_to_centroid": 1.84, "runner_up_gap": 0.42, "nearest_neighbors": [...]}` |
+| `GET` | `/api/analyzer/presets` | Retrieve instant preloaded EuroSAT benchmark patches for single-patch analysis | `[{"id": "pe0bce20c66ac24a69c02", "label": "Dense Forest Canopy", ...}]` |
+| `GET` | `/api/disaster/presets` | Retrieve verified natural disaster & catastrophe satellite observation scenarios | `[{"id": "wildfire_burn_scar", "type": "Wildfire", ...}]` |
+| `POST` | `/api/disaster` | Run multi-spectral anomaly detection & Gemini Vision crisis reconnaissance | `{"crisis_report": {"severity_level": "CRITICAL", "severity_score": 94, ...}}` |
 | `GET` | `/api/export/metrics.csv`| Download complete CSV record of all experimental runs | CSV formatted data stream |
 
 ---
@@ -524,15 +538,18 @@ terralens/
 │   └── terralens/
 │       ├── __init__.py           # Package initializer
 │       ├── app.py                # FastAPI HTTP server & endpoint routing
+│       ├── applied.py            # Applied capabilities & disaster reconnaissance engine
 │       ├── clustering.py         # K-Means++ fitting, metrics & cluster summaries
 │       ├── experiments.py        # Asynchronous experiment engine & SQLite journal
 │       ├── features.py           # 78 deterministic domain descriptor extractors
+│       ├── gemini_service.py     # Zero-shot Vision Foundation Core (Gemini 3.5 Flash-Lite)
 │       ├── pipeline.py           # Scaler, PCA projection & t-SNE manifold fitting
 │       └── study.py              # Ingestion adapter, SHA-256 hashing & sealed audit
 ├── frontend/
 │   ├── src/
-│   │   ├── components/           # Reusable UI components (CustomSelect, Dropdown, Modals)
-│   │   ├── views/                # Observatory, ProjectionLab, ExperimentBench, ReferenceAudit, PatchAnalyzer
+│   │   ├── Disaster.tsx          # Crisis Radar (Natural Disaster Reconnaissance)
+│   │   ├── Analyzer.tsx          # Single-patch unsupervised land-cover analyzer
+│   │   ├── Observatory.tsx       # Mission workspace & 27k dataset summary
 │   │   ├── App.tsx               # Root application view coordinator
 │   │   ├── main.tsx              # React DOM mounting
 │   │   └── types.ts              # TypeScript interfaces matching backend models
@@ -544,13 +561,15 @@ terralens/
 │   ├── start.sh                  # Application launch script (Linux/macOS)
 │   ├── start.bat                 # Application launch script (Windows)
 │   ├── prepare_study.py          # Dataset downloader & study reproduction script
+│   ├── test_browser_workflow.mjs # Chrome DevTools Protocol end-to-end browser test
 │   ├── build_deliverables.py     # 28-page academic report PDF generator
 │   ├── build_study_guide_pdf.py  # 14-page master viva study guide PDF generator
 │   ├── build_presentation.mjs    # 16-slide PPTX & PDF presentation builder
 │   ├── capture_screenshots.mjs   # Chrome DevTools Protocol screenshot automation
 │   ├── generate_readme_diagrams.py # SVG diagram generator for documentation
 │   └── package_submission.py     # Final packaging script for university submission
-├── artifacts/                    # Precomputed study.json, audit.json & anonymous previews
+├── artifacts/                    # Precomputed study.json, audit.json & presets
+│   └── presets/disasters/        # Multi-spectral natural disaster observation passes
 ├── docs/
 │   ├── diagrams/                 # Scalable vector graphics (SVGs) for pipeline & features
 │   ├── screenshots/              # High-resolution application screenshots
