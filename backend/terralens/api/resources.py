@@ -59,6 +59,8 @@ class AppResources:
         self.submit_lock = threading.Lock()
         self.experiment_worker = ThreadPoolExecutor(max_workers=1, thread_name_prefix="terralens-study")
         self.upload_worker = ThreadPoolExecutor(max_workers=1, thread_name_prefix="terralens-upload")
+        # Network-bound Gemini calls get their own threads so they never hold up image analysis.
+        self.vision_worker = ThreadPoolExecutor(max_workers=2, thread_name_prefix="terralens-vision")
 
     @classmethod
     @contextmanager
@@ -69,6 +71,7 @@ class AppResources:
         finally:
             resources.experiment_worker.shutdown(wait=False, cancel_futures=True)
             resources.upload_worker.shutdown(wait=False, cancel_futures=True)
+            resources.vision_worker.shutdown(wait=False, cancel_futures=True)
 
     @property
     def study_ready(self) -> bool:
