@@ -1,72 +1,88 @@
-export type View = 'observatory' | 'disaster' | 'analyzer' | 'clusters' | 'diagnostics';
+export type View = 'observatory' | 'radar' | 'area' | 'plant' | 'analyzer' | 'clusters' | 'diagnostics';
 export interface PatchContext { runId: string; clusterId?: number; run?: Run; point?: Point; source?: 'live' }
 export type XY = [number, number];
 export interface Point { id: string; pca: XY; tsne?: XY; cluster: number }
 export interface Feature { name: string; value: number; zscore: number }
 
-export interface DisasterPreset {
-  id: string;
-  title: string;
-  location: string;
-  type: string;
-  description: string;
-  image_path?: string;
-}
+export type LandType = 'trees' | 'farmland' | 'water' | 'built' | 'bare' | 'mixed';
+export type Detail = 'low' | 'medium' | 'high';
 
-export interface DisasterCrisisReport {
-  disaster_type: string;
-  severity_level: 'CRITICAL' | 'HIGH' | 'MODERATE' | 'STABLE';
-  severity_score: number;
-  affected_area_percentage: number;
-  confidence_score: number;
+export interface LandShare { land_type: LandType; label: string; tiles: number; percent: number }
+export interface SceneReliability { level: 'high' | 'medium' | 'low'; unusual_percent: number; mixed_percent: number; note: string }
+export interface GroupName { cluster: number; land_type: LandType; reliability: number }
+
+export interface AreaTile { row: number; col: number; land_type: LandType; cluster: number; unusual: boolean }
+export interface AreaProfile {
   headline: string;
-  damage_assessment: string;
-  spectral_anomalies: {
-    thermal_albedo_shift: string;
-    chlorophyll_depletion: string;
-    moisture_delta: string;
-    texture_entropy: string;
-  };
-  detected_features: string[];
-  operational_dispatch: string;
-  engine?: string;
+  green_cover: { percent: number; label: 'High' | 'Good' | 'Moderate' | 'Low' };
+  built_percent: number;
+  water_percent: number;
+  considerations: { topic: string; tone: 'good' | 'watch' | 'info'; text: string }[];
+}
+export interface ModelLand {
+  run_id: string;
+  grid: { rows: number; cols: number };
+  tiles: AreaTile[];
+  breakdown: LandShare[];
+  reliability: SceneReliability;
+  groups: GroupName[];
+  method: string;
+}
+export interface AreaCell { row: number; col: number; land_type: LandType; shares: Record<Exclude<LandType, 'mixed'>, number> }
+export interface AreaResult {
+  image: string;
+  grid: { rows: number; cols: number };
+  tiles: AreaCell[];
+  breakdown: LandShare[];
+  profile: AreaProfile;
+  reliability: { level: 'high' | 'medium' | 'low'; note: string };
+  place: { setting: string; headline: string; summary: string; features: string[]; quality_notes: string[] };
+  method: string;
+  warnings: string[];
 }
 
-export interface DisasterResult {
-  preset_id?: string | null;
-  image_base64: string;
-  dimensions: [number, number];
-  crisis_report: DisasterCrisisReport;
-  engine: string;
+export type Severity = 'none' | 'low' | 'moderate' | 'high' | 'severe';
+export interface CrisisAssessment {
+  image_kind: 'satellite' | 'aerial' | 'ground_photo' | 'map_or_graphic' | 'other';
+  status: 'crisis' | 'no_crisis' | 'uncertain';
+  crisis_type: string;
+  secondary_types: string[];
+  severity: Severity;
+  confidence: number | null;
+  headline: string;
+  summary: string;
+  scene_description: string;
+  affected_area_percent: number | null;
+  regions: { label: string; top: number; left: number; width: number; height: number }[];
+  evidence: string[];
+  secondary_risks: string[];
+  actions: string[];
+  cloud_cover: 'none' | 'some' | 'heavy';
+  quality_notes: string[];
+  model: string;
+}
+export interface CrisisScanResult {
+  image: string;
+  assessment: CrisisAssessment | null;
+  vision_error: { message: string; status: number } | null;
+  land: ModelLand;
 }
 
-export interface ChangeAlert {
-  level: 'CRITICAL' | 'WARNING' | 'INFO' | 'STABLE';
-  title: string;
-  narrative: string;
-  recommendation: string;
-}
-
-export interface ChangePass {
-  cluster: number;
-  cluster_name: string;
-  color: string;
-  distance: number;
-  pca: XY;
-  image_base64: string;
-}
-
-export interface ChangeResult {
-  before: ChangePass;
-  after: ChangePass;
-  pca_distance: number;
-  alert: ChangeAlert;
-  deltas: {
-    greenness: number;
-    albedo: number;
-    contrast: number;
-    entropy: number;
-  };
+export interface ChangeTile { row: number; col: number; before: LandType; after: LandType; change: 'type' | 'look' | 'none'; movement: number }
+export interface ChangeCheckResult {
+  run_id: string;
+  before_image: string;
+  after_image: string;
+  grid: { rows: number; cols: number };
+  tiles: ChangeTile[];
+  summary: { changed_percent: number; look_changed_percent: number; level: 'none' | 'small' | 'noticeable' | 'major' };
+  verdict: { story: string; title: string; explanation: string; next_steps: string[] };
+  deltas: { land_type: LandType; label: string; before: number; after: number; change: number }[];
+  transitions: { from: LandType; to: LandType; tiles: number; percent: number }[];
+  reliability: { before: SceneReliability; after: SceneReliability };
+  groups: GroupName[];
+  method: string;
+  warnings: string[];
 }
 
 export interface AnomalyInfo {
@@ -122,6 +138,7 @@ export interface Capabilities {
   storage: string;
   reference_run_id: string;
   analysis_runs?: string[];
+  crisis_scan?: boolean;
 }
 export type LivePerplexity = 10 | 30 | 50;
 export interface ExperimentConfig {
@@ -166,3 +183,19 @@ export interface Analysis {
   warnings: string[];
 }
 export type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
+
+export type AreaWidth = 'street' | 'colony' | 'neighbourhood' | 'large';
+export interface PlantSpot { number: number; label: string; kind: string; priority: 'high' | 'medium' | 'low'; reason: string; top: number; left: number; width: number; height: number; area_m2: number; trees: number }
+export interface PlantResult {
+  image: string;
+  grid: { rows: number; cols: number };
+  tiles: { row: number; col: number; plantable: number; trees: number }[];
+  summary: { headline: string; text: string; trees_possible: number; plantable_percent: number; plantable_m2: number; tree_cover_now: number; tree_cover_after: number; area_width_m: number; spacing_m: number };
+  spots: PlantSpot[];
+  ideas: string[];
+  before_you_plant: { topic: string; text: string }[];
+  reliability: { level: 'high' | 'medium' | 'low'; note: string };
+  quality_notes: string[];
+  method: string;
+  warnings: string[];
+}
