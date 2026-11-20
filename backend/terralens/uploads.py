@@ -19,13 +19,14 @@ class UploadBodyLimitMiddleware:
     An oversized stream is stopped before any UploadFile is created or spooled.
     """
 
-    def __init__(self, app, max_bytes: int):
+    def __init__(self, app, limits: dict[str, int]):
         self.app = app
-        self.max_bytes = max_bytes
+        self.limits = limits
         self.slots = asyncio.Semaphore(2)
 
     async def __call__(self, scope, receive, send):
-        if scope["type"] != "http" or scope.get("path") != "/api/analyze" or scope.get("method") != "POST":
+        limit = self.limits.get(scope.get("path", "")) if scope["type"] == "http" else None
+        if limit is None or scope.get("method") != "POST":
             await self.app(scope, receive, send)
             return
         if self.slots.locked():
@@ -39,8 +40,8 @@ class UploadBodyLimitMiddleware:
                     return
                 chunk = message.get("body", b"")
                 received += len(chunk)
-                if received > self.max_bytes:
-                    await JSONResponse({"detail": "The image must be smaller than 8 MB."}, status_code=413)(scope, receive, send)
+                if received > limit:
+                    await JSONResponse({"detail": "Each image must be smaller than 8 MB."}, status_code=413)(scope, receive, send)
                     return
                 if chunk:
                     chunks.append(chunk)
@@ -60,9 +61,8 @@ class UploadBodyLimitMiddleware:
             await self.app(scope, bounded_receive, send)
 
 
-def analyze_upload(raw: bytes, artifacts_dir: Path, comparison: bool = False) -> dict:
-    """Decode, validate, resize and infer in the single bounded image worker."""
-    notices = []
+def decode_image(raw: bytes, min_side: int = 16, max_side: int = 4096) -> Image.Image:
+    """Decode untrusted bytes as a bounded JPEG, PNG or WebP image and return it as RGB."""
     try:
         with warnings.catch_warnings():
             warnings.simplefilter("error", Image.DecompressionBombWarning)
@@ -70,26 +70,33 @@ def analyze_upload(raw: bytes, artifacts_dir: Path, comparison: bool = False) ->
                 if source.format not in ("JPEG", "PNG", "WEBP"):
                     raise HTTPException(415, "Supported image formats are JPEG, PNG and WebP.")
                 width, height = source.size
-                if min(width, height) < 16 or max(width, height) > 4096:
-                    raise HTTPException(422, "Choose an image between 16 and 4096 pixels on each side.")
+                if min(width, height) < min_side or max(width, height) > max_side:
+                    raise HTTPException(422, f"Choose an image between {min_side} and {max_side} pixels on each side.")
                 source.load()
-                rgb_source = source.convert("RGB")
-                if width != height:
-                    min_dim = min(width, height)
-                    left = (width - min_dim) // 2
-                    top = (height - min_dim) // 2
-                    square = rgb_source.crop((left, top, left + min_dim, top + min_dim))
-                    image = square.resize((64, 64), Image.Resampling.LANCZOS)
-                    notices.append(f"Image center-cropped ({width}×{height} → {min_dim}×{min_dim}) to maintain 1:1 aspect ratio and scaled to 64×64.")
-                elif (width, height) != (64, 64):
-                    image = rgb_source.resize((64, 64), Image.Resampling.LANCZOS)
-                    notices.append(f"Image scaled from {width}×{height} to the study's 64×64 patch format.")
-                else:
-                    image = rgb_source
+                return source.convert("RGB")
     except HTTPException:
         raise
     except (UnidentifiedImageError, OSError, ValueError, Image.DecompressionBombError, Image.DecompressionBombWarning):
         raise HTTPException(422, "The file could not be decoded as a safe image.") from None
+
+
+def analyze_upload(raw: bytes, artifacts_dir: Path, comparison: bool = False) -> dict:
+    """Decode, validate, resize and infer in the single bounded image worker."""
+    notices = []
+    rgb_source = decode_image(raw)
+    width, height = rgb_source.size
+    if width != height:
+        min_dim = min(width, height)
+        left = (width - min_dim) // 2
+        top = (height - min_dim) // 2
+        square = rgb_source.crop((left, top, left + min_dim, top + min_dim))
+        image = square.resize((64, 64), Image.Resampling.LANCZOS)
+        notices.append(f"Image center-cropped ({width}×{height} → {min_dim}×{min_dim}) to maintain 1:1 aspect ratio and scaled to 64×64.")
+    elif (width, height) != (64, 64):
+        image = rgb_source.resize((64, 64), Image.Resampling.LANCZOS)
+        notices.append(f"Image scaled from {width}×{height} to the study's 64×64 patch format.")
+    else:
+        image = rgb_source
     from terralens.inference import analyze_image
     result = analyze_image(image, artifacts_dir, comparison=comparison)
     result["warnings"] = notices + result.get("warnings", [])

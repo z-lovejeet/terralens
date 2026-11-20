@@ -13,6 +13,20 @@ from terralens.uploads import analyze_upload
 router = APIRouter(tags=["Patch analysis"])
 log = logging.getLogger(__name__)
 
+# Bundled EuroSAT study patches offered as one-click examples in the Patch Analyzer.
+ANALYZER_PRESETS = [
+    {"id": "pe0bce20c66ac24a69c02", "label": "Dense Forest Canopy", "dominant": "Forest"},
+    {"id": "p4c4d3414ff772fda8d8b", "label": "Meandering River Channel", "dominant": "River & Waterways"},
+    {"id": "pc3e5311f7c0a3428ea84", "label": "Heavy Industrial Complex", "dominant": "Industrial Buildings"},
+    {"id": "p4ad8538c80a0317ebcc1", "label": "Residential Roof Grid", "dominant": "Residential Buildings"},
+    {"id": "pf86a09867b8db213f801", "label": "Active Agricultural Crops", "dominant": "Annual Crops"},
+]
+
+
+@router.get("/analyzer/presets")
+def get_analyzer_presets():
+    return ANALYZER_PRESETS
+
 
 @router.post("/analyze")
 async def analyze(request: Request, resources: Resources, file: Annotated[UploadFile, File()], run_id: str | None = None):

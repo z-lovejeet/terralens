@@ -9,9 +9,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 
 from terralens import __version__
-from terralens.api import analyzer, applied, experiments, reference
+from terralens.api import analyzer, experiments, reference, scenes
 from terralens.api.resources import AppResources
-from terralens.settings import ARTIFACTS, FRONTEND, MAX_UPLOAD_ENVELOPE, RUNTIME
+from terralens.settings import ARTIFACTS, FRONTEND, RUNTIME, UPLOAD_LIMITS
 from terralens.uploads import UploadBodyLimitMiddleware
 
 
@@ -34,19 +34,20 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type"],
 )
-app.add_middleware(UploadBodyLimitMiddleware, max_bytes=MAX_UPLOAD_ENVELOPE)
+app.add_middleware(UploadBodyLimitMiddleware, limits=UPLOAD_LIMITS)
 
 
 @app.middleware("http")
 async def response_headers(request: Request, call_next):
-    is_upload = request.url.path == "/api/analyze"
+    upload_limit = UPLOAD_LIMITS.get(request.url.path)
+    is_upload = upload_limit is not None
     if is_upload and request.method == "POST":
         try:
             content_length = int(request.headers.get("content-length", "0"))
         except ValueError:
             return JSONResponse({"detail": "Invalid upload length."}, status_code=400)
-        if content_length > MAX_UPLOAD_ENVELOPE:
-            return JSONResponse({"detail": "The image must be smaller than 8 MB."}, status_code=413)
+        if content_length > upload_limit:
+            return JSONResponse({"detail": "Each image must be smaller than 8 MB."}, status_code=413)
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
@@ -59,7 +60,7 @@ async def response_headers(request: Request, call_next):
 app.include_router(reference.router, prefix="/api")
 app.include_router(experiments.router, prefix="/api")
 app.include_router(analyzer.router, prefix="/api")
-app.include_router(applied.router, prefix="/api")
+app.include_router(scenes.router, prefix="/api")
 
 
 @app.api_route("/{path:path}", methods=["GET", "HEAD"], include_in_schema=False)
