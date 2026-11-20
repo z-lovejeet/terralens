@@ -1,0 +1,77 @@
+/* Where can we plant trees? */
+.plant-view {
+  --plant-open: oklch(86% 0.19 125);
+  --priority-high: oklch(52% 0.13 150);
+  --priority-medium: oklch(70% 0.13 85);
+  --priority-low: oklch(66% 0.03 150);
+}
+
+.width-picker { border: 0; padding: 0; margin: 0; display: grid; gap: 10px; }
+.width-picker legend { display: flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 700; color: var(--color-ink); margin-bottom: 10px; padding: 0; }
+.width-picker legend svg { color: var(--color-accent); }
+.width-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.width-options button { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 10px 12px; text-align: left; white-space: normal; background: var(--color-surface); border: 1.5px solid var(--color-rule); border-radius: var(--radius-md); }
+.width-options button:hover:not(:disabled) { border-color: var(--color-faint); }
+.width-options button.is-active { border-color: var(--color-accent); box-shadow: 0 0 0 3px var(--color-accent-soft); }
+.width-options strong { font-size: 12.5px; color: var(--color-ink); }
+.width-options small { font-size: 11px; color: var(--color-muted); }
+
+/* Hero */
+.plant-hero { display: grid; grid-template-columns: minmax(200px, 280px) minmax(0, 1fr); border-radius: var(--radius-lg); overflow: hidden; background: var(--color-forest); color: var(--color-on-forest); }
+.plant-hero-count { display: flex; flex-direction: column; justify-content: center; gap: 4px; padding: 28px 26px; background: var(--color-forest-deep); }
+.plant-hero-count .workspace-label { color: var(--color-on-forest-muted); font-size: 10px; margin-bottom: 10px; }
+.plant-hero-count strong { font-size: clamp(32px, 3.6vw, 48px); line-height: 1; letter-spacing: -.045em; color: var(--color-lime); }
+.plant-hero-count > span:not(.workspace-label) { font-size: 15px; font-weight: 600; }
+.plant-hero-count small { font-size: 11px; color: var(--color-on-forest-muted); margin-top: 6px; }
+.plant-hero-copy { padding: 26px 28px; }
+.plant-hero-copy h2 { color: var(--color-on-forest); font-size: clamp(18px, 1.9vw, 24px); letter-spacing: -.03em; line-height: 1.3; }
+.plant-hero-copy p { margin-top: 8px; max-width: 64ch; font-size: 13.5px; line-height: 1.6; color: var(--color-on-forest-muted); }
+.cover-meter { margin-top: 18px; }
+.cover-track { display: flex; height: 12px; border-radius: 6px; overflow: hidden; background: var(--color-forest-light); }
+.cover-now { background: var(--color-on-forest-muted); }
+.cover-gain { background: repeating-linear-gradient(135deg, var(--color-lime) 0 6px, oklch(78% 0.11 115) 6px 12px); }
+.cover-labels { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 8px; font-size: 11.5px; color: var(--color-on-forest-muted); }
+.cover-labels b { color: var(--color-on-forest); }
+.plant-hero .hero-stats strong { font-size: 18px; }
+
+/* Map */
+.plant-mark.priority-high { border-color: var(--priority-high); }
+.plant-mark.priority-high b { background: var(--priority-high); color: oklch(99% 0 0); }
+.plant-mark.priority-medium { border-color: var(--priority-medium); }
+.plant-mark.priority-medium b { background: var(--priority-medium); color: var(--color-forest-deep); }
+.plant-mark.priority-low { border-style: dashed; }
+.priority-key, .ground-key { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.priority-key i { width: 12px; height: 12px; border-radius: 3px; margin-left: 8px; }
+.priority-key i:first-child { margin-left: 0; }
+.priority-key .priority-high { background: var(--priority-high); }
+.priority-key .priority-medium { background: var(--priority-medium); }
+.priority-key .priority-low { border: 2px dashed var(--priority-low); }
+.ground-key i { width: 28px; height: 10px; border-radius: 3px; background: linear-gradient(90deg, transparent, var(--plant-open)); border: 1px solid var(--color-rule); }
+
+/* Spots */
+.spot-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.spot { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start; }
+.spot-number { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 6px; font-family: var(--font-mono); font-size: 12px; background: var(--priority-low); color: oklch(99% 0 0); }
+.spot.priority-high .spot-number { background: var(--priority-high); }
+.spot.priority-medium .spot-number { background: var(--priority-medium); color: var(--color-forest-deep); }
+.spot-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.spot-head strong { color: var(--color-ink); font-size: 13.5px; }
+.spot-priority { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: var(--color-muted); }
+.spot.priority-high .spot-priority { color: var(--priority-high); }
+.spot p { font-size: 12.5px; line-height: 1.55; margin-top: 3px; }
+.spot small { display: block; margin-top: 4px; font-size: 11px; color: var(--color-muted); }
+
+.checklist { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.checklist li { display: flex; gap: 10px; padding: 12px 14px; border-radius: var(--radius-md); background: var(--color-paper); font-size: 12.5px; line-height: 1.55; }
+.checklist svg { color: var(--color-accent); flex: 0 0 auto; margin-top: 1px; }
+.checklist strong { display: block; color: var(--color-ink); }
+
+@media (max-width: 860px) {
+  .plant-hero { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .width-options { grid-template-columns: 1fr; }
+}
+@media print {
+  .plant-hero, .plant-hero-count, .cover-track i, .plant-mark b, .spot-number { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
