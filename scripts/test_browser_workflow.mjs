@@ -105,8 +105,8 @@ async function main() {
     await send("Page.enable");
     await send("Runtime.enable");
 
-    async function evaluate(expression) {
-      const res = await send("Runtime.evaluate", { expression, returnByValue: true });
+    async function evaluate(expression, awaitPromise = false) {
+      const res = await send("Runtime.evaluate", { expression, returnByValue: true, awaitPromise });
       return res?.result?.value;
     }
 
@@ -139,39 +139,40 @@ async function main() {
     console.log("  Stats bar content:", obsStats?.slice(0, 80));
     await capture("test-1-observatory.jpg");
 
-    // --- TEST 2: NATURAL DISASTER & CRISIS RECONNAISSANCE ---
-    console.log("\n--- TEST 2: Natural Disaster & Crisis Reconnaissance (Gemini Vision) ---");
-    await evaluate("window.location.hash = 'disaster'");
-    
-    // Wait for disaster analysis to complete
-    let disasterReady = false;
-    for (let i = 0; i < 60; i++) {
-      disasterReady = await evaluate("!!document.querySelector('.alert-headline')");
-      if (disasterReady) break;
-      await sleep(1000);
-    }
-    const alertLevel = await evaluate("document.querySelector('.alert-level-pill')?.textContent");
-    const disasterHeadline = await evaluate("document.querySelector('.alert-headline')?.textContent");
-    console.log("  Detected status:", alertLevel);
-    console.log("  Disaster headline:", disasterHeadline);
-    const anomalies = await evaluate("Array.from(document.querySelectorAll('.drift-metric-card')).map(c => c.textContent.trim()).join(' | ')");
-    console.log("  Spectral anomaly telemetry:", anomalies);
-    await capture("test-2-disaster-wildfire.jpg");
+    // --- TEST 2: CHECK MY AREA & CRISIS RADAR (upload a scene built from real thumbnails) ---
+    const uploadScene = `(async () => {
+      const study = await fetch('/api/study').then(r => r.json());
+      const canvas = Object.assign(document.createElement('canvas'), { width: 384, height: 384 });
+      const ctx = canvas.getContext('2d');
+      await Promise.all(study.points.slice(0, 36).map((p, i) => new Promise(res => { const img = new Image(); img.onload = () => { ctx.drawImage(img, (i % 6) * 64, Math.floor(i / 6) * 64); res(); }; img.src = '/api/patches/' + p.id + '.jpg'; })));
+      const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.92));
+      const input = document.querySelector('input[type=file]');
+      const dt = new DataTransfer(); dt.items.add(new File([blob], 'scene.jpg', { type: 'image/jpeg' })); input.files = dt.files;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+      return true;
+    })()`;
 
-    // Switch to Tsunami Preset
-    console.log("  Testing 'Coastal Surge & Tsunami Inundation' preset...");
-    await evaluate("Array.from(document.querySelectorAll('.preset-chip')).find(c => c.textContent.includes('Tsunami'))?.click()");
-    await sleep(2000);
-    for (let i = 0; i < 60; i++) {
-      const isAnalyzing = await evaluate("document.querySelector('.button-primary')?.textContent?.includes('Analyzing')");
-      if (!isAnalyzing) break;
-      await sleep(1000);
+    console.log("\n--- TEST 2a: Check my area ---");
+    await evaluate("window.location.hash = 'area'");
+    await sleep(1500);
+    await evaluate(uploadScene, true);
+    for (let i = 0; i < 40; i++) {
+      if (await evaluate("!!document.querySelector('.report-hero h2')")) break;
+      await sleep(500);
     }
-    const tsunamiAlert = await evaluate("document.querySelector('.alert-level-pill')?.textContent");
-    const tsunamiHeadline = await evaluate("document.querySelector('.alert-headline')?.textContent");
-    console.log("  Tsunami status:", tsunamiAlert);
-    console.log("  Tsunami headline:", tsunamiHeadline);
-    await capture("test-2-disaster-tsunami.jpg");
+    console.log("  Area headline:", await evaluate("document.querySelector('.report-hero h2')?.textContent"));
+    await capture("test-2-area-check.jpg");
+
+    console.log("\n--- TEST 2b: Crisis Radar single-image scan ---");
+    await evaluate("window.location.hash = 'radar'");
+    await sleep(1500);
+    await evaluate(uploadScene, true);
+    for (let i = 0; i < 60; i++) {
+      if (await evaluate("!!document.querySelector('.incident h2')")) break;
+      await sleep(500);
+    }
+    console.log("  Incident:", await evaluate("document.querySelector('.incident-kicker')?.textContent"), "-", await evaluate("document.querySelector('.incident h2')?.textContent"));
+    await capture("test-2-crisis-radar-scan.jpg");
 
     // --- TEST 3: PATCH ANALYZER ---
     console.log("\n--- TEST 3: Patch Analyzer with Presets & Radar ---");
