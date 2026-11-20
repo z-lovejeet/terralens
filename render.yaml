@@ -9,3 +9,5 @@ services:
         value: "1000"
       - key: TERRALENS_RUNTIME
         value: /tmp/terralens-runtime
+      - key: GEMINI_API_KEY
+        sync: false

@@ -7,7 +7,7 @@
 [![TypeScript 5.6](https://img.shields.io/badge/TypeScript-5.6-3178C6.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS 3.4](https://img.shields.io/badge/TailwindCSS-3.4-38B2AC.svg?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![scikit-learn](https://img.shields.io/badge/scikit--learn-1.5.2-F7931E.svg?logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
-[![Pytest Passing](https://img.shields.io/badge/Pytest-29%20Passed-brightgreen.svg?logo=pytest&logoColor=white)](tests/)
+[![Pytest Passing](https://img.shields.io/badge/Pytest-50%20Passed-brightgreen.svg?logo=pytest&logoColor=white)](tests/)
 [![EuroSAT Dataset](https://img.shields.io/badge/Dataset-EuroSAT%20RGB%20(27k)-informational.svg)](https://github.com/phelber/EuroSAT)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -76,7 +76,8 @@ External EuroSAT Alignment: ARI = 0.299, NMI = 0.429
 
 Moving beyond static dataset evaluation, TerraLens provides direct operational value for environmental decision support, emergency response, and geospatial monitoring:
 
-* 🚨 **Natural Disaster & Crisis Reconnaissance (Crisis Radar):** Combines multi-spectral anomaly telemetry with zero-shot vision foundation intelligence (Gemini 3.5 Flash-Lite Vision) to detect active wildfires, thermal burn scars, tsunami aftermath, river levee breaches, deforestation frontiers, and drought desiccation.
+* 🏡 **Check my area:** Anyone can upload a satellite screenshot of a neighbourhood, farm or town and get a plain-language report: green cover score, share of buildings, water and farmland, and practical things to consider (heat, flood-risk checks, open space). The scene is cut into tiles and every tile is grouped by the same frozen PCA + K-Means model.
+* 🚨 **Crisis Radar:** Upload one satellite or aerial image to check it for floods, fires, burn scars, drought, landslides, storm or earthquake damage, oil spills and more. The hazard assessment comes from Google Gemini vision and is clearly labelled as such; the land-cover map beside it comes from the TerraLens clustering model. A second mode compares a before and an after image tile by tile using only the clustering model.
 * 🌲 **Deforestation & Canopy Depletion Tracking:** Unsupervised clustering detects shifts from dense forest canopies (Cluster 02) to cleared soil or scrubland without requiring pre-labeled training data from the local region.
 * 💧 **Reservoir & Water Body Monitoring:** Tracks seasonal shrinkage or drought depletion in surface water bodies (Cluster 04) by measuring acreage distribution percentages across multi-temporal satellite passes.
 * 🌾 **Agricultural Land-Use & Crop Field Mapping:** Distinguishes active crop cultivation (Cluster 01) from fallow pastures and wetlands to aid regional food security and agricultural planning.
@@ -335,14 +336,36 @@ The TerraLens frontend is a high-performance, single-page application built with
 
 ---
 
-### Application 6: Crisis Radar (Natural Disaster Reconnaissance)
-*Rapid emergency reconnaissance detecting wildfires, burn scars, tsunamis, floods, and droughts.*
+### Application 6: Check my area
+*A plain-language land report for any neighbourhood, farm or town.*
 
-* **Key Features:**
-  * **Verified Disaster Passes:** Instant presets for active wildfire fronts, coastal tsunami surges, Amazon clear-cutting, alluvial levee breaches, and reservoir drought desiccation.
-  * **Multi-Spectral Anomaly Telemetry:** Measures 4 physical shift vectors—Thermal Albedo Shift, Photosynthetic Loss, Moisture Deficit/Delta, and Structural Entropy $\Delta$.
-  * **Zero-Shot Foundation Core:** Powered by Gemini 3.5 Flash-Lite Vision with fallback resilience, returning emergency severity ratings (0–100), visual signatures, and tactical operational dispatch guidance.
+* **Who it is for:** home buyers, farmers, students and residents who want to know how green, built-up or water-adjacent a place is, without any technical knowledge.
+* **How to use it:** upload a top-down satellite screenshot (for example from Google Maps' Satellite view). No settings are needed: every image is read on a fine grid (8 squares along the short side, up to 12 along the long side).
+* **What it shows:** a colour-coded land map, the share of *Trees & greenery*, *Fields & farmland*, *Water*, *Buildings & roads*, *Bare ground & open plots* and *Mixed land*, a 0–100 % green-cover score, what stands out, things to consider, a reliability rating and a printable PDF report.
+* **How it works:** the image is centre-cropped into a grid of squares, and a labelled grid (A1, B1 …) is drawn on the copy sent to the Gemini API (`assess_area` in `backend/terralens/vision.py`). For every square the model returns the share of trees, fields, water, buildings and bare ground; each square on the map takes its largest share (or *Mixed land* below 40 %), and the overall percentages are the average of all squares, so the map and the numbers always agree. Replies are validated: squares are matched by label, each mix is normalised to 100, and readings missing more than 20 % of squares are rejected. Overload errors are retried automatically.
+* **Accuracy:** on six benchmark scenes built from real EuroSAT tiles with known classes (forest, crops, pasture, lakes, residential and industrial), the labelled-grid, per-square reading got **98.1 %** of squares right, up from 81.0 % for a plain whole-image reading.
+* **Without a working `GEMINI_API_KEY`** the feature reports that image reading is unavailable rather than showing an estimate.
 
+### Application 7: Crisis Radar
+*Check one image for disasters and damage, or compare two images of the same place.*
+
+**Scan one image (Gemini vision + clustering model)**
+* **How to use it:** drop a single satellite or aerial image. No settings are needed.
+* **What it shows:** an incident card (hazard type, severity on a five-step scale, approximate area affected, scanner confidence, image type and cloud cover), the image with numbered boxes around the evidence and map grid references (A–F, 1–6), what the scanner sees, what to do now, secondary risks and image-quality notes. A normal scene is reported as *No crisis visible* with a description of what is there.
+* **Hazards covered:** flood, tsunami or storm surge, coastal erosion, wildfire, burn scar, smoke plume, volcanic activity, industrial accident, drought, deforestation, landslide, desertification, mining damage, earthquake and building damage, storm damage, dust storm, snow or ice hazard, oil spill and algal bloom.
+* **How it works:** the image is cropped to the land-cover grid so both overlays share one frame. The TerraLens model maps land cover tile by tile. The image is also sent to the Gemini API (`backend/terralens/vision.py`) with a remote-sensing prompt that lists visual cues and common look-alikes (cloud vs smoke, cloud shadow vs burn scar, a river in its banks vs a flood) and a strict JSON schema. Every field of the reply is validated and clamped before it reaches the browser. If the API is unavailable the page still shows the land map and says the hazard check could not run; it never substitutes a made-up assessment.
+* **Configuration:** set `GEMINI_API_KEY` (a Google AI Studio key) in the environment or in `.env.local`. `GEMINI_MODEL` takes a comma-separated list of model IDs tried in order (default `gemini-3.5-flash-lite,gemini-flash-lite-latest`).
+
+**Compare before & after (clustering model only)**
+* Upload two screenshots of the same place at the same zoom. Both are tiled on the same grid (6 squares along the short side, the size the clustering model reads most reliably, since finer squares look more zoomed-in than its training images) and grouped by the frozen model; a tile counts as changed when its land type differs. The verdict comes from the net change in each land type: water gained reads as flooding, water lost as drying, buildings gained as construction, trees lost as clearing, and greenery gained from built, bare or mixed land as regrowth. Using net change keeps squares that straddle two land types from flipping the verdict.
+
+### Application 8: Where can we plant trees?
+*Find open ground for new trees in a colony, campus or street.*
+
+* **Who it is for:** housing societies, schools, colleges, ward offices and residents planning a planting drive.
+* **How to use it:** upload a top-down satellite screenshot and choose roughly how wide the area is (a street ≈ 200 m, a colony or campus ≈ 500 m, a neighbourhood ≈ 1 km, a larger area ≈ 3 km). The width only sets the scale for the tree count.
+* **What it shows:** the estimated number of trees that would fit, open ground as a share and in m² or hectares, tree cover today and once the new trees grow, up to 8 numbered planting spots (open plots, roadside verges, parks, courtyards, field edges, school grounds, stream banks) ranked by priority with a reason and room for roughly how many trees, an open-ground heatmap, ideas for the place (mini-forest, shade-tree rows, school drives) and a *Before you plant* checklist (permission, utilities, native species, spacing, watering). The report can be saved as a PDF.
+* **How it works:** the image is read on the same labelled grid as Check my area (`assess_planting` in `backend/terralens/vision.py`): for every square the model returns the share of existing trees, plantable open ground, buildings and roads, water and other uses such as crop fields, plus boxes around the best spots. `backend/terralens/planting.py` converts this to square metres using the chosen width and assumes trees about 5 m apart on 60 % of the open ground, leaving room for paths, gaps and utilities. Spots with unusable boxes are dropped rather than drawn in the wrong place.
 ---
 
 ## Prerequisites & System Requirements
@@ -495,7 +518,7 @@ The project includes an automated test suite verifying feature determinism, labe
 PYTHONPATH=backend .venv/bin/python -m pytest -v
 ```
 
-### Test Coverage Summary (29 Tests Passing):
+### Test Coverage Summary (50 Tests Passing):
 * `test_features.py`:
   * Validates that extracting descriptors from the same image always yields byte-identical 78 floats.
   * Validates that `extract_features()` strictly rejects invalid file shapes, non-finite values, and NaN inputs.
@@ -507,6 +530,12 @@ PYTHONPATH=backend .venv/bin/python -m pytest -v
   * Tests that `GET /api/study` returns immutable frozen reference metrics.
   * Validates multipart image upload bounds (rejects files $> 8\text{ MB}$ or invalid MIME types).
   * Validates single-patch inference response structure (`POST /api/analyze`).
+* `test_scenes.py`:
+  * Asserts that scene tiling groups every tile with the frozen model (scaler, PCA and K-Means are never refitted), that Check my area builds its map and percentages from a validated per-square reading matched by grid label, and that incomplete readings are rejected.
+  * Asserts that identical before/after views report no change, and that each kind of change is named correctly (clearing, construction, drying, flood).
+  * Asserts that the planting estimate converts open ground to trees correctly for each area width, drops spots with unusable boxes and ranks the rest by priority.
+  * Asserts that Gemini replies are validated and clamped, that a normal scene clears the hazard fields, that a missing or rejected key returns the land map with an explicit error (never an invented assessment), and that a missing model falls back to the next one.
+  * Asserts that unfamiliar images (e.g. a blank frame) lower the reliability rating, and that bad, tiny or oversized uploads are rejected.
 
 ---
 
@@ -524,8 +553,10 @@ The FastAPI backend exposes typed JSON endpoints for exploration and real-time e
 | `GET` | `/api/experiments/{id}`| Poll the status and retrieve results of an experiment job | `{"status": "completed", "result": {"silhouette": 0.238, ...}}` |
 | `POST` | `/api/analyze` | Upload a satellite patch (multipart/form-data) for live 10-group classification | `{"cluster": 4, "distance_to_centroid": 1.84, "runner_up_gap": 0.42, "nearest_neighbors": [...]}` |
 | `GET` | `/api/analyzer/presets` | Retrieve instant preloaded EuroSAT benchmark patches for single-patch analysis | `[{"id": "pe0bce20c66ac24a69c02", "label": "Dense Forest Canopy", ...}]` |
-| `GET` | `/api/disaster/presets` | Retrieve verified natural disaster & catastrophe satellite observation scenarios | `[{"id": "wildfire_burn_scar", "type": "Wildfire", ...}]` |
-| `POST` | `/api/disaster` | Run multi-spectral anomaly detection & Gemini Vision crisis reconnaissance | `{"crisis_report": {"severity_level": "CRITICAL", "severity_score": 94, ...}}` |
+| `POST` | `/api/area-check` | Check my area: per-square land reading of an uploaded scene (multipart `file`, optional `detail`) | `{"breakdown": [...], "profile": {"green_cover": {...}}, "tiles": [...]}` |
+| `POST` | `/api/crisis-scan` | Crisis Radar single-image scan: Gemini hazard assessment plus clustering land map (multipart `file`) | `{"assessment": {"crisis_type": "flood", "severity": "high", ...}, "land": {...}}` |
+| `POST` | `/api/plant-check` | Where can we plant trees: planting spots, tree estimate and checklist (multipart `file`, form `area_width`) | `{"summary": {"trees_possible": 900, ...}, "spots": [...]}` |
+| `POST` | `/api/change-check` | Crisis Radar comparison: `before` and `after` images tile by tile | `{"summary": {"changed_percent": 30.6}, "verdict": {"story": "flood", ...}}` |
 | `GET` | `/api/export/metrics.csv`| Download complete CSV record of all experimental runs | CSV formatted data stream |
 
 ---
@@ -538,16 +569,20 @@ terralens/
 │   └── terralens/
 │       ├── __init__.py           # Package initializer
 │       ├── app.py                # FastAPI HTTP server & endpoint routing
-│       ├── applied.py            # Applied capabilities & disaster reconnaissance engine
 │       ├── clustering.py         # K-Means++ fitting, metrics & cluster summaries
 │       ├── experiments.py        # Asynchronous experiment engine & SQLite journal
 │       ├── features.py           # 78 deterministic domain descriptor extractors
-│       ├── gemini_service.py     # Zero-shot Vision Foundation Core (Gemini 3.5 Flash-Lite)
+│       ├── landscan.py           # Scene tiling, Check my area & Crisis Radar change detection
+│       ├── vision.py             # Image reading for Check my area, Plant trees and Crisis Radar (Gemini API)
+│       ├── planting.py           # Where can we plant trees: spots, tree estimate and checklist
 │       ├── pipeline.py           # Scaler, PCA projection & t-SNE manifold fitting
 │       └── study.py              # Ingestion adapter, SHA-256 hashing & sealed audit
 ├── frontend/
 │   ├── src/
-│   │   ├── Disaster.tsx          # Crisis Radar (Natural Disaster Reconnaissance)
+│   │   ├── AreaCheck.tsx         # Check my area (plain-language land report)
+│   │   ├── PlantTrees.tsx        # Where can we plant trees?
+│   │   ├── CrisisRadar.tsx       # Crisis Radar shell (scan one image / compare)
+│   │   ├── radar/                # Single-image scan and before/after views
 │   │   ├── Analyzer.tsx          # Single-patch unsupervised land-cover analyzer
 │   │   ├── Observatory.tsx       # Mission workspace & 27k dataset summary
 │   │   ├── App.tsx               # Root application view coordinator
@@ -569,7 +604,6 @@ terralens/
 │   ├── generate_readme_diagrams.py # SVG diagram generator for documentation
 │   └── package_submission.py     # Final packaging script for university submission
 ├── artifacts/                    # Precomputed study.json, audit.json & presets
-│   └── presets/disasters/        # Multi-spectral natural disaster observation passes
 ├── docs/
 │   ├── diagrams/                 # Scalable vector graphics (SVGs) for pipeline & features
 │   ├── screenshots/              # High-resolution application screenshots
@@ -602,7 +636,7 @@ terralens/
   Pedregosa et al. (2011). *Scikit-learn: Machine Learning in Python*. JMLR 12, pp. 2825-2830.
 
 ### AI Assistance Disclosure
-This project was designed, implemented, and audited with the technical assistance of Google Antigravity / Codex for code drafting, SVG diagram generation, and documentation formatting. In accordance with university academic policies, all mathematical formulations, software implementations, and scientific findings have been verified, validated, and presented by the team members.
+This project was designed, implemented, and audited with the technical assistance of AI coding assistants (Google Antigravity / Codex and Claude Code) for code drafting, SVG diagram generation, and documentation formatting. At runtime, the Crisis Radar single-image scan uses Google's Gemini vision API for hazard assessment; all clustering, land-cover mapping and change detection are performed by the project's own unsupervised pipeline. In accordance with university academic policies, all mathematical formulations, software implementations, and scientific findings have been verified, validated, and presented by the team members.
 
 ---
 
