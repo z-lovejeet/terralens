@@ -17,3 +17,24 @@ output/
 *.tsbuildinfo
 team.json
 PROJECT_LINKS.txt
+
+# Assistant and design-tool state (not part of the project)
+.claude/
+.hallmark/
+
+# Editor and operating-system files
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+
+# Logs, caches and coverage output
+*.log
+.cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Packaged archives and generated papers (built locally, not committed)
+*.zip

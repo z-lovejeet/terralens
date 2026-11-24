@@ -16,3 +16,7 @@ PROJECT_LINKS.txt
 docs/screenshots
 .env
 .env.*
+.claude
+.hallmark
+.github
+examples
