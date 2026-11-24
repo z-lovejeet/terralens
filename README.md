@@ -740,7 +740,7 @@ The FastAPI backend exposes typed JSON endpoints for exploration and real-time e
 
 | HTTP Method | Endpoint Path | Description | Sample Response Payload |
 | :---: | :--- | :--- | :--- |
-| `GET` | `/api/health` | Service health status check | `{"status": "ok", "version": "1.0.0"}` |
+| `GET` | `/api/health` | Service health status check | `{"status": "ok", "study_ready": true, "version": "1.2.0"}` |
 | `GET` | `/api/capabilities` | Upload limit and live-experiment limits the interface reads on start | `{"upload_max_bytes": 8388608, ...}` |
 | `GET` | `/api/study` | Returns immutable 27k study settings, scree eigenvalues, cluster summaries & 2D coordinates | Full study dictionary with 28 PCs, variance metrics, and cluster definitions |
 | `GET` | `/api/features` | Returns definitions, mathematical formulae, and families for all 78 descriptors | `[{"name": "red_mean", "family": "Colour", "description": "..."}]` |
