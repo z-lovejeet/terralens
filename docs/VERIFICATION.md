@@ -24,7 +24,7 @@ The 29-test suite passed, including 10-group assignment, shared PCA coordinates,
 
 ## Hosted runs
 
-Verified on [TerraLens on Render](https://terralens-f0sn.onrender.com/). The two image files are in [examples](../examples/README.md).
+Verified on [TerraLens on Render](https://terralens-slek.onrender.com/). The two image files are in [examples](../examples/README.md).
 
 | Input | Assignment | Centroid gap | Candidate count | Ranked neighbors |
 | --- | --- | --- | --- | --- |
