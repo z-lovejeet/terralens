@@ -292,10 +292,10 @@ await fs.mkdir(BUILD,{recursive:true}); await fs.mkdir(OUT,{recursive:true});
   tx(q,"1. Lovejeet Singh (12521613) — ML Architecture & Dimensionality Reduction (Slides 01–05)\n2. Mohammad Asim (12518421) — Manifold Learning & Platform Engineering (Slides 06–10)\n3. Reshu Kumar (12508208) — Unsupervised Clustering & Scientific Audit (Slides 11–15)",64,350,1100,100,21,{color:"#CCD8C9"});
 
   tx(q,"Verified Deliverables & Online Verification:",64,475,700,35,23,{bold:true,color:PAPER});
-  tx(q,"• Public GitHub Repository:   https://github.com/z-lovejeet/terralens\n• Live Interactive Web App:   https://terralens-f0sn.onrender.com\n• Automated Test Suite:        29 / 29 Pytest Tests Passing (100%)\n• Full Academic Dossier:       28-Page Report  ·  14-Page Study Guide  ·  16-Slide Deck",64,510,1100,120,20,{color:"#CCD8C9"});
+  tx(q,"• Public GitHub Repository:   https://github.com/z-lovejeet/terralens\n• Live Interactive Web App:   https://terralens-slek.onrender.com\n• Automated Test Suite:        29 / 29 Pytest Tests Passing (100%)\n• Full Academic Dossier:       28-Page Report  ·  14-Page Study Guide  ·  16-Slide Deck",64,510,1100,120,20,{color:"#CCD8C9"});
 
   tx(q,"Lovely Professional University  ·  SIH26142  ·  CO2, CO4, CO5  ·  10 November 2026",64,670,1152,25,16,{color:"#92A792"});
-  q.speakerNotes.text="[All Presenters: Q&A] Thank you for your time and evaluation. The live application is active at terralens-f0sn.onrender.com and full code with 29 passing tests is on GitHub. We are now happy to answer questions from the evaluation panel.";
+  q.speakerNotes.text="[All Presenters: Q&A] Thank you for your time and evaluation. The live application is active at terralens-slek.onrender.com and full code with 29 passing tests is on GitHub. We are now happy to answer questions from the evaluation panel.";
 }
 
 // Keep a candidate, then validate and write a separate final PPTX.

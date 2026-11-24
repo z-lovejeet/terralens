@@ -399,7 +399,7 @@ card_gap = 43
 
 link_cards = [
     ("Live Web Application", "Production Cloud Deployment", [
-        "• URL: https://terralens-f0sn.onrender.com",
+        "• URL: https://terralens-slek.onrender.com",
         "• Infrastructure: Containerized Docker on Render cloud",
         "• Capabilities: Full interactive workbench, live regional scanner, and patch analyzer",
         "• Availability: 24/7 publicly accessible and verified"
@@ -431,7 +431,7 @@ for i, (hd, subhd, items, line_color) in enumerate(link_cards):
 # Footer subtext
 tb_foot15 = add_text_box(s15, 64, 575, 1152, 35)
 format_tf(tb_foot15.text_frame, "Full codebase, test suites, live deployment, and documentation verified for evaluation.", size=22, color=C_MUTED)
-set_speaker_notes(s15, "[Presenter: Reshu Kumar] Slide 15 consolidates our project deliverables and verification links. Our live web application is hosted on Render at terralens-f0sn.onrender.com, featuring all interactive views, the regional scanner, and live patch inference. Our complete open-source codebase is on GitHub with 29 passing automated unit tests covering all numerical invariants. Finally, our academic documentation includes a comprehensive 28-page project report, a 14-page study guide, and this 16-slide presentation deck. Individual submission packages are ready for evaluation.")
+set_speaker_notes(s15, "[Presenter: Reshu Kumar] Slide 15 consolidates our project deliverables and verification links. Our live web application is hosted on Render at terralens-slek.onrender.com, featuring all interactive views, the regional scanner, and live patch inference. Our complete open-source codebase is on GitHub with 29 passing automated unit tests covering all numerical invariants. Finally, our academic documentation includes a comprehensive 28-page project report, a 14-page study guide, and this 16-slide presentation deck. Individual submission packages are ready for evaluation.")
 
 # ==============================================================================
 # SLIDE 16 (Index 15): Concluding Slide / Q&A
@@ -442,7 +442,7 @@ for shape in s16.shapes:
         t = shape.text_frame.text.strip()
         if "10 November" in t or "15 November" in t:
             format_tf(shape.text_frame, "Lovely Professional University  ·  SIH26142  ·  CO2, CO4, CO5  ·  15 November 2026", size=16, color=RGBColor(146, 167, 146))
-set_speaker_notes(s16, "[All Presenters: Q&A] Thank you for your time and evaluation. The live application is active at terralens-f0sn.onrender.com and full code with 29 passing tests is on GitHub. We are now happy to answer questions from the evaluation panel.")
+set_speaker_notes(s16, "[All Presenters: Q&A] Thank you for your time and evaluation. The live application is active at terralens-slek.onrender.com and full code with 29 passing tests is on GitHub. We are now happy to answer questions from the evaluation panel.")
 
 # Save modified presentation
 prs.save(PPTX_PATH)
