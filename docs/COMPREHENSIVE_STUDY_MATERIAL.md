@@ -12,7 +12,7 @@
 | :--- | :--- | :--- | :--- | :--- |
 | **Lovejeet Singh** | **12521613** | **Machine Learning Architecture & Dimensionality Reduction** | **Objective 1 & 2:** Data Prep, Colour Descriptors, StandardScaler, PCA 95% Scree Model & Generalization Validation | Co-led data prep; 47 colour descriptors; fitted StandardScaler; 28-PC PCA model (95% Scree rule); proved <0.75% generalization MSE delta; co-developed 29-test pytest suite. |
 | **Mohammad Asim** | **12518421** | **Manifold Learning & Full-Stack Platform Engineering** | **Objective 2:** Texture/Edge Descriptors, t-SNE Manifold Learning, FastAPI Services & Interactive React Workbench | Co-led texture/edge engineering (23 GLCM/LBP + 8 Sobel); t-SNE tuning (p10/30/50) & trustworthiness; FastAPI async backend & live Patch Analyzer; React workbench & 27k ribbon. |
-| **Reshu Kumar** | **12508208** | **Unsupervised Clustering, Evaluation & Scientific Audit** | **Objective 2 & 3:** 80/20 Partition Protocol, K-Means Clustering, Triangulated Intrinsic Validation & External Label Audit | Co-led 80/20 partition (21.6k/5.4k); K-Means (K=10, K-Means++); triangulated validation (Silhouette 0.245, DB 1.42, Stability ARI 0.824); external audit; report & slides generator. |
+| **Reshu Kumar** | **12508208** | **Unsupervised Clustering, Evaluation & Scientific Audit** | **Objective 2 & 3:** 80/20 Partition Protocol, K-Means Clustering, Triangulated Intrinsic Validation & External Label Audit | Co-led 80/20 partition (21.6k/5.4k); K-Means (K=10, K-Means++); triangulated validation (Silhouette 0.175, DB 1.645, Stability ARI 0.9986); external audit; report & slides generator. |
 
 ---
 
@@ -287,21 +287,21 @@ Perplexity acts as a smooth measure of the **effective number of nearest neighbo
                        Triangulated Validation
                        /          |          \
                       /           |           \
-           Silhouette (0.245)  DB Index (1.42)  Elbow Flattening
+           Silhouette (0.175)  DB Index (1.645)  Elbow Flattening
                       \           |           /
                        \          |          /
-                     Multi-Seed Stability (ARI = 0.824)
+                     Multi-Seed Stability (ARI = 0.9986)
 ```
 
-1. **Common-Space Silhouette Score ($0.245$):**
+1. **Common-Space Silhouette Score ($0.156$):**
    $$s(i) = \frac{b(i) - a(i)}{\max(a(i), b(i))}$$
    Evaluated in the standardized 78-feature space so all representations are compared on equal footing.
-2. **Davies-Bouldin Index ($1.42$):**
+2. **Davies-Bouldin Index ($1.645$):**
    $$R_{ij} = \frac{s_i + s_j}{d(\mu_i, \mu_j)}, \quad DB = \frac{1}{K} \sum_{i=1}^K \max_{j \ne i} R_{ij}$$
    Measures cluster scatter relative to centroid separation (lower is better).
-3. **Calinski-Harabasz Variance Ratio:** Confirms robust between-cluster dispersion.
-4. **Inertia Elbow Analysis:** Inertia drops sharply from $K=2$ to $K=8$, then levels off smoothly between $K=8$ and $K=10$.
-5. **Multi-Seed Stability ($ARI = 0.824$):** K-Means repeated across 5 random seeds yields an Adjusted Rand Index of $0.824$, confirming the 10 groups represent stable natural modes.
+3. **Calinski-Harabasz Variance Ratio ($208$ on a 1,500-patch sample):** Useful for comparing runs on the same sample, not as an absolute score.
+4. **Inertia and $K$:** Inertia decreases smoothly with $K$ and shows no sharp elbow, and the silhouette is highest at $K=2$ and flat for $K\geq5$, so $K=10$ is a modelling choice matching the ten reference categories.
+5. **Multi-Seed Stability ($ARI = 0.9986$):** K-Means repeated across three random seeds (42, 17, 91) yields an Adjusted Rand Index of $0.9986$, confirming the 10 groups represent stable natural modes.
 
 ### 3. The 10 Discovered Land-Cover Groups
 
@@ -490,7 +490,7 @@ Ground-truth EuroSAT labels were sealed during all training and opened strictly 
     *A:* "It sets the effective number of nearest neighbors ($2^{\text{Entropy}}$) considered when constructing high-dimensional Gaussian probabilities. We evaluated perplexities 10, 30, and 50."
 
 26. **Q: Can you report an "explained variance" for t-SNE?**  
-    *A:* "No. t-SNE minimizes KL divergence, not variance. Instead, we report neighborhood **trustworthiness** ($0.771$), which measures how well 2D neighborhoods preserve 10-nearest-neighbor topology."
+    *A:* "No. t-SNE minimizes KL divergence, not variance. Instead, we report neighborhood **trustworthiness** ($0.968$), which measures how well 2D neighborhoods preserve 10-nearest-neighbor topology."
 
 27. **Q: Why can't we cluster directly in t-SNE space?**  
     *A:* "t-SNE alters Euclidean distance geometry; cluster sizes and gaps are optimization artifacts. Furthermore, t-SNE lacks an out-of-sample projection matrix, preventing live inference on new images."
@@ -509,10 +509,10 @@ Ground-truth EuroSAT labels were sealed during all training and opened strictly 
     *A:* "$s(i) = \frac{b(i) - a(i)}{\max(a(i), b(i))}$. It compares a point's mean intra-cluster distance ($a(i)$) with its nearest neighboring cluster distance ($b(i)$). It ranges from $-1$ to $+1$."
 
 32. **Q: What is Davies-Bouldin Index?**  
-    *A:* "It calculates the ratio of within-cluster scatter to separation between centroid pairs. Lower values indicate tighter, better-separated clusters ($1.42$ in our model)."
+    *A:* "It calculates the ratio of within-cluster scatter to separation between centroid pairs. Lower values indicate tighter, better-separated clusters ($1.645$ in our model, which reflects overlapping groups)."
 
 33. **Q: What is Multi-Seed Stability and how did you measure it?**  
-    *A:* "We re-ran K-Means across 5 random seeds and computed pairwise Adjusted Rand Index (ARI). An average ARI of $0.824$ proves the clusters are consistent physical modes, not random initialization artifacts."
+    *A:* "We re-ran K-Means across three random seeds (42, 17, 91) and computed pairwise Adjusted Rand Index (ARI). An average ARI of $0.9986$ proves the clusters are consistent physical modes, not random initialization artifacts."
 
 ### Category 7: 80/20 Protocol & Overfitting Verification
 34. **Q: Why have an 80/20 split in unsupervised learning?**  
@@ -552,10 +552,10 @@ Ground-truth EuroSAT labels were sealed during all training and opened strictly 
     *A:* "I was responsible for Machine Learning Architecture & Dimensionality Reduction (33.3% equal share). I co-led data preparation across the 27,000 patches, engineered the 47 colour moments and spectral distributions, conducted the data hygiene audit (0 missing/corrupt values), implemented the study-fitted StandardScaler and median imputation, fitted the 28-component PCA model under the 95% Scree rule, mapped the physical remote-sensing loadings (PC1 Albedo, PC2 Greenness vs Water), mathematically verified out-of-sample generalization with <0.75% reconstruction MSE delta, and co-developed the 29-test automated numerical test suite."
 
 45. **Q: (For Mohammad Asim, 12518421): What was your exact contribution?**  
-    *A:* "I was responsible for Manifold Learning & Full-Stack Platform Engineering (33.3% equal share). I co-led spatial texture and edge feature engineering (23 GLCM/LBP descriptors and 8 Sobel gradient features), implemented the non-linear t-SNE manifold learning pipeline across perplexities 10/30/50 and seeds 42/17 with 10-neighbor trustworthiness evaluation (0.771), built the asynchronous FastAPI backend server and live single-patch inference engine (POST /api/analyze), and developed the interactive React/TypeScript research workbench including the 27,000-patch Class Distribution ribbon (80/20 toggle) and theme-matched CustomSelect controls."
+    *A:* "I was responsible for Manifold Learning & Full-Stack Platform Engineering (33.3% equal share). I co-led spatial texture and edge feature engineering (23 GLCM/LBP descriptors and 8 Sobel gradient features), implemented the non-linear t-SNE manifold learning pipeline across perplexities 10/30/50 and seeds 42/17 with 10-neighbor trustworthiness evaluation (0.968), built the asynchronous FastAPI backend server and live single-patch inference engine (POST /api/analyze), and developed the interactive React/TypeScript research workbench including the 27,000-patch Class Distribution ribbon (80/20 toggle) and theme-matched CustomSelect controls."
 
 46. **Q: (For Reshu Kumar, 12508208): What was your exact contribution?**  
-    *A:* "I was responsible for Unsupervised Clustering, Evaluation & Scientific Audit (33.3% equal share). I co-led the 80/20 train/holdout partition protocol (21,600 study patches vs 5,400 holdout patches) with cryptographic SHA-256 verification, designed and executed the K-Means clustering pipeline (K=10, K-Means++, 10 restarts) in 28-PC space, established the triangulated multi-metric validation framework (Common-space Silhouette 0.245, DB Index 1.42, Multi-seed stability ARI 0.824), conducted the sealed post-selection external contingency matrix audit against the 10 EuroSAT classes (ARI 0.299, NMI 0.429), and authored the academic report generator, presentation deck, and ethical deployment guidelines."
+    *A:* "I was responsible for Unsupervised Clustering, Evaluation & Scientific Audit (33.3% equal share). I co-led the 80/20 train/holdout partition protocol (21,600 study patches vs 5,400 holdout patches) with cryptographic SHA-256 verification, designed and executed the K-Means clustering pipeline (K=10, K-Means++, 10 restarts) in 28-PC space, established the triangulated multi-metric validation framework (Common-space Silhouette 0.156, DB Index 1.645, Multi-seed stability ARI 0.9986), conducted the sealed post-selection external contingency matrix audit against the 10 EuroSAT classes (ARI 0.299, NMI 0.429), and authored the academic report generator, presentation deck, and ethical deployment guidelines."
 
 47. **Q: How was AI used in this project?**  
     *A:* "AI (Codex/Antigravity) assisted in drafting boilerplate scripts, ReportLab styling, and initial documentation. All mathematical formulas, scientific decisions, code implementations, and experimental verifications were reviewed, understood, and validated by our team."
