@@ -2,12 +2,12 @@
 ### Unsupervised Land-Type Grouping of Satellite Image Patches Using Clustering
 
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![React 18](https://img.shields.io/badge/React-18.3-61DAFB.svg?logo=react&logoColor=black)](https://react.dev/)
-[![TypeScript 5.6](https://img.shields.io/badge/TypeScript-5.6-3178C6.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tailwind CSS 3.4](https://img.shields.io/badge/TailwindCSS-3.4-38B2AC.svg?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![scikit-learn](https://img.shields.io/badge/scikit--learn-1.5.2-F7931E.svg?logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
-[![Pytest Passing](https://img.shields.io/badge/Pytest-50%20Passed-brightgreen.svg?logo=pytest&logoColor=white)](tests/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.121-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![React 19](https://img.shields.io/badge/React-19-61DAFB.svg?logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript 5.9](https://img.shields.io/badge/TypeScript-5.9-3178C6.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite 7](https://img.shields.io/badge/Vite-7-646CFF.svg?logo=vite&logoColor=white)](https://vite.dev/)
+[![scikit-learn](https://img.shields.io/badge/scikit--learn-1.7.2-F7931E.svg?logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
+[![Pytest Passing](https://img.shields.io/badge/Pytest-52%20Passed-brightgreen.svg?logo=pytest&logoColor=white)](tests/)
 [![EuroSAT Dataset](https://img.shields.io/badge/Dataset-EuroSAT%20RGB%20(27k)-informational.svg)](https://github.com/phelber/EuroSAT)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -20,22 +20,45 @@
 
 ---
 
+## Quick Start
+
+```bash
+git clone https://github.com/z-lovejeet/terralens.git && cd terralens
+./scripts/setup.sh      # Windows: .\scripts\setup.bat   (needs Git, uv and Node.js: see Installation)
+./scripts/start.sh      # Windows: .\scripts\start.bat
+```
+Open <http://127.0.0.1:8000>. Everything runs on your own computer: **no API keys, accounts or internet connection are needed** after the packages are installed. Step-by-step instructions for macOS, Linux and Windows are in [Installation & Setup Instructions](#installation--setup-instructions).
+
+**What you can do with it**
+
+| Page | What it does for you |
+| :--- | :--- |
+| **Map my image** | Upload one satellite image; it is split into regions by itself, each region is named (trees, fields, water, buildings, bare ground) with a share of the image. |
+| **Sort my photos** | Drop a batch of satellite images; they are grouped by look with an automatically chosen number of groups. |
+| **Patch analyzer** | Compare a single patch with the 27,000-patch reference study. |
+| **Observatory, Cluster atlas, Model lab** | Explore the unsupervised study itself: the 10 discovered groups, PCA and t-SNE projections, experiments and the sealed reference audit. |
+
+All of it is **unsupervised machine learning** (K-Means++, PCA, t-SNE, the elbow method) with hand-built colour, texture and edge measurements; nothing calls an outside API.
+
+---
+
 ## Table of Contents
-1. [Executive Summary & Problem Statement](#-executive-summary--problem-statement)
-2. [Team Contributions & Roles](#-team-contributions--roles)
-3. [System Architecture & Data Flow](#-system-architecture--data-flow)
-4. [Data Hygiene & Cryptographic Label-Quarantine Protocol](#-data-hygiene--cryptographic-label-quarantine-protocol)
-5. [Domain-Specific Feature Engineering (78 Descriptors)](#-domain-specific-feature-engineering-78-descriptors)
-6. [Dimensionality Reduction: PCA & t-SNE Manifold Learning](#-dimensionality-reduction-pca--t-sne-manifold-learning)
-7. [Unsupervised Clustering & Scientific Validation](#-unsupervised-clustering--scientific-validation)
-8. [Interactive Research Workbench (UI Walkthrough)](#-interactive-research-workbench-ui-walkthrough)
-9. [Prerequisites & System Requirements](#-prerequisites--system-requirements)
-10. [Installation & Setup Instructions](#-installation--setup-instructions)
-11. [Execution & Reproduction Guide](#-execution--reproduction-guide)
-12. [Testing & Scientific Verification](#-testing--scientific-verification)
-13. [REST API Reference](#-rest-api-reference)
-14. [Repository Directory Structure](#-repository-directory-structure)
-15. [Academic Disclosures & Citations](#-academic-disclosures--citations)
+1. [Executive Summary & Problem Statement](#executive-summary--problem-statement)
+2. [Team Contributions & Roles](#team-contributions--roles)
+3. [System Architecture & Data Flow](#system-architecture--data-flow)
+4. [Data Hygiene & Cryptographic Label-Quarantine Protocol](#data-hygiene--cryptographic-label-quarantine-protocol)
+5. [Domain-Specific Feature Engineering (78 Descriptors)](#domain-specific-feature-engineering-78-descriptors)
+6. [Dimensionality Reduction: PCA & t-SNE Manifold Learning](#dimensionality-reduction-pca--t-sne-manifold-learning)
+7. [Unsupervised Clustering & Scientific Validation](#unsupervised-clustering--scientific-validation)
+8. [Interactive Research Workbench (UI Walkthrough)](#interactive-research-workbench-ui-walkthrough)
+   * [Map my image](#application-6-map-my-image) · [30-group land model](#the-30-group-land-model) · [Sort my photos](#application-7-sort-my-photos)
+9. [Prerequisites & System Requirements](#prerequisites--system-requirements)
+10. [Installation & Setup Instructions](#installation--setup-instructions) (quick start, step-by-step for macOS / Linux / Windows, Docker, troubleshooting)
+11. [Execution & Reproduction Guide](#execution--reproduction-guide)
+12. [Testing & Scientific Verification](#testing--scientific-verification)
+13. [REST API Reference](#rest-api-reference)
+14. [Repository Directory Structure](#repository-directory-structure)
+15. [Academic Disclosures & Citations](#academic-disclosures--citations)
 
 ---
 
@@ -76,8 +99,8 @@ External EuroSAT Alignment: ARI = 0.299, NMI = 0.429
 
 Moving beyond static dataset evaluation, TerraLens provides direct operational value for environmental decision support, emergency response, and geospatial monitoring:
 
-* 🏡 **Check my area:** Anyone can upload a satellite screenshot of a neighbourhood, farm or town and get a plain-language report: green cover score, share of buildings, water and farmland, and practical things to consider (heat, flood-risk checks, open space). The scene is cut into tiles and every tile is grouped by the same frozen PCA + K-Means model.
-* 🚨 **Crisis Radar:** Upload one satellite or aerial image to check it for floods, fires, burn scars, drought, landslides, storm or earthquake damage, oil spills and more. The hazard assessment comes from Google Gemini vision and is clearly labelled as such; the land-cover map beside it comes from the TerraLens clustering model. A second mode compares a before and an after image tile by tile using only the clustering model.
+* 🗺️ **Map my image (unsupervised segmentation):** Upload one satellite image of a farm, town or reservoir and the app splits it into regions of similar-looking land, by itself, names each one (trees, fields, water, buildings or bare ground) and reports its share of the image. On test scenes with a known layout, region shares are within about 11 percentage points and land-model names are right 100 % of the time when given; on 14 real map-app views checked by eye, colour-and-texture names were right for 83 % of regions.
+* 🗂️ **Sort my photos:** Drop a folder of satellite images and TerraLens groups them by look (forest, water, houses, fields, industry) with the number of groups chosen automatically by the elbow method, so a pile of unlabelled images becomes an organised archive.
 * 🌲 **Deforestation & Canopy Depletion Tracking:** Unsupervised clustering detects shifts from dense forest canopies (Cluster 02) to cleared soil or scrubland without requiring pre-labeled training data from the local region.
 * 💧 **Reservoir & Water Body Monitoring:** Tracks seasonal shrinkage or drought depletion in surface water bodies (Cluster 04) by measuring acreage distribution percentages across multi-temporal satellite passes.
 * 🌾 **Agricultural Land-Use & Crop Field Mapping:** Distinguishes active crop cultivation (Cluster 01) from fallow pastures and wetlands to aid regional food security and agricultural planning.
@@ -274,7 +297,7 @@ Cluster 01           PermanentCrop & Pasture       74.3%         Moderate greenn
 
 ## Interactive Research Workbench (UI Walkthrough)
 
-The TerraLens frontend is a high-performance, single-page application built with **React 18, TypeScript, and Tailwind CSS**, communicating with the Python backend via typed JSON endpoints.
+The TerraLens frontend is a high-performance, single-page application built with **React 19, TypeScript, and Vite**, communicating with the Python backend via typed JSON endpoints.
 
 ### Application 1: Observatory
 *Inspect the complete 27,000-patch EuroSAT dataset with linked visual cluster galleries.*
@@ -336,36 +359,47 @@ The TerraLens frontend is a high-performance, single-page application built with
 
 ---
 
-### Application 6: Check my area
-*A plain-language land report for any neighbourhood, farm or town.*
+### Application 6: Map my image
+*Split one satellite image into regions of similar-looking land.*
 
-* **Who it is for:** home buyers, farmers, students and residents who want to know how green, built-up or water-adjacent a place is, without any technical knowledge.
-* **How to use it:** upload a top-down satellite screenshot (for example from Google Maps' Satellite view). No settings are needed: every image is read on a fine grid (8 squares along the short side, up to 12 along the long side).
-* **What it shows:** a colour-coded land map, the share of *Trees & greenery*, *Fields & farmland*, *Water*, *Buildings & roads*, *Bare ground & open plots* and *Mixed land*, a 0–100 % green-cover score, what stands out, things to consider, a reliability rating and a printable PDF report.
-* **How it works:** the image is centre-cropped into a grid of squares, and a labelled grid (A1, B1 …) is drawn on the copy sent to the Gemini API (`assess_area` in `backend/terralens/vision.py`). For every square the model returns the share of trees, fields, water, buildings and bare ground; each square on the map takes its largest share (or *Mixed land* below 40 %), and the overall percentages are the average of all squares, so the map and the numbers always agree. Replies are validated: squares are matched by label, each mix is normalised to 100, and readings missing more than 20 % of squares are rejected. Overload errors are retried automatically.
-* **Accuracy:** on six benchmark scenes built from real EuroSAT tiles with known classes (forest, crops, pasture, lakes, residential and industrial), the labelled-grid, per-square reading got **98.1 %** of squares right, up from 81.0 % for a plain whole-image reading.
-* **Without a working `GEMINI_API_KEY`** the feature reports that image reading is unavailable rather than showing an estimate.
+* **How to use it:** upload a top-down satellite image (at least 128 px on each side). Leave **Number of regions** on *Auto* or choose 2–8.
+* **What it shows:** a colour map of the regions over your image (click a region to highlight it), each region's share of the image, a name for each region with how sure it is (*matches the land model*, *likely* or *best guess*), a land-cover summary such as *70 % fields & farmland, 30 % buildings & roads*, what makes each region look different in plain words (for example *brighter · redder or browner*), a switch to colour the map by land type or by region, an elbow chart for choosing the number of regions, the measured accuracy, and CSV/JSON downloads.
+* **How it works (`backend/terralens/regions.py`):** the image is cut into a grid of squares (24 along the short side, up to 40 along the long side) and each square is described by the 78 descriptors. The descriptors are standardised **within this image**, capped at ±3 standard deviations, and reduced with a PCA fitted to this image's squares (95 % of the variance); the squares are then clustered with K-Means++, with K = 2–8 chosen by the elbow method. A 3 × 3 majority filter tidies lone squares (never erasing a whole region). The study's saved scaler, PCA and land model are only read, never changed: they supply the plain-language descriptions and, when the image resembles the training imagery, the region names.
+* **Why standardise within the image:** in the study's own space, a detailed close-up (for example a village screenshot at sub-metre resolution) produces a few out-of-range squares with extreme coordinates, and K-Means spent whole regions on them: a real test image came out as one 82 % region plus slivers. Standardising within the image, with capping, split the same image into village, gardens and fields, and also scored better on the benchmark below.
+* **Naming regions, step 1 (land model):** bigger squares (8 along the short side, close in size to the training patches) are labelled with the 30-group land model, and a region takes the land type that covers at least half of it (*Mixed land* otherwise). This is used when the image resembles the training imagery: fewer than 30 % of those squares look unfamiliar (at most 8 % did in the benchmark scenes).
+* **Naming regions, step 2 (colour and texture, `backend/terralens/reading.py`):** close-up screenshots from map apps (the village test image had 60 % unfamiliar squares) are sharper and more colourful than the 10 m Sentinel-2 training patches, so the land model's names are unreliable there. Each region is then read from measurable cues: greenness (the excess-green index 2G − R − B, also compared with the least green region), brightness, smoothness (local grey spread; open water is the flattest surface), field rows (structure-tensor coherence: planted fields have parallel edges, tree crowns and water do not) and the share of very dark pixels (deep water). Water is flat and not vivid green; bare ground is bright and not green; buildings and roads are textured and not green; green regions that are dark, rough and row-free are trees, and lighter, smoother or striped ones are fields. Calls near a threshold are marked *best guess*. This is an interpretation of the unsupervised clusters, not a trained classifier.
+* **How the colour-and-texture names were checked:** 14 public satellite views (Esri World Imagery, zoom 15–18) of lakes (Dal Lake, Sukhna Lake, a Finnish lake), rivers (Ganges at Varanasi, Rio Negro at Manaus, a Nile delta canal), a sea front (Mumbai), forests (Black Forest, Finland), farms (Punjab, Netherlands, Kerala, Nile delta), towns (Jaisalmer, Mumbai, Manaus) and the village test image, with each region's true land type judged by eye. **83 % of the 52 clearly identifiable regions were named right (90 % of the image area; 91 % of calls not marked *best guess*).** Buildings and water were never named wrongly; the misses were trees versus crop fields, a cloud-streaked lake and narrow canals. The views themselves are not stored in the repository.
+* **Measured accuracy** (`scripts/benchmark_regions.py` → `artifacts/regions-benchmark.json`; 30 scenes of 8 × 8 held-out EuroSAT patches in blobs of 2–5 clearly different land types, uploaded as JPEG; labels opened only to score):
 
-### Application 7: Crisis Radar
-*Check one image for disasters and damage, or compare two images of the same place.*
+| Image | Region agreement (ARI) | Area-share error | Regions named | Names right |
+| :--- | :---: | :---: | :---: | :---: |
+| As uploaded | 0.51 | ±10.6 pts | 92 % of regions | 100 % |
+| Enlarged 3× (like a close-up) | 0.51 | ±11.4 pts | 79 % of regions | 96 % |
 
-**Scan one image (Gemini vision + clustering model)**
-* **How to use it:** drop a single satellite or aerial image. No settings are needed.
-* **What it shows:** an incident card (hazard type, severity on a five-step scale, approximate area affected, scanner confidence, image type and cloud cover), the image with numbered boxes around the evidence and map grid references (A–F, 1–6), what the scanner sees, what to do now, secondary risks and image-quality notes. A normal scene is reported as *No crisis visible* with a description of what is there.
-* **Hazards covered:** flood, tsunami or storm surge, coastal erosion, wildfire, burn scar, smoke plume, volcanic activity, industrial accident, drought, deforestation, landslide, desertification, mining damage, earthquake and building damage, storm damage, dust storm, snow or ice hazard, oil spill and algal bloom.
-* **How it works:** the image is cropped to the land-cover grid so both overlays share one frame. The TerraLens model maps land cover tile by tile. The image is also sent to the Gemini API (`backend/terralens/vision.py`) with a remote-sensing prompt that lists visual cues and common look-alikes (cloud vs smoke, cloud shadow vs burn scar, a river in its banks vs a flood) and a strict JSON schema. Every field of the reply is validated and clamped before it reaches the browser. If the API is unavailable the page still shows the land map and says the hazard check could not run; it never substitutes a made-up assessment.
-* **Configuration:** set `GEMINI_API_KEY` (a Google AI Studio key) in the environment or in `.env.local`. `GEMINI_MODEL` takes a comma-separated list of model IDs tried in order (default `gemini-3.5-flash-lite,gemini-flash-lite-latest`).
+* **Limits:** similar-looking land (forest and dark water, different crop types) can share a region, and the app tends to find about one region more than there are land types. Regions are found at any zoom. Names from the land model are only used for views similar to the training imagery; for close-ups the colour-and-texture names are less certain, and trees versus crop fields is the pair most often confused.
 
-**Compare before & after (clustering model only)**
-* Upload two screenshots of the same place at the same zoom. Both are tiled on the same grid (6 squares along the short side, the size the clustering model reads most reliably, since finer squares look more zoomed-in than its training images) and grouped by the frozen model; a tile counts as changed when its land type differs. The verdict comes from the net change in each land type: water gained reads as flooding, water lost as drying, buildings gained as construction, trees lost as clearing, and greenery gained from built, bare or mixed land as regrowth. Using net change keeps squares that straddle two land types from flipping the verdict.
+### The 30-group land model
+*A finer unsupervised grouping used for region names in Map my image and land labels in Sort my photos.*
 
-### Application 8: Where can we plant trees?
-*Find open ground for new trees in a colony, campus or street.*
+* **What it is:** K-Means++ with 30 groups, fitted on the 21,600 study patches in exactly the same frozen 28-component PCA space as the 10-group reference model (`scripts/build_land_model.py`, saved as `artifacts/land-model.joblib`). The 10-group model stays the study's headline result; smaller, purer groups simply make better land labels.
+* **Naming:** groups are fitted without labels. Only afterwards are the evaluation-only labels opened to give each group its most common everyday land type among study patches (*Mixed land* when no type reaches half and the group is not mostly vegetation), and to score the untouched holdout cohort. The full record is in `artifacts/land-model-audit.json`.
+* **Results on the 5,400 held-out patches:**
 
-* **Who it is for:** housing societies, schools, colleges, ward offices and residents planning a planting drive.
-* **How to use it:** upload a top-down satellite screenshot and choose roughly how wide the area is (a street ≈ 200 m, a colony or campus ≈ 500 m, a neighbourhood ≈ 1 km, a larger area ≈ 3 km). The width only sets the scale for the tree count.
-* **What it shows:** the estimated number of trees that would fit, open ground as a share and in m² or hectares, tree cover today and once the new trees grow, up to 8 numbered planting spots (open plots, roadside verges, parks, courtyards, field edges, school grounds, stream banks) ranked by priority with a reason and room for roughly how many trees, an open-ground heatmap, ideas for the place (mini-forest, shade-tree rows, school drives) and a *Before you plant* checklist (permission, utilities, native species, spacing, watering). The report can be saved as a PDF.
-* **How it works:** the image is read on the same labelled grid as Check my area (`assess_planting` in `backend/terralens/vision.py`): for every square the model returns the share of existing trees, plantable open ground, buildings and roads, water and other uses such as crop fields, plus boxes around the best spots. `backend/terralens/planting.py` converts this to square metres using the chosen width and assumes trees about 5 m apart on 60 % of the open ground, leaving room for paths, gaps and utilities. Spots with unusable boxes are dropped rather than drawn in the wrong place.
+| Labelling model | Patches named | Right when named | Right overall (mixed = miss) |
+| :--- | :---: | :---: | :---: |
+| 10 reference groups | 73.4 % | 74.6 % | 54.8 % |
+| **30-group land model** | **89.1 %** | **78.1 %** | **69.6 %** |
+
+* **Internal quality:** silhouette 0.161, Davies–Bouldin 1.51, seed stability ARI 0.811 (seeds 42, 17, 91). Recall by type: trees 69.9 %, fields 59.5 %, water 76.6 %, buildings 73.9 %.
+
+### Application 7: Sort my photos
+*Group a batch of your own satellite land images without telling the model any categories.*
+
+* **How to use it:** drop 4 to 300 top-down satellite images (or choose a folder). Each photo is shrunk in the browser before upload. Leave the number of groups on *Auto* or pick 2–12.
+* **What it shows:** how many groups were found and how clearly they separate, an elbow chart of the spread inside the groups for every number of groups (click a bar to try it), each group's photos with the most typical one first, a plain description of what sets the group apart (for example *busier, more detailed texture · brighter*), its most common land type, photos that don't fit well, a map of all photos on the first two principal components, and CSV/JSON downloads. A *Land type* view sorts the same photos by the 30-group land model instead.
+* **Try it:** `examples/sort-my-photos/` holds 30 held-out EuroSAT images (six each of forest, lake or sea, houses, crop fields and industry) with an answer key. With those files Auto finds 5 groups that are 83 % pure (ARI 0.68); forest and water partly share a group.
+* **How it works (`backend/terralens/sorting.py`):** each photo is centre-cropped to a square, described by the 78 descriptors, standardised and projected with the study's frozen scaler and PCA, and clustered with K-Means++. On *Auto*, every K from 2 to 10 is tried and the **elbow method** picks the K where adding groups stops making them much tighter (the bend in the inertia curve). On held-out batches with a known number of land types this chose better than the best-silhouette rule (mean ARI 0.37 vs 0.26; knowing the true K gives 0.38); the gap statistic, Calinski–Harabasz, Davies–Bouldin and GMM-BIC rules were also tested and did worse. Photos further than Q3 + 1.5 × IQR from their group centre are flagged as not fitting well.
+* **Measured on held-out EuroSAT patches (batches of 30–40 with known types):** photos of clearly different land (forest, lakes, towns) form groups that are about 76–80 % pure (ARI 0.52–0.60). Broad mixes of similar-looking land (trees, fields, water and buildings together) are only about half pure (ARI ≈ 0.14), because colour and texture alone cannot separate them; automatic K can still miss the true number of types by one or two. Clustering in a whitened PCA space or on the land model's group profile was tested and did worse.
 ---
 
 ## Prerequisites & System Requirements
@@ -470,7 +504,7 @@ To download the original 27,000-image EuroSAT archive from Zenodo, extract all 7
 ```bash
 PYTHONPATH=backend .venv/bin/python scripts/prepare_study.py
 ```
-> *Note: This will download ~2 GB, extract all 27,000 images, and take 5–10 minutes depending on your CPU.*
+> *Note: This will download ~2 GB, extract all 27,000 images, and take 5–10 minutes depending on your CPU. It is only needed to rebuild the study; the app and the tests run from the committed `artifacts/`.*
 
 ### 2. Fast Re-Clustering & Audit Reproduction
 If features are already extracted or you want to rebuild the 10-group model and audit against the recorded dataset:
@@ -479,14 +513,23 @@ If features are already extracted or you want to rebuild the 10-group model and 
 PYTHONPATH=backend .venv/bin/python scripts/prepare_study.py --comparison-only
 ```
 
-### 3. Automated Screenshot Capture via Chrome DevTools Protocol
-To automatically launch the frontend and capture live high-resolution screenshots of all 5 UI views:
+### 3. Rebuild the 30-Group Land Model and the Map Benchmark
+These two steps need the EuroSAT cache created by step 1 (`.data/`). The land model that names regions and sorts photos is fitted on the 21,600 study patches in the frozen 28-component PCA space; the benchmark then measures Map my image on 30 scenes with a known layout:
+
+```bash
+PYTHONPATH=backend .venv/bin/python scripts/build_land_model.py    # writes artifacts/land-model.joblib and land-model-audit.json
+PYTHONPATH=backend .venv/bin/python scripts/benchmark_regions.py   # writes artifacts/regions-benchmark.json (shown in the app's accuracy panel)
+```
+On Windows use `set PYTHONPATH=backend` and `.venv\Scripts\python.exe` in place of the first two parts. Both files are already committed, so you only need this to reproduce them.
+
+### 4. Automated Screenshot Capture via Chrome DevTools Protocol
+To automatically launch the frontend and capture live high-resolution screenshots of the research views (needs Google Chrome installed at its default macOS path):
 
 ```bash
 node scripts/capture_screenshots.mjs
 ```
 
-### 4. Build Deliverables (Report, Slides, Study Guide, Submissions)
+### 5. Build Deliverables (Report, Slides, Study Guide, Submissions)
 Generate the complete suite of academic deliverables:
 
 ```bash
@@ -512,31 +555,31 @@ Submission packages will be created in `output/submission/`:
 
 ## Testing & Scientific Verification
 
-The project includes an automated test suite verifying feature determinism, label isolation, and mathematical invariants:
+The project includes an automated test suite verifying feature determinism, label isolation, and mathematical invariants. Run it from the project folder (it needs no server and no internet):
+
+```bash
+.venv/bin/python -m pytest -q        # Windows: .venv\Scripts\python -m pytest -q
+```
 
 ```bash
 PYTHONPATH=backend .venv/bin/python -m pytest -v
 ```
 
-### Test Coverage Summary (50 Tests Passing):
-* `test_features.py`:
-  * Validates that extracting descriptors from the same image always yields byte-identical 78 floats.
-  * Validates that `extract_features()` strictly rejects invalid file shapes, non-finite values, and NaN inputs.
-* `test_study_invariants.py`:
-  * Asserts that `StandardScaler` is fitted **strictly on the 80% study partition**.
-  * Asserts that `reference_labels_evaluation_only.json` contains zero references inside the feature cache (`features.npz`).
-  * Validates that linear reconstruction MSE holds $\Delta < 0.75\%$ between study and holdout.
+### Test Coverage Summary (52 Tests Passing):
+* `test_science.py` (study invariants):
+  * Validates that extracting descriptors from the same image always yields identical values, independent of the file name, and that a constant patch gives finite numbers.
+  * Asserts that the saved reference study is real and consistent (27,000 images, 21,600 study / 5,400 holdout), that the reference labels are kept separate from the feature cache and the split is disjoint.
+  * Asserts that the bundled model reproduces the reference points, that uploads only transform with the saved scaler and PCA (nothing is refitted), and that live experiments are bounded, label-free and leave the reference untouched.
 * `test_api.py`:
-  * Tests that `GET /api/study` returns immutable frozen reference metrics.
-  * Validates multipart image upload bounds (rejects files $> 8\text{ MB}$ or invalid MIME types).
-  * Validates single-patch inference response structure (`POST /api/analyze`).
-* `test_scenes.py`:
-  * Asserts that scene tiling groups every tile with the frozen model (scaler, PCA and K-Means are never refitted), that Check my area builds its map and percentages from a validated per-square reading matched by grid label, and that incomplete readings are rejected.
-  * Asserts that identical before/after views report no change, and that each kind of change is named correctly (clearing, construction, drying, flood).
-  * Asserts that the planting estimate converts open ground to trees correctly for each area width, drops spots with unusable boxes and ranks the rest by priority.
-  * Asserts that Gemini replies are validated and clamped, that a normal scene clears the hazard fields, that a missing or rejected key returns the land map with an explicit error (never an invented assessment), and that a missing model falls back to the next one.
-  * Asserts that unfamiliar images (e.g. a blank frame) lower the reliability rating, and that bad, tiny or oversized uploads are rejected.
-
+  * Health, exports and anonymous patch previews (including path-traversal protection).
+  * Upload safety: invalid or oversized files and chunked uploads are rejected before parsing, and slow image decoding does not block health checks.
+  * Single-patch analysis (`POST /api/analyze`) with the saved pipeline, rejection of unknown run ids, and the live experiment engine (real result, bounded t-SNE samples, interrupted jobs marked on restart).
+* `test_land_tools.py`:
+  * Asserts that the 30-group land model labels images with the frozen projection (scaler and PCA are never refitted), is recorded with its holdout evaluation, and beats the 10-group labels by more than 10 points.
+  * Asserts that Map my image recovers a known layout of real satellite tiles, is not hijacked by a few extreme squares, names regions with the land model only when a region agrees, names regions of images unlike the training data from colour and texture (water, buildings, bare ground, trees and fields on typical cues), never changes the saved study models, reports its recorded benchmark, and rejects bad or uniform input.
+  * Asserts that Sort my photos separates clearly different land into pure groups, picks K at the elbow of the inertia curve, reuses the frozen scaler and PCA, and rejects bad batches.
+* `test_offline.py`:
+  * Asserts that no application module imports a network client (`urllib`, `requests`, `httpx`, `socket`, or an AI library), that no module reads an API key, and that the removed routes (the old AI features, Crisis Radar and Places like mine) no longer exist. Only the offline study pipeline downloads the public EuroSAT archive.
 ---
 
 ## REST API Reference
@@ -546,6 +589,7 @@ The FastAPI backend exposes typed JSON endpoints for exploration and real-time e
 | HTTP Method | Endpoint Path | Description | Sample Response Payload |
 | :---: | :--- | :--- | :--- |
 | `GET` | `/api/health` | Service health status check | `{"status": "ok", "version": "1.0.0"}` |
+| `GET` | `/api/capabilities` | Upload limit and live-experiment limits the interface reads on start | `{"upload_max_bytes": 8388608, ...}` |
 | `GET` | `/api/study` | Returns immutable 27k study settings, scree eigenvalues, cluster summaries & 2D coordinates | Full study dictionary with 28 PCs, variance metrics, and cluster definitions |
 | `GET` | `/api/features` | Returns definitions, mathematical formulae, and families for all 78 descriptors | `[{"name": "red_mean", "family": "Colour", "description": "..."}]` |
 | `GET` | `/api/audit` | Returns sealed post-hoc contingency matrix, ARI, and NMI metrics | `{"metrics": {"adjusted_rand_index": 0.299, "normalized_mutual_information": 0.429}}` |
@@ -553,11 +597,11 @@ The FastAPI backend exposes typed JSON endpoints for exploration and real-time e
 | `GET` | `/api/experiments/{id}`| Poll the status and retrieve results of an experiment job | `{"status": "completed", "result": {"silhouette": 0.238, ...}}` |
 | `POST` | `/api/analyze` | Upload a satellite patch (multipart/form-data) for live 10-group classification | `{"cluster": 4, "distance_to_centroid": 1.84, "runner_up_gap": 0.42, "nearest_neighbors": [...]}` |
 | `GET` | `/api/analyzer/presets` | Retrieve instant preloaded EuroSAT benchmark patches for single-patch analysis | `[{"id": "pe0bce20c66ac24a69c02", "label": "Dense Forest Canopy", ...}]` |
-| `POST` | `/api/area-check` | Check my area: per-square land reading of an uploaded scene (multipart `file`, optional `detail`) | `{"breakdown": [...], "profile": {"green_cover": {...}}, "tiles": [...]}` |
-| `POST` | `/api/crisis-scan` | Crisis Radar single-image scan: Gemini hazard assessment plus clustering land map (multipart `file`) | `{"assessment": {"crisis_type": "flood", "severity": "high", ...}, "land": {...}}` |
-| `POST` | `/api/plant-check` | Where can we plant trees: planting spots, tree estimate and checklist (multipart `file`, form `area_width`) | `{"summary": {"trees_possible": 900, ...}, "spots": [...]}` |
-| `POST` | `/api/change-check` | Crisis Radar comparison: `before` and `after` images tile by tile | `{"summary": {"changed_percent": 30.6}, "verdict": {"story": "flood", ...}}` |
+| `POST` | `/api/map-regions` | Map my image: split one uploaded image into regions (multipart `file`, form `count` = `auto` or 2–8) | `{"k": 4, "regions": [...], "cells": [...]}` |
+| `POST` | `/api/sort-photos` | Sort my photos: group 4–300 uploaded images (multipart `files`, form `groups` = `auto` or 2–12) | `{"k": 3, "groups": [...], "photos": [...]}` |
+| `GET` | `/api/patches/{id}.jpg` | Thumbnail of one anonymous reference patch | JPEG image |
 | `GET` | `/api/export/metrics.csv`| Download complete CSV record of all experimental runs | CSV formatted data stream |
+| `GET` | `/api/export/study.json`, `/api/export/config.json` | Download the frozen study and its configuration | JSON files |
 
 ---
 
@@ -567,56 +611,76 @@ The FastAPI backend exposes typed JSON endpoints for exploration and real-time e
 terralens/
 ├── backend/
 │   └── terralens/
-│       ├── __init__.py           # Package initializer
-│       ├── app.py                # FastAPI HTTP server & endpoint routing
-│       ├── clustering.py         # K-Means++ fitting, metrics & cluster summaries
-│       ├── experiments.py        # Asynchronous experiment engine & SQLite journal
+│       ├── app.py                # FastAPI application, middleware, upload limits & static frontend
+│       ├── settings.py           # Paths, upload limits and environment variables
+│       ├── api/                  # One router per feature
+│       │   ├── reference.py      #   health, capabilities, study, audit, features, exports
+│       │   ├── experiments.py    #   live experiment jobs
+│       │   ├── analyzer.py       #   Patch analyzer (single patch)
+│       │   ├── regions.py        #   POST /api/map-regions
+│       │   ├── sorting.py        #   POST /api/sort-photos
+│       │   └── resources.py      #   shared loaders and the upload worker
 │       ├── features.py           # 78 deterministic domain descriptor extractors
-│       ├── landscan.py           # Scene tiling, Check my area & Crisis Radar change detection
-│       ├── vision.py             # Image reading for Check my area, Plant trees and Crisis Radar (Gemini API)
-│       ├── planting.py           # Where can we plant trees: spots, tree estimate and checklist
-│       ├── pipeline.py           # Scaler, PCA projection & t-SNE manifold fitting
-│       └── study.py              # Ingestion adapter, SHA-256 hashing & sealed audit
+│       ├── clustering.py         # K-Means++ fitting, metrics & cluster summaries
+│       ├── study.py              # Dataset ingestion, SHA-256 verification, PCA/t-SNE and the sealed audit
+│       ├── inference.py          # Applies the frozen scaler, PCA and 10-group model to new images
+│       ├── landmodel.py          # 30-group land model: everyday land labels
+│       ├── regions.py            # Map my image: segmentation of one image into regions
+│       ├── reading.py            # Names regions of unfamiliar images from colour and texture
+│       ├── sorting.py            # Sort my photos: grouping uploaded images, elbow method
+│       ├── experiments.py        # Asynchronous experiment engine
+│       ├── store.py              # SQLite experiment journal
+│       └── uploads.py            # Safe image upload reading and size limits
 ├── frontend/
 │   ├── src/
-│   │   ├── AreaCheck.tsx         # Check my area (plain-language land report)
-│   │   ├── PlantTrees.tsx        # Where can we plant trees?
-│   │   ├── CrisisRadar.tsx       # Crisis Radar shell (scan one image / compare)
-│   │   ├── radar/                # Single-image scan and before/after views
-│   │   ├── Analyzer.tsx          # Single-patch unsupervised land-cover analyzer
+│   │   ├── App.tsx               # Navigation and view coordinator
 │   │   ├── Observatory.tsx       # Mission workspace & 27k dataset summary
-│   │   ├── App.tsx               # Root application view coordinator
-│   │   ├── main.tsx              # React DOM mounting
-│   │   └── types.ts              # TypeScript interfaces matching backend models
-│   ├── package.json              # Frontend package configuration
+│   │   ├── MapImage.tsx          # Map my image page
+│   │   ├── SortPhotos.tsx        # Sort my photos page
+│   │   ├── Analyzer.tsx          # Patch analyzer
+│   │   ├── Clusters.tsx          # Cluster atlas
+│   │   ├── Diagnostics.tsx       # Model lab: PCA scree, t-SNE, audit
+│   │   ├── Projections.tsx, Experiments.tsx, Evidence.tsx, Charts.tsx, ClassDistribution.tsx, UI.tsx
+│   │   ├── scenes/               # Shared upload zone, land-type icons and styles
+│   │   ├── map/, sort/           # Styles for Map my image and Sort my photos
+│   │   ├── api.ts                # Typed fetch helpers
+│   │   └── types.ts              # TypeScript interfaces matching the backend JSON
+│   ├── package.json              # Frontend dependencies (React 19, Vite 7, TypeScript 5.9)
 │   └── vite.config.ts            # Vite bundler & API proxy configuration
 ├── scripts/
-│   ├── setup.sh                  # One-click automated environment setup (Linux/macOS)
-│   ├── setup.bat                 # One-click automated environment setup (Windows)
-│   ├── start.sh                  # Application launch script (Linux/macOS)
-│   ├── start.bat                 # Application launch script (Windows)
-│   ├── prepare_study.py          # Dataset downloader & study reproduction script
+│   ├── setup.sh / setup.bat      # One-command setup (macOS, Linux, WSL / Windows)
+│   ├── start.sh / start.bat      # Start the application
+│   ├── prepare_study.py          # Dataset downloader & study reproduction
+│   ├── build_land_model.py       # Fits and audits the 30-group land model
+│   ├── benchmark_regions.py      # Measures Map my image on scenes with a known layout
 │   ├── test_browser_workflow.mjs # Chrome DevTools Protocol end-to-end browser test
-│   ├── build_deliverables.py     # 28-page academic report PDF generator
-│   ├── build_study_guide_pdf.py  # 14-page master viva study guide PDF generator
-│   ├── build_presentation.mjs    # 16-slide PPTX & PDF presentation builder
-│   ├── capture_screenshots.mjs   # Chrome DevTools Protocol screenshot automation
-│   ├── generate_readme_diagrams.py # SVG diagram generator for documentation
-│   └── package_submission.py     # Final packaging script for university submission
-├── artifacts/                    # Precomputed study.json, audit.json & presets
+│   ├── capture_screenshots.mjs   # Screenshot automation
+│   ├── build_deliverables.py, build_study_guide_pdf.py, build_presentation.mjs,
+│   │   update_presentation_applied.py, export_pdf.py, package_submission.py   # Academic deliverables
+│   └── generate_readme_diagrams.py # SVG diagram generator for documentation
+├── artifacts/                    # Committed results: models, study.json, audit.json, 30-group land model,
+│                                 #   land-model-audit.json, regions-benchmark.json, patch thumbnails
+├── examples/
+│   ├── sort-my-photos/           # 30 held-out satellite images + answer key to try Sort my photos
+│   └── demo-patch-01.jpg, demo-patch-02.jpg   # Sample patches for the Patch analyzer
 ├── docs/
-│   ├── diagrams/                 # Scalable vector graphics (SVGs) for pipeline & features
-│   ├── screenshots/              # High-resolution application screenshots
-│   ├── CODEBASE_GUIDE.md         # Comprehensive line-by-line codebase walkthrough
-│   ├── METHODOLOGY.md            # Detailed scientific & mathematical methodology
-│   └── VERIFICATION.md           # Verification logs & release audit documentation
-├── tests/                        # 29 PyTest automated unit & scientific tests
-├── Dockerfile                    # Container definition for production deployment
-├── render.yaml                   # Infrastructure-as-code for free Render cloud hosting
-├── requirements-dev.lock.txt     # Exact pinned Python dependencies
-├── team.json                     # Verified team identities, registration numbers & roles
-└── links.json                    # Verified GitHub & deployment URLs
+│   ├── API_CONTRACT.md           # Endpoint request/response contract
+│   ├── ARCHITECTURE.md, CODEBASE_GUIDE.md, VERIFICATION.md, DELIVERABLES.md
+│   ├── LEARNING_GUIDE.md, VIVA_40.md, TEAM_REHEARSAL.md, COMPREHENSIVE_STUDY_MATERIAL.md, DEMO_WALKTHROUGH.md
+│   ├── diagrams/                 # SVG diagrams for pipeline & features
+│   ├── screenshots/              # Application screenshots
+│   └── plans/, specs/            # Design notes written during the build
+├── tests/                        # 52 pytest tests: test_science (study invariants),
+│                                 #   test_api, test_land_tools (land model, Map my image, Sort my photos), test_offline
+├── Dockerfile                    # Production container (also used for Render)
+├── render.yaml                   # Render cloud deployment definition
+├── requirements.txt / requirements.lock.txt           # Runtime dependencies (loose / exact)
+├── requirements-dev.txt / requirements-dev.lock.txt   # + tests and document tools (exact pins used by setup)
+├── tokens.css                    # Shared design tokens
+└── pytest.ini                    # Test configuration
 ```
+
+> Not in the repository on purpose: `.venv/` (your Python environment), `node_modules/` and `frontend/dist/` (created by setup), `.data/` (the downloaded EuroSAT archive, only for rebuilding the study), and `runtime/` (experiment journal).
 
 ---
 
@@ -636,7 +700,7 @@ terralens/
   Pedregosa et al. (2011). *Scikit-learn: Machine Learning in Python*. JMLR 12, pp. 2825-2830.
 
 ### AI Assistance Disclosure
-This project was designed, implemented, and audited with the technical assistance of AI coding assistants (Google Antigravity / Codex and Claude Code) for code drafting, SVG diagram generation, and documentation formatting. At runtime, the Crisis Radar single-image scan uses Google's Gemini vision API for hazard assessment; all clustering, land-cover mapping and change detection are performed by the project's own unsupervised pipeline. In accordance with university academic policies, all mathematical formulations, software implementations, and scientific findings have been verified, validated, and presented by the team members.
+This project was designed, implemented, and audited with the technical assistance of AI coding assistants (Google Antigravity / Codex and Claude Code) for code drafting, SVG diagram generation, and documentation formatting. The application itself makes no calls to any outside service or API: every result it shows (clustering, projections, patch analysis, region mapping and photo sorting) is computed by the project's own unsupervised machine-learning pipeline, with no API key, outside service or pretrained model involved. In accordance with university academic policies, all mathematical formulations, software implementations, and scientific findings have been verified, validated, and presented by the team members.
 
 ---
 
