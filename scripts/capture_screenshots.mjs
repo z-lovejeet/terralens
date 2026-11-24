@@ -1,134 +1,107 @@
 #!/usr/bin/env node
-/** Capture high-resolution screenshots from the live TerraLens application via Chrome CDP.
- * Updates:
- * - docs/screenshots/observatory.jpg (10 groups + 27k distribution ribbon)
- * - docs/screenshots/projection-lab.jpg (Dual linked PCA/t-SNE + enlarged Scree plot with HUD)
- * - docs/screenshots/experiment-bench.jpg (Interactive parameter exploration)
- * - docs/screenshots/reference-audit.jpg (10-group contingency matrix & audit metrics)
+/** Capture high-resolution screenshots of the running TerraLens application with headless Chrome (CDP).
+ *
+ * Start the app first (./scripts/start.sh), then:
+ *   node scripts/capture_screenshots.mjs [http://127.0.0.1:8000]
+ *
+ * Writes to docs/screenshots/:
+ *   observatory.jpg   - the 27,000-patch overview
+ *   map-my-image.jpg  - examples/map-my-image/demo-scene.jpg mapped into named regions
+ *   sort-my-photos.jpg- the 30 photos in examples/sort-my-photos sorted into groups
+ *   cluster-atlas.jpg - the 10 discovered groups
+ *   model-lab.jpg     - PCA scree, t-SNE and the audit
+ *
+ * Needs Google Chrome at its default macOS path (set CHROME to another binary path elsewhere).
  */
 import fs from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-const SCREENSHOTS_DIR = path.join(ROOT, "docs", "screenshots");
-
+const SHOTS = path.join(ROOT, "docs", "screenshots");
+const BASE = process.argv[2] || "http://127.0.0.1:8000";
+const CHROME = process.env.CHROME || "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+const PORT = 9225;
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 async function main() {
-  console.log("Launching headless Chrome for screenshot capture...");
-  const chrome = spawn("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", [
-    "--headless=new",
-    "--remote-debugging-port=9225",
-    "--window-size=1440,1050",
-    "--disable-gpu",
-    "--no-sandbox",
-    "--hide-scrollbars",
-  ]);
-
+  const profile = await fs.mkdtemp(path.join(os.tmpdir(), "terralens-shots-"));
+  const chrome = spawn(CHROME, [
+    "--headless=new", `--remote-debugging-port=${PORT}`, `--user-data-dir=${profile}`,
+    "--window-size=1440,1050", "--disable-gpu", "--no-sandbox", "--hide-scrollbars", "--force-device-scale-factor=1",
+  ], { stdio: "ignore" });
   try {
     let version = null;
-    for (let i = 0; i < 20; i++) {
-      try {
-        const res = await fetch("http://127.0.0.1:9225/json/version");
-        version = await res.json();
-        break;
-      } catch {
-        await sleep(250);
-      }
+    for (let i = 0; i < 40 && !version; i++) {
+      try { version = await (await fetch(`http://127.0.0.1:${PORT}/json/version`)).json(); } catch { await sleep(250); }
     }
-    if (!version) throw new Error("Could not connect to Chrome debugging port 9225.");
-    console.log("Connected to Chrome:", version.Browser);
-
-    const targetRes = await fetch("http://127.0.0.1:9225/json/new?http://127.0.0.1:5173/", { method: "PUT" });
-    const target = await targetRes.json();
+    if (!version) throw new Error(`Could not connect to Chrome on port ${PORT}.`);
+    const target = await (await fetch(`http://127.0.0.1:${PORT}/json/new?${BASE}/`, { method: "PUT" })).json();
     const ws = new WebSocket(target.webSocketDebuggerUrl);
+    await new Promise(resolve => (ws.onopen = resolve));
+    let id = 0;
+    const send = (method, params = {}) => new Promise((resolve, reject) => {
+      const current = ++id;
+      const handler = event => {
+        const message = JSON.parse(event.data);
+        if (message.id !== current) return;
+        ws.removeEventListener("message", handler);
+        message.error ? reject(new Error(message.error.message)) : resolve(message.result);
+      };
+      ws.addEventListener("message", handler);
+      ws.send(JSON.stringify({ id: current, method, params }));
+    });
+    const evaluate = async expression => (await send("Runtime.evaluate", { expression, returnByValue: true, awaitPromise: true }))?.result?.value;
+    const waitFor = async (expression, tries = 80) => { for (let i = 0; i < tries; i++) { if (await evaluate(expression)) return true; await sleep(250); } return false; };
+    const capture = async filename => {
+      const { data } = await send("Page.captureScreenshot", { format: "jpeg", quality: 92, captureBeyondViewport: false });
+      await fs.writeFile(path.join(SHOTS, filename), Buffer.from(data, "base64"));
+      console.log(`saved docs/screenshots/${filename}`);
+    };
+    const uploadTo = async (selector, files) => {
+      const { root } = await send("DOM.getDocument", { depth: 0 });
+      const { nodeId } = await send("DOM.querySelector", { nodeId: root.nodeId, selector });
+      if (!nodeId) throw new Error(`No element matches ${selector}`);
+      await send("DOM.setFileInputFiles", { nodeId, files });
+    };
+    const scrollTo = selector => evaluate(`document.querySelector(${JSON.stringify(selector)})?.scrollIntoView({block:'start'}), 0`);
 
-    await new Promise(r => (ws.onopen = r));
+    await send("Page.enable"); await send("Runtime.enable"); await send("DOM.enable");
+    await send("Emulation.setDeviceMetricsOverride", { width: 1440, height: 1050, deviceScaleFactor: 1, mobile: false });
+    if (!await waitFor("!document.querySelector('.view-skeleton') && !document.querySelector('.connection-state') && !!document.querySelector('.app-shell')")) throw new Error("The app did not load. Is it running at " + BASE + "?");
+    await sleep(1500);
 
-    let msgId = 0;
-    function send(method, params = {}) {
-      return new Promise((resolve, reject) => {
-        const cur = ++msgId;
-        const handler = e => {
-          const msg = JSON.parse(e.data);
-          if (msg.id === cur) {
-            ws.removeEventListener("message", handler);
-            if (msg.error) reject(new Error(msg.error.message));
-            else resolve(msg.result);
-          }
-        };
-        ws.addEventListener("message", handler);
-        ws.send(JSON.stringify({ id: cur, method, params }));
-      });
-    }
-
-    await send("Page.enable");
-    await send("Runtime.enable");
-
-    async function evaluate(expression) {
-      const res = await send("Runtime.evaluate", { expression, returnByValue: true });
-      return res?.result?.value;
-    }
-
-    async function capture(filename) {
-      const { data } = await send("Page.captureScreenshot", {
-        format: "jpeg",
-        quality: 92,
-        captureBeyondViewport: false,
-      });
-      const buffer = Buffer.from(data, "base64");
-      const outPath = path.join(SCREENSHOTS_DIR, filename);
-      await fs.writeFile(outPath, buffer);
-      console.log(`✓ Successfully saved: docs/screenshots/${filename} (${buffer.length} bytes)`);
-    }
-
-    // Wait for the React app to initialize and fetch study data
-    console.log("Waiting for application to load...");
-    for (let i = 0; i < 40; i++) {
-      const loaded = await evaluate("!document.querySelector('.view-skeleton') && !document.querySelector('.connection-state') && !!document.querySelector('.app-shell')");
-      if (loaded) break;
-      await sleep(300);
-    }
-    await sleep(2000);
-
-    // 1. OBSERVATORY
-    console.log("Capturing 1/4: Observatory (10 groups + 27,000-patch ribbon)...");
-    await evaluate("window.location.hash = 'observatory'");
-    await sleep(2500);
+    await evaluate("window.location.hash = 'observatory'"); await sleep(2500);
     await capture("observatory.jpg");
 
-    // 2. PROJECTION LAB
-    console.log("Capturing 2/4: Projection Lab (PCA vs t-SNE & enlarged Scree HUD)...");
-    await evaluate("window.location.hash = 'projections'");
-    await sleep(2500);
-    await capture("projection-lab.jpg");
+    await evaluate("window.location.hash = 'regions'"); await sleep(1500);
+    await uploadTo("input[type=file]", [path.join(ROOT, "examples", "map-my-image", "demo-scene.jpg")]);
+    if (!await waitFor("!!document.querySelector('.region-frame') && !document.querySelector('.is-updating')")) throw new Error("Map my image gave no result");
+    await sleep(1200); await scrollTo(".map-summary"); await sleep(600);
+    await capture("map-my-image.jpg");
 
-    // 3. EXPERIMENT BENCH
-    console.log("Capturing 3/4: Experiment Bench...");
-    await evaluate("window.location.hash = 'experiments'");
+    await evaluate("window.location.hash = 'sort'"); await sleep(1500);
+    const photos = (await fs.readdir(path.join(ROOT, "examples", "sort-my-photos"))).filter(name => name.endsWith(".jpg")).sort().map(name => path.join(ROOT, "examples", "sort-my-photos", name));
+    await uploadTo("input[aria-label='Choose satellite photos']", photos);
     await sleep(2500);
-    await capture("experiment-bench.jpg");
+    await evaluate("[...document.querySelectorAll('button')].find(b => /sort photos/i.test(b.textContent))?.click(), 0");
+    if (!await waitFor("!!document.querySelector('.sort-summary')", 120)) throw new Error("Sort my photos gave no result");
+    await sleep(2500); await scrollTo(".sort-summary"); await sleep(600);
+    await capture("sort-my-photos.jpg");
 
-    // 4. REFERENCE AUDIT
-    console.log("Capturing 4/4: Reference Audit (Revealing EuroSAT sealed audit table)...");
-    await evaluate("window.location.hash = 'evidence'");
-    await sleep(1000);
-    await evaluate("document.querySelector('#tab-audit')?.click()");
-    await sleep(1000);
-    await evaluate("document.querySelector('.audit-gate button')?.click()");
-    await sleep(2500);
-    await capture("reference-audit.jpg");
+    await evaluate("window.location.hash = 'clusters'"); await sleep(2500);
+    await capture("cluster-atlas.jpg");
+
+    await evaluate("window.location.hash = 'diagnostics'"); await sleep(3000);
+    await capture("model-lab.jpg");
 
     ws.close();
-    console.log("All 4 application screenshots have been updated with current 10-group UI!");
   } finally {
     chrome.kill();
+    await fs.rm(profile, { recursive: true, force: true }).catch(() => {});
   }
 }
 
-main().catch(err => {
-  console.error("Screenshot capture failed:", err);
-  process.exit(1);
-});
+main().catch(error => { console.error("Screenshot capture failed:", error.message); process.exit(1); });
