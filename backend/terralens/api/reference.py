@@ -7,7 +7,6 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse, JSONResponse, Response
 
 from terralens import __version__
-from terralens import vision
 from terralens.api.resources import SAFE_ID, Resources
 from terralens.settings import (
     COMPARISON_AUDIT_FILENAME,
@@ -36,7 +35,6 @@ def capabilities(resources: Resources):
         "storage": "Reference results are permanent. Live experiment history is temporary on free hosting. Export important results.",
         "reference_run_id": analysis_runs[0] if analysis_runs else None,
         "analysis_runs": analysis_runs,
-        "crisis_scan": vision.is_configured(),
     }
 
 
