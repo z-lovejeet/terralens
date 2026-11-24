@@ -71,7 +71,7 @@ Earth-observation satellites such as the European Space Agency's **Copernicus Se
 * **Input:** 27,000 raw $64 \times 64 \times 3$ RGB satellite image patches across Europe from the open EuroSAT benchmark.
 * **Challenge:** Group these satellite patches into natural, physically coherent land-cover types **without showing the models a single ground-truth class label or folder name during training**.
 * **Methodology:** We engineered **78 rotation-invariant, domain-specific visual descriptors** (colour moments, GLCM textures, local binary patterns, and Sobel gradient metrics), partitioned the dataset under an **80/20 train/holdout protocol** (21,600 study vs 5,400 holdout patches), compressed the space using a **95% Scree Rule PCA model** (reducing 78 dimensions down to 28 principal components), and discovered $K=10$ natural land-cover clusters via **K-Means++**.
-* **Verification:-** Intrinsic geometric validation (**Silhouette = 0.245, Davies-Bouldin = 1.42, Multi-seed Stability ARI = 0.824**), followed by a sealed, double-blind **Post-Hoc Reference Audit** (**ARI = 0.299, NMI = 0.429** against all 10 EuroSAT reference classes).
+* **Verification:-** Intrinsic geometric validation (**Silhouette = 0.175, Davies-Bouldin = 1.645, Multi-seed Stability ARI = 0.9986**), followed by a sealed, double-blind **Post-Hoc Reference Audit** (**ARI = 0.299, NMI = 0.429** against all 10 EuroSAT reference classes).
 
 ```
 Raw Images (27,000 × 12,288 Pixels)
@@ -89,8 +89,8 @@ Standardized Feature Matrix (Zero Data Leakage)
    ▼                                           ▼
 [28-D PCA Space]                       [Dual 2D Manifolds]
 K-Means++ (K=10 Clusters)              • Global Linear PCA (PC1 vs PC2)
-Silhouette: 0.245 · DB: 1.42           • Local Non-Linear t-SNE (Perp: 30)
-Multi-Seed Stability ARI: 0.824        Trustworthiness: 0.771
+Silhouette: 0.175 · DB: 1.645           • Local Non-Linear t-SNE (Perp: 30)
+Multi-Seed Stability ARI: 0.9986        Trustworthiness: 0.968
    │
    ▼  [Sealed Envelope Post-Hoc Audit]
 External EuroSAT Alignment: ARI = 0.299, NMI = 0.429
@@ -116,8 +116,8 @@ Our team divided the work equally (exact 33.3% share each) across all phases of 
 | Member Name | Registration No. | Assigned Role | Key Scientific & Engineering Responsibilities |
 | :--- | :---: | :--- | :--- |
 | **Lovejeet Singh** *(Presenter 1)* | **12521613** | **Machine Learning Architecture & Dimensionality Reduction** | • Data hygiene auditing (0 missing, 0 duplicates, 0 constant features).<br>• Engineered 47 colour descriptors (RGB moments, HSV stats, circular hue histograms).<br>• Implemented study-fitted `StandardScaler` ($z = (x - \mu)/\sigma$).<br>• Fitted 28-PC PCA model (95% Scree rule, 64.1% reduction).<br>• Mapped remote-sensing loadings (PC1 Albedo, PC2 Greenness vs Water).<br>• Generalization validation ($\Delta < 0.75\%$ holdout reconstruction MSE).<br>• Automated numerical test suites (29 tests). |
-| **Mohammad Asim** *(Presenter 2)* | **12518421** | **Manifold Learning & Full-Stack Platform Engineering** | • Engineered 23 texture & 8 edge descriptors (GLCM, LBP, Entropy, Sobel).<br>• Non-linear t-SNE manifold learning & perplexity hyperparameter tuning (10, 30, 50).<br>• 10-neighbor trustworthiness evaluation (0.771).<br>• Asynchronous FastAPI backend server with SQLite experiment journal.<br>• Single-patch live inference engine (`POST /api/analyze`).<br>• Interactive React/TypeScript UI with 27k Class Distribution ribbon & theme-matched controls. |
-| **Reshu Kumar** *(Presenter 3)* | **12508208** | **Unsupervised Clustering, Evaluation & Scientific Audit** | • 80/20 train/holdout protocol (21,600 study vs 5,400 holdout patches).<br>• Cryptographic SHA-256 archive verification.<br>• K-Means++ clustering ($K=10$, 10 random restarts) across 28-PC space.<br>• Triangulated intrinsic validation (Silhouette 0.245, Davies-Bouldin 1.42, Multi-seed ARI 0.824).<br>• Sealed post-selection external contingency matrix audit (ARI 0.299, NMI 0.429).<br>• Study limitations, sensor bias analysis, and ethical deployment guidelines. |
+| **Mohammad Asim** *(Presenter 2)* | **12518421** | **Manifold Learning & Full-Stack Platform Engineering** | • Engineered 23 texture & 8 edge descriptors (GLCM, LBP, Entropy, Sobel).<br>• Non-linear t-SNE manifold learning & perplexity hyperparameter tuning (10, 30, 50).<br>• 10-neighbor trustworthiness evaluation (0.968).<br>• Asynchronous FastAPI backend server with SQLite experiment journal.<br>• Single-patch live inference engine (`POST /api/analyze`).<br>• Interactive React/TypeScript UI with 27k Class Distribution ribbon & theme-matched controls. |
+| **Reshu Kumar** *(Presenter 3)* | **12508208** | **Unsupervised Clustering, Evaluation & Scientific Audit** | • 80/20 train/holdout protocol (21,600 study vs 5,400 holdout patches).<br>• Cryptographic SHA-256 archive verification.<br>• K-Means++ clustering ($K=10$, 10 random restarts) across 28-PC space.<br>• Triangulated intrinsic validation (Silhouette 0.175, Davies-Bouldin 1.645, Multi-seed ARI 0.9986).<br>• Sealed post-selection external contingency matrix audit (ARI 0.299, NMI 0.429).<br>• Study limitations, sensor bias analysis, and ethical deployment guidelines. |
 
 ---
 
@@ -257,7 +257,7 @@ While PCA preserves global variance, non-linear manifold learning via **t-SNE** 
 * Low-dimensional similarities use a heavy-tailed Student-t distribution with 1 degree of freedom:
   $$q_{ij} = \frac{(1 + \|\mathbf{y}_i - \mathbf{y}_j\|^2)^{-1}}{\sum_{k}\sum_{l \neq k}(1 + \|\mathbf{y}_k - \mathbf{y}_l\|^2)^{-1}}$$
 * **Solving the Crowding Problem:** In 28-D space, moderate distances have vast volume. In 2D space, points crowd together. The heavy tails of the Student-t distribution allow moderately distant points to be placed far apart in 2D without inflating the Kullback-Leibler divergence cost function.
-* **Operating Point:** Perplexity $\mathbf{= 30}$, 1,000 iterations, yielding an objective **10-neighbor Trustworthiness of 0.771**.
+* **Operating Point:** Perplexity $\mathbf{= 30}$, 750 iterations, yielding a **10-neighbor Trustworthiness of 0.968** (0.960 to 0.968 across perplexities 10, 30 and 50, against 0.879 for the first two PCA components).
 
 ---
 
@@ -271,15 +271,15 @@ $$\arg\min_{\mathbf{S}} \sum_{k=1}^{K} \sum_{\mathbf{x} \in S_k} \|\mathbf{x} - 
 
 ### 2. Triangulated Intrinsic Validation
 Because unsupervised clustering operates without ground truth, we validated the natural partition using **internal geometric metrics**:
-* **Silhouette Score:** $\mathbf{0.245}$ (Positive global cohesion; indicates well-separated cluster cores with realistic natural transition boundaries).
-* **Davies-Bouldin Index:** $\mathbf{1.42}$ (Low ratio of within-cluster scatter to between-cluster separation; values $< 1.5$ represent compact clusters).
-* **Calinski-Harabasz Score:** $\mathbf{2,518}$ (Strong between-cluster dispersion relative to internal variance).
-* **Multi-Seed Stability (ARI):** $\mathbf{0.824}$ (Clustering repeated with seed 42 vs seed 17 yields 82.4% identical groupings, proving the discovered clusters are natural geometric attractors, not random seed artifacts).
+* **Silhouette Score:** $\mathbf{0.175}$ in the 28-component space and $\mathbf{0.156}$ in the full 78-descriptor space (modest cohesion; groups overlap, as expected for continuous land-cover gradients).
+* **Davies-Bouldin Index:** $\mathbf{1.645}$ (ratio of within-cluster scatter to between-cluster separation, lower is better; this value reflects overlapping groups).
+* **Calinski-Harabasz Score:** $\mathbf{208}$ (computed on a 1,500-patch sample, so it is comparable only between runs on that same sample).
+* **Multi-Seed Stability (ARI):** $\mathbf{0.9986}$ (mean pairwise ARI between K-Means runs with seeds 42, 17 and 91, so the partition is not a random-seed artifact).
 
 ### 3. Sealed Post-Hoc Reference Audit
 Only after all models, scalers, and hyperparameters were completely frozen did we open the quarantined EuroSAT ground-truth labels:
-* **Adjusted Rand Index (ARI):** $\mathbf{0.299}$ on Study Cohort / $\mathbf{0.301}$ on Holdout Cohort.
-* **Normalized Mutual Information (NMI):** $\mathbf{0.429}$ on Study Cohort / $\mathbf{0.435}$ on Holdout Cohort.
+* **Adjusted Rand Index (ARI):** $\mathbf{0.299}$ on Study Cohort / $\mathbf{0.322}$ on Holdout Cohort.
+* **Normalized Mutual Information (NMI):** $\mathbf{0.429}$ on Study Cohort / $\mathbf{0.442}$ on Holdout Cohort.
 
 ```
                       EuroSAT Reference Classes vs Discovered Clusters
