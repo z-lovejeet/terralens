@@ -189,7 +189,7 @@ def build_pipeline_svg():
     <text x="25" y="382" fill="#e2e8f0" font-size="11">• PCA 2D: Global Geometry</text>
     <text x="25" y="402" fill="#e2e8f0" font-size="11">• t-SNE 2D: Local Manifold</text>
     <text x="35" y="418" fill="#94a3b8" font-size="10">Perplexity: 30 · Iter: 1000</text>
-    <text x="35" y="433" fill="#94a3b8" font-size="10">Trustworthiness: 0.771</text>
+    <text x="35" y="433" fill="#94a3b8" font-size="10">Trustworthiness: 0.968</text>
     <text x="25" y="452" fill="#fbbf24" font-size="9.5">Solves Crowding Problem</text>
   </g>
 
@@ -207,10 +207,10 @@ def build_pipeline_svg():
     <text x="25" y="92" fill="#34d399" font-size="12" font-weight="700">K-MEANS++ (K=10)</text>
     <text x="25" y="112" fill="#e2e8f0" font-size="11">Fitted in 28-D PCA Space</text>
     <text x="25" y="132" fill="#94a3b8" font-size="10">Intrinsic Validation:</text>
-    <text x="25" y="150" fill="#f8fafc" font-size="11">Silhouette: <tspan fill="#34d399" font-weight="700">0.245</tspan></text>
-    <text x="25" y="168" fill="#f8fafc" font-size="11">Davies-Bouldin: <tspan fill="#34d399" font-weight="700">1.42</tspan></text>
-    <text x="25" y="186" fill="#f8fafc" font-size="11">Calinski-Harabasz: <tspan fill="#34d399" font-weight="700">2,518</tspan></text>
-    <text x="25" y="204" fill="#fbbf24" font-size="10.5" font-weight="600">Seed ARI: 0.824 (Stable)</text>
+    <text x="25" y="150" fill="#f8fafc" font-size="11">Silhouette: <tspan fill="#34d399" font-weight="700">0.175</tspan></text>
+    <text x="25" y="168" fill="#f8fafc" font-size="11">Davies-Bouldin: <tspan fill="#34d399" font-weight="700">1.645</tspan></text>
+    <text x="25" y="186" fill="#f8fafc" font-size="11">Calinski-Harabasz: <tspan fill="#34d399" font-weight="700">208</tspan></text>
+    <text x="25" y="204" fill="#fbbf24" font-size="10.5" font-weight="600">Seed ARI: 0.9986 (Stable)</text>
 
     <!-- Sealed Post-Hoc Audit -->
     <rect x="15" y="235" width="150" height="150" rx="8" fill="#2e1065" stroke="#9333ea" stroke-width="1.5"/>
@@ -218,9 +218,9 @@ def build_pipeline_svg():
     <text x="25" y="277" fill="#94a3b8" font-size="10">Opened only AFTER</text>
     <text x="25" y="291" fill="#94a3b8" font-size="10">model is frozen:</text>
     <text x="25" y="315" fill="#f8fafc" font-size="11">Adjusted Rand (ARI):</text>
-    <text x="25" y="333" fill="#38bdf8" font-size="13" font-weight="700">0.299 (Study) / 0.301</text>
+    <text x="25" y="333" fill="#38bdf8" font-size="13" font-weight="700">0.299 (Study) / 0.322</text>
     <text x="25" y="353" fill="#f8fafc" font-size="11">Mutual Info (NMI):</text>
-    <text x="25" y="371" fill="#38bdf8" font-size="13" font-weight="700">0.429 (Study) / 0.435</text>
+    <text x="25" y="371" fill="#38bdf8" font-size="13" font-weight="700">0.429 (Study) / 0.442</text>
 
     <!-- Live Inference Box -->
     <rect x="15" y="400" width="150" height="65" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
@@ -520,7 +520,7 @@ def build_quarantine_svg():
     <text x="15" y="47" fill="#f8fafc" font-size="11.5">• StandardScaler(z = (x - μ)/σ)</text>
     <text x="15" y="67" fill="#f8fafc" font-size="11.5">• PCA Model (28 components, 95% variance)</text>
     <text x="15" y="87" fill="#f8fafc" font-size="11.5">• K-Means++ Clustering (K = 10)</text>
-    <text x="15" y="107" fill="#f8fafc" font-size="11.5">• Silhouette (0.245) &amp; Davies-Bouldin (1.42)</text>
+    <text x="15" y="107" fill="#f8fafc" font-size="11.5">• Silhouette (0.175) &amp; Davies-Bouldin (1.645)</text>
     <text x="15" y="132" fill="#6ee7b7" font-size="11" font-weight="700">COMPLETED WITH ZERO LABELS SEEN</text>
   </g>
 
@@ -529,7 +529,7 @@ def build_quarantine_svg():
     <text x="15" y="25" fill="#d8b4fe" font-size="12" font-weight="700">3B. POST-SELECTION SEALED AUDIT</text>
     <text x="15" y="47" fill="#f8fafc" font-size="11.5">Opened strictly AFTER models are frozen:</text>
     <text x="15" y="70" fill="#e2e8f0" font-size="11">• Study Cohort ARI: <tspan fill="#38bdf8" font-weight="700">0.299</tspan> · NMI: <tspan fill="#38bdf8" font-weight="700">0.429</tspan></text>
-    <text x="15" y="90" fill="#e2e8f0" font-size="11">• Holdout Cohort ARI: <tspan fill="#38bdf8" font-weight="700">0.301</tspan> · NMI: <tspan fill="#38bdf8" font-weight="700">0.435</tspan></text>
+    <text x="15" y="90" fill="#e2e8f0" font-size="11">• Holdout Cohort ARI: <tspan fill="#38bdf8" font-weight="700">0.322</tspan> · NMI: <tspan fill="#38bdf8" font-weight="700">0.442</tspan></text>
     <text x="15" y="112" fill="#c084fc" font-size="10.5" font-weight="600">Evaluates natural alignment without leakage.</text>
   </g>
 </svg>'''

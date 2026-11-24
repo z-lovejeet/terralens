@@ -211,13 +211,13 @@ def build_pdf():
             "<b>Mohammad Asim</b><br/>Reg: <b>12518421</b>",
             "<b>Manifold Learning & Full-Stack Platform Engineering</b>",
             "<b>Objective 2:</b><br/>Texture/Edge Features, t-SNE Manifold, FastAPI Async Services & React UI",
-            "Co-led spatial texture/edge feature engineering (23 GLCM/LBP + 8 Sobel); implemented non-linear t-SNE manifold learning (perplexities 10/30/50, seeds 42/17) with trustworthiness evaluation (0.771); built asynchronous FastAPI backend server and live Patch Analyzer inference engine (POST /api/analyze); developed interactive React workbench with 27k Class Distribution ribbon."
+            "Co-led spatial texture/edge feature engineering (23 GLCM/LBP + 8 Sobel); implemented non-linear t-SNE manifold learning (perplexities 10/30/50, seeds 42/17) with trustworthiness evaluation (0.968); built asynchronous FastAPI backend server and live Patch Analyzer inference engine (POST /api/analyze); developed interactive React workbench with 27k Class Distribution ribbon."
         ],
         [
             "<b>Reshu Kumar</b><br/>Reg: <b>12508208</b>",
             "<b>Unsupervised Clustering, Evaluation & Scientific Audit</b>",
             "<b>Objective 2 & 3:</b><br/>80/20 Partition Protocol, K-Means Clustering, Triangulated Intrinsic Validation & Audit",
-            "Co-led 80/20 train/holdout protocol (21,600 study vs 5,400 holdout); designed and executed K-Means clustering (K=10, K-Means++, 10 restarts) in 28-PC space; established triangulated validation framework (Silhouette 0.245, DB 1.42, Stability ARI 0.824); conducted sealed post-selection external contingency matrix audit (ARI 0.299, NMI 0.429); authored report generator and presentation deck."
+            "Co-led 80/20 train/holdout protocol (21,600 study vs 5,400 holdout); designed and executed K-Means clustering (K=10, K-Means++, 10 restarts) in 28-PC space; established triangulated validation framework (Silhouette 0.175, DB 1.645, Stability ARI 0.9986); conducted sealed post-selection external contingency matrix audit (ARI 0.299, NMI 0.429); authored report generator and presentation deck."
         ]
     ]
     story.append(make_table(team_data, [98, 114, 122, 165], padding=2.5))
@@ -230,7 +230,7 @@ def build_pdf():
         "deterministic colour, texture, and edge descriptors down to 28 principal components using the 95% Scree rule. "
         "Under a strict 80/20 train/holdout protocol, the linear PCA subspace achieves 0.04899 study MSE and 0.04936 holdout MSE "
         "(relative delta < 0.75%), proving zero overfitting. K=10 clustering is selected via a triangulated four-pillar validation "
-        "consensus (Silhouette 0.245, Davies-Bouldin 1.42, Multi-seed stability ARI = 0.824). A sealed post-selection audit confirms "
+        "consensus (Silhouette 0.175, Davies-Bouldin 1.645, Multi-seed stability ARI = 0.9986). A sealed post-selection audit confirms "
         "substantial agreement with EuroSAT reference classes (ARI 0.299, NMI 0.429) without label leakage."
     ))
 
@@ -253,7 +253,7 @@ def build_pdf():
         [
             "<b>Objective 2:</b><br/>PCA & t-SNE Projections",
             "<b>Mohammad Asim</b><br/>(Reg: 12518421)<br/>& <b>Lovejeet Singh</b>",
-            "Apply PCA and t-SNE to prepared feature set. Compare retained variance and 2D structure. Derive the 95% Scree threshold (78 → 28 PCs, 64.1% reduction). Evaluate t-SNE neighborhood trustworthiness (0.771). Run K-Means on PCA-reduced features to uncover natural groups."
+            "Apply PCA and t-SNE to prepared feature set. Compare retained variance and 2D structure. Derive the 95% Scree threshold (78 → 28 PCs, 64.1% reduction). Evaluate t-SNE neighborhood trustworthiness (0.968). Run K-Means on PCA-reduced features to uncover natural groups."
         ],
         [
             "<b>Objective 3:</b><br/>Interpretability & Ethics",
@@ -276,9 +276,9 @@ def build_pdf():
         "StandardScaler fitting on the 80% study cohort without label leakage.<br/>"
         "• <b>CO4 (Dimensionality Reduction via PCA & t-SNE):</b> Demonstrated by mathematical derivation of the 95% Scree rule "
         "(78 → 28 PCs, 64.1% pruning), analysis of physical remote-sensing loadings (PC1 Albedo, PC2 Greenness vs Water), and non-linear "
-        "t-SNE manifold learning across perplexities 10, 30, 50 with 10-neighbor trustworthiness evaluation (0.771).<br/>"
+        "t-SNE manifold learning across perplexities 10, 30, 50 with 10-neighbor trustworthiness evaluation (0.968).<br/>"
         "• <b>CO5 (Clustering Analysis & Validation):</b> Demonstrated by K-Means clustering (K=10, K-Means++, 10 restarts) in 28-PC space, "
-        "triangulated intrinsic validation (Common-space Silhouette 0.245, Davies-Bouldin 1.42, Multi-seed stability ARI 0.824), and sealed "
+        "triangulated intrinsic validation (Common-space Silhouette 0.156, Davies-Bouldin 1.645, Multi-seed stability ARI 0.9986), and sealed "
         "post-selection external audit against EuroSAT reference classes (ARI 0.299, NMI 0.429)."
     ))
 
@@ -424,10 +424,10 @@ def build_pdf():
 
     tsne_table = [
         ["Perplexity", "Seed", "Trustworthiness", "Runtime (s)", "Scientific Interpretation & Visual Behaviour"],
-        ["10", "42", "0.763", "8.4s", "Focuses on fine-grained micro-clusters; exaggerates minor local splits."],
-        ["30", "42", "0.771", "12.2s", "<b>Reference view:</b> Optimal balance of local manifold clustering and global structure."],
-        ["50", "42", "0.775", "15.8s", "Wider neighborhood scale; merges adjacent sub-clusters into broad regions."],
-        ["30", "17", "0.770", "12.1s", "Re-run with alternate seed; preserves cluster topologies despite arbitrary rotation."]
+        ["10", "42", "0.960", "2.9s", "Focuses on fine-grained micro-clusters; exaggerates minor local splits."],
+        ["30", "42", "0.968", "3.6s", "<b>Reference view:</b> Optimal balance of local manifold clustering and global structure."],
+        ["50", "42", "0.966", "4.2s", "Wider neighborhood scale; merges adjacent sub-clusters into broad regions."],
+        ["30", "17", "0.967", "3.2s", "Re-run with alternate seed; preserves cluster topologies despite arbitrary rotation."]
     ]
     story.append(make_table(tsne_table, [60, 40, 85, 65, 249], padding=2.5))
     story.append(Spacer(1, 8))
@@ -446,10 +446,10 @@ def build_pdf():
 
     story.append(callout_box(
         "The Triangulated 4-Pillar Validation Framework (Why K = 10 Was Selected)",
-        "1. <b>Common-Space Silhouette (0.245):</b> Evaluated in standardized 78-feature space so all representations are compared on equal footing.<br/>"
-        "2. <b>Davies-Bouldin Index (1.42):</b> Measures within-cluster scatter relative to centroid separation (lower is better).<br/>"
-        "3. <b>Inertia Elbow Analysis:</b> Inertia drops steeply from K=2 to K=8, exhibiting a natural elbow bend between K=8 and K=10.<br/>"
-        "4. <b>Multi-Seed Stability (ARI = 0.824):</b> Re-running K-Means across 5 random seeds yields an Adjusted Rand Index of 0.824, "
+        "1. <b>Common-Space Silhouette (0.156):</b> Evaluated in standardized 78-feature space so all representations are compared on equal footing.<br/>"
+        "2. <b>Davies-Bouldin Index (1.645):</b> Measures within-cluster scatter relative to centroid separation (lower is better).<br/>"
+        "3. <b>Inertia and K:</b> Inertia decreases smoothly with K with no sharp elbow; the silhouette is highest at K=2 and flat for K=5 and above, so K=10 is a modelling choice matching the ten reference categories.<br/>"
+        "4. <b>Multi-Seed Stability (ARI = 0.9986):</b> Re-running K-Means across three random seeds (42, 17, 91) yields an Adjusted Rand Index of 0.9986, "
         "confirming that the 10 groups represent stable physical modes rather than initialization noise."
     ))
     story.append(Spacer(1, 6))
@@ -613,7 +613,7 @@ def build_pdf():
         ("Q25: What does Perplexity control in t-SNE?",
          "It sets the effective number of nearest neighbors (2^Entropy) considered when constructing high-dimensional Gaussian probabilities. We evaluated perplexities 10, 30, and 50."),
         ("Q26: Can you report an 'explained variance' for t-SNE?",
-         "No. t-SNE minimizes KL divergence, not variance. Instead, we report neighborhood trustworthiness (0.771), which measures how well 2D neighborhoods preserve 10-nearest-neighbor topology."),
+         "No. t-SNE minimizes KL divergence, not variance. Instead, we report neighborhood trustworthiness (0.968), which measures how well 2D neighborhoods preserve 10-nearest-neighbor topology."),
         ("Q27: Why can't we cluster directly in t-SNE space?",
          "t-SNE alters Euclidean distance geometry; cluster sizes and gaps are optimization artifacts. Furthermore, t-SNE lacks an out-of-sample projection matrix, preventing live inference on new images."),
 
@@ -627,9 +627,9 @@ def build_pdf():
         ("Q31: What is Silhouette Score?",
          "s(i) = (b(i) - a(i)) / max(a(i), b(i)). It compares a point's mean intra-cluster distance (a(i)) with its nearest neighboring cluster distance (b(i)). It ranges from -1 to +1."),
         ("Q32: What is Davies-Bouldin Index?",
-         "It calculates the ratio of within-cluster scatter to separation between centroid pairs. Lower values indicate tighter, better-separated clusters (1.42 in our model)."),
+         "It calculates the ratio of within-cluster scatter to separation between centroid pairs. Lower values indicate tighter, better-separated clusters (1.645 in our model, which reflects overlapping groups)."),
         ("Q33: What is Multi-Seed Stability and how did you measure it?",
-         "We re-ran K-Means across 5 random seeds and computed pairwise Adjusted Rand Index (ARI). An average ARI of 0.824 proves the clusters are consistent physical modes, not random initialization artifacts."),
+         "We re-ran K-Means across three random seeds (42, 17, 91) and computed pairwise Adjusted Rand Index (ARI). An average ARI of 0.9986 proves the clusters are consistent physical modes, not random initialization artifacts."),
 
         # Cat 7: Generalization (Q34 - Q36)
         ("Q34: Why have an 80/20 split in unsupervised learning?",
@@ -661,9 +661,9 @@ def build_pdf():
         ("Q44: (For Lovejeet Singh, 12521613): What was your exact contribution?",
          "I was responsible for Machine Learning Architecture & Dimensionality Reduction (33.3% equal share). I co-led data preparation across the 27,000 patches, engineered the 47 colour descriptors, conducted the data hygiene audit, implemented the study-fitted StandardScaler, fitted the 28-component PCA model (95% Scree rule), mapped physical remote-sensing loadings (PC1 Albedo, PC2 Greenness vs Water), mathematically verified out-of-sample generalization (<0.75% reconstruction MSE delta), and co-developed the 29-test automated pytest suite."),
         ("Q45: (For Mohammad Asim, 12518421): What was your exact contribution?",
-         "I was responsible for Manifold Learning & Full-Stack Platform Engineering (33.3% equal share). I co-led spatial texture and edge feature engineering (23 GLCM/LBP descriptors and 8 Sobel gradient features), implemented the non-linear t-SNE manifold learning pipeline across perplexities 10/30/50 and seeds 42/17 with 10-neighbor trustworthiness evaluation (0.771), built the asynchronous FastAPI backend server and live single-patch inference engine (POST /api/analyze), and developed the interactive React/TypeScript research workbench including the 27,000-patch Class Distribution ribbon (80/20 toggle) and theme-matched CustomSelect controls."),
+         "I was responsible for Manifold Learning & Full-Stack Platform Engineering (33.3% equal share). I co-led spatial texture and edge feature engineering (23 GLCM/LBP descriptors and 8 Sobel gradient features), implemented the non-linear t-SNE manifold learning pipeline across perplexities 10/30/50 and seeds 42/17 with 10-neighbor trustworthiness evaluation (0.968), built the asynchronous FastAPI backend server and live single-patch inference engine (POST /api/analyze), and developed the interactive React/TypeScript research workbench including the 27,000-patch Class Distribution ribbon (80/20 toggle) and theme-matched CustomSelect controls."),
         ("Q46: (For Reshu Kumar, 12508208): What was your exact contribution?",
-         "I was responsible for Unsupervised Clustering, Evaluation & Scientific Audit (33.3% equal share). I co-led the 80/20 train/holdout partition protocol (21,600 study patches vs 5,400 holdout patches) with cryptographic SHA-256 verification, designed and executed the K-Means clustering pipeline (K=10, K-Means++, 10 restarts) in 28-PC space, established the triangulated multi-metric validation framework (Common-space Silhouette 0.245, DB Index 1.42, Multi-seed stability ARI 0.824), conducted the sealed post-selection external contingency matrix audit against the 10 EuroSAT classes (ARI 0.299, NMI 0.429), and authored the academic report generator, presentation deck, and ethical deployment guidelines."),
+         "I was responsible for Unsupervised Clustering, Evaluation & Scientific Audit (33.3% equal share). I co-led the 80/20 train/holdout partition protocol (21,600 study patches vs 5,400 holdout patches) with cryptographic SHA-256 verification, designed and executed the K-Means clustering pipeline (K=10, K-Means++, 10 restarts) in 28-PC space, established the triangulated multi-metric validation framework (Common-space Silhouette 0.156, DB Index 1.645, Multi-seed stability ARI 0.9986), conducted the sealed post-selection external contingency matrix audit against the 10 EuroSAT classes (ARI 0.299, NMI 0.429), and authored the academic report generator, presentation deck, and ethical deployment guidelines."),
         ("Q47: How was AI used in this project?",
          "AI (Codex/Antigravity) assisted in drafting boilerplate scripts, ReportLab styling, and initial documentation. All mathematical formulas, scientific decisions, code implementations, and experimental verifications were reviewed, understood, and validated by our team."),
         ("Q48: What are the primary scientific limitations of this study?",
@@ -741,10 +741,10 @@ def build_pdf():
         ["Feature Space", "<b>78 Deterministic Descriptors</b>", "47 colour moments/bins + 23 texture properties (GLCM/LBP) + 8 edge statistics."],
         ["Dimensionality Reduction", "<b>28 Principal Components</b>", "95.006% cumulative variance retained via Scree rule; 50 dimensions pruned (64.1%)."],
         ["Linear Reconstruction MSE", "Train: <b>0.04899</b> | Holdout: <b>0.04936</b>", "Relative generalization delta = <b>0.749% (< 0.75%)</b>, proving zero overfitting."],
-        ["t-SNE Manifold Learning", "Trustworthiness = <b>0.771</b>", "Evaluated at reference perplexity 30 (12.2s runtime; 10-nearest neighbor fidelity)."],
-        ["K-Means Clustering", "<b>K = 10 Groups</b> (K-Means++, 10 restarts)", "Silhouette = <b>0.245</b>, Davies-Bouldin = <b>1.42</b>, Multi-seed Stability ARI = <b>0.824</b>."],
+        ["t-SNE Manifold Learning", "Trustworthiness = <b>0.968</b>", "Evaluated at reference perplexity 30 (3.6s runtime; 10-nearest neighbor fidelity)."],
+        ["K-Means Clustering", "<b>K = 10 Groups</b> (K-Means++, 10 restarts)", "Silhouette = <b>0.175</b>, Davies-Bouldin = <b>1.645</b>, Multi-seed Stability ARI = <b>0.9986</b>."],
         ["External Audit (Sealed)", "ARI = <b>0.299</b> | NMI = <b>0.429</b>", "Substantial agreement against 10 EuroSAT classes without label feedback."],
-        ["Codebase Quality", "<b>29 / 29 Pytest Tests Passing (100%)</b>", "Automated verification of feature shapes, PCA math, K-Means bounds, and API contracts."]
+        ["Codebase Quality", "<b>52 / 52 Pytest Tests Passing (100%)</b>", "Automated verification of feature shapes, PCA math, K-Means bounds, and API contracts."]
     ]
     story.append(make_table(facts_data, [115, 145, 239], padding=2.0))
     story.append(Spacer(1, 6))
