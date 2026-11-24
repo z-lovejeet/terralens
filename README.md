@@ -30,6 +30,8 @@ git clone https://github.com/z-lovejeet/terralens.git && cd terralens
 ```
 Open <http://127.0.0.1:8000>. Everything runs on your own computer: **no API keys, accounts or internet connection are needed** after the packages are installed. Step-by-step instructions for macOS, Linux and Windows are in [Installation & Setup Instructions](#installation--setup-instructions).
 
+**For evaluators:** a short step-by-step test guide (install, run, example files, expected results, automated tests) is in [TESTING_AND_INSTALLATION.md](TESTING_AND_INSTALLATION.md).
+
 **What you can do with it**
 
 | Page | What it does for you |
