@@ -404,95 +404,247 @@ The TerraLens frontend is a high-performance, single-page application built with
 
 ## Prerequisites & System Requirements
 
-| Requirement | Minimum Specification | Recommended Specification |
+| Requirement | Minimum | Recommended |
 | :--- | :--- | :--- |
-| **Operating System** | macOS 12+, Ubuntu 22.04 LTS, or Windows 11 (WSL2 / PowerShell) | macOS 14+ (Apple Silicon) or Linux x86_64 |
-| **Python** | Python `3.12.x` (or `uv` package manager) | Python `3.12.8` managed via `uv` |
-| **Node.js** | Node.js `20.x` LTS | Node.js `24.x` LTS with npm `10.x` |
-| **RAM** | 4 GB | 8 GB or higher |
-| **Disk Space** | 1.5 GB (Codebase, virtualenv, and build artifacts) | 3.5 GB (If re-downloading full EuroSAT archive) |
-| **Network** | Offline after dependencies are installed (Bundled reference study) | Internet required only for initial `pip`/`npm` install |
+| **Operating system** | macOS 12+, Ubuntu 22.04+ / Debian 12+, or Windows 10/11 | macOS 14+ (Apple Silicon or Intel), Ubuntu 24.04, or Windows 11 |
+| **Git** | any recent version | 2.40+ |
+| **Python** | `3.12.x` (the dependency lock file was built for 3.12) | `3.12.x`, installed for you by `uv` |
+| **Node.js** | `20.19+` (needed by Vite 7) | `24.x` LTS with npm `10+` |
+| **RAM** | 4 GB | 8 GB or more |
+| **Disk space** | 1.5 GB (code, virtual environment, `node_modules`, build) | 4 GB if you also re-download the full EuroSAT archive |
+| **Network** | needed once, to install packages | not needed afterwards: the app makes no outside calls and needs **no API key** |
+
+The repository already contains everything the app needs to run: the fitted models, the 27,000-patch study results and the patch thumbnails (`artifacts/`, about 17 MB). You do **not** have to download the EuroSAT dataset to use the app or run the tests; that is only needed to rebuild the study from scratch (see [Execution & Reproduction Guide](#execution--reproduction-guide)).
 
 ---
 
 ## Installation & Setup Instructions
 
-### Option A: One-Click Automated Setup (Recommended)
-
-Clone the repository and run the automated bootstrap scripts:
-
-#### macOS / Linux / WSL:
-```bash
-# 1. Clone the repository
-git clone https://github.com/z-lovejeet/terralens.git
-cd terralens
-
-# 2. Run the automated setup script
-./scripts/setup.sh
-
-# 3. Start the application
-./scripts/start.sh
-```
-
-#### Windows (Command Prompt / PowerShell):
-```cmd
-# 1. Clone the repository
-git clone https://github.com/z-lovejeet/terralens.git
-cd terralens
-
-# 2. Run the automated setup script
-scripts\setup.bat
-
-# 3. Start the application
-scripts\start.bat
-```
-* **Frontend & API:** Open your browser to <http://127.0.0.1:8000>
-* **Interactive Swagger API Docs:** <http://127.0.0.1:8000/docs>
+Installing takes about 10 minutes the first time. In short: install three tools (Step 1), download the code (Step 2), run one setup script (Step 3) and one start script (Step 4). The two-line version is in the [Quick Start](#quick-start) at the top; the steps below explain each part and what to do if something goes wrong.
 
 ---
 
-### Option B: Step-by-Step Manual Setup
+### Step 1: Install the tools (once per computer)
 
-If you prefer full control over your virtual environment and builds:
+You need three tools: **Git** (to download the code), **uv** (a fast Python installer that also fetches Python 3.12 for you, so you do not install Python by hand) and **Node.js** (to build the web interface).
 
-#### 1. Setup Python Environment
+<details open>
+<summary><b>macOS</b></summary>
+
+1. Open **Terminal** (press `Cmd + Space`, type *Terminal*, press Enter).
+2. Install [Homebrew](https://brew.sh) if you do not have it (skip this if `brew --version` works): follow the one-line command on the Homebrew website.
+3. Install the tools:
+   ```bash
+   brew install git node uv
+   ```
+</details>
+
+<details>
+<summary><b>Ubuntu / Debian Linux (and WSL)</b></summary>
+
 ```bash
-# Create a Python 3.12 virtual environment using uv or python venv
-uv venv --python 3.12 .venv
-# Or: python3.12 -m venv .venv
+# Git and curl
+sudo apt update && sudo apt install -y git curl
 
-# Activate the virtual environment
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+# uv (installs into ~/.local/bin)
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# Install locked dependencies
-uv pip install -r requirements-dev.lock.txt
-# Or: pip install -r requirements-dev.lock.txt
+# Node.js through nvm (no sudo needed)
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+```
+Close and reopen the terminal, then run `nvm install 24`.
+</details>
+
+<details>
+<summary><b>Windows 10 / 11</b></summary>
+
+Open **PowerShell** (press the Windows key, type *PowerShell*, press Enter) and run:
+
+```powershell
+winget install --id Git.Git -e
+winget install --id astral-sh.uv -e
+winget install --id OpenJS.NodeJS.LTS -e
+```
+**Close and reopen PowerShell** afterwards so the new commands are found. You can also use Windows Subsystem for Linux (WSL) and follow the Ubuntu steps instead.
+</details>
+
+Check that everything is installed (each command should print a version number):
+
+```bash
+git --version
+uv --version
+node --version     # must be 20.19 or newer
+npm --version
 ```
 
-#### 2. Build the Frontend
+> **Already have Python 3.12?** That works too: if `uv` is not installed, the setup script falls back to `python3.12 -m venv` (Windows: the `py` launcher or `python`). The pinned packages are only tested on Python 3.12, so use that version.
+
+---
+
+### Step 2: Download the project
+
 ```bash
-# Install frontend dependencies
+git clone https://github.com/z-lovejeet/terralens.git
+cd terralens
+```
+
+No Git? On the [repository page](https://github.com/z-lovejeet/terralens) choose **Code → Download ZIP**, unzip it and open a terminal inside the unzipped folder.
+
+---
+
+### Step 3: Run the automatic setup
+
+| System | Command (run inside the project folder) |
+| :--- | :--- |
+| macOS / Linux / WSL | `./scripts/setup.sh` |
+| Windows (PowerShell or Command Prompt) | `.\scripts\setup.bat` |
+
+The script, in order:
+
+1. creates a private Python 3.12 virtual environment in `.venv/` (downloading Python 3.12 if you use `uv`);
+2. installs the exact pinned Python packages from `requirements-dev.lock.txt` (FastAPI, scikit-learn, scikit-image, NumPy, and the test tools);
+3. installs the web interface packages with `npm ci`;
+4. builds the web interface into `frontend/dist/`.
+
+The first run takes about 3 to 8 minutes depending on your internet speed. It finishes with *TerraLens is installed*. Nothing is installed outside the project folder except the tools from Step 1 (and a cached Python 3.12 if `uv` had to download it).
+
+If macOS or Linux says *permission denied*, run `bash scripts/setup.sh` instead.
+
+---
+
+### Step 4: Start TerraLens
+
+| System | Command |
+| :--- | :--- |
+| macOS / Linux / WSL | `./scripts/start.sh` |
+| Windows | `.\scripts\start.bat` |
+
+Open **<http://127.0.0.1:8000>** in your browser. You should see the **Observatory** page with the *EuroSAT RGB · 27,000 observations* card in the left sidebar. Interactive API documentation (Swagger) is at <http://127.0.0.1:8000/docs>.
+
+Stop the server with `Ctrl + C` in the terminal. To use another port, set `PORT` first:
+
+```bash
+PORT=9000 ./scripts/start.sh           # macOS / Linux
+```
+```bat
+set "PORT=9000" && .\scripts\start.bat :: Windows Command Prompt
+```
+```powershell
+$env:PORT = 9000; .\scripts\start.bat  # Windows PowerShell
+```
+
+---
+
+### Step 5: Check that it works
+
+With the server running, in a second terminal:
+
+```bash
+curl http://127.0.0.1:8000/api/health        # Windows PowerShell: curl.exe http://127.0.0.1:8000/api/health
+```
+It should answer with `"status":"ok"`. Then run the automated tests (no server needed):
+
+```bash
+.venv/bin/python -m pytest -q                # Windows: .venv\Scripts\python -m pytest -q
+```
+Expected: `52 passed`. (The tests use the bundled thumbnails, so they run offline and do not need the EuroSAT download.)
+
+---
+
+### Step 6: Try the tools with the bundled example images
+
+| Tool | What to do |
+| :--- | :--- |
+| **Map my image** | Open *Map my image*, drop in any top-down satellite image (a screenshot from a map app works). It is split into regions, each region is named (trees, fields, water, buildings, bare ground) and the share of the image it covers is shown. |
+| **Sort my photos** | Open *Sort my photos*, click *Choose a folder* and pick `examples/sort-my-photos/` (30 satellite images with an answer key). Leave the groups on *Auto*. You should get about 5 groups, 83 % pure. |
+| **Patch analyzer** | Open *Patch analyzer* and upload `examples/demo-patch-01.jpg`, or pick one of the bundled test patches. |
+
+---
+
+### Alternative: set it up by hand
+
+Use this if you want to see or change each step (all commands are run in the project folder).
+
+**macOS / Linux / WSL**
+```bash
+uv venv --python 3.12 .venv                          # or: python3.12 -m venv .venv
+uv pip install --python .venv/bin/python -r requirements-dev.lock.txt
+                                                     # or: .venv/bin/python -m pip install -r requirements-dev.lock.txt
 npm --prefix frontend ci
-
-# Compile production React build into frontend/dist
 npm --prefix frontend run build
-```
-
-#### 3. Start the Production Server
-```bash
 PYTHONPATH=backend .venv/bin/python -m uvicorn terralens.app:app --host 127.0.0.1 --port 8000
 ```
 
-#### 4. (Optional) Run in Live Frontend Development Mode
-To develop with Vite Hot Module Replacement (HMR):
+**Windows (Command Prompt)**
+```bat
+uv venv --python 3.12 .venv
+uv pip install --python .venv\Scripts\python.exe -r requirements-dev.lock.txt
+npm --prefix frontend ci
+npm --prefix frontend run build
+set PYTHONPATH=backend
+.venv\Scripts\python.exe -m uvicorn terralens.app:app --host 127.0.0.1 --port 8000
+```
+
+Only want to *run* the app (not test or build documents)? `requirements.lock.txt` is the smaller list used in production; `requirements-dev.lock.txt` adds pytest and the PDF/chart tools.
+
+### Alternative: run it in Docker
+
+If you have Docker Desktop, you need neither Python nor Node. This is the same `Dockerfile` used for the Render deployment:
+
 ```bash
-# Terminal 1: Start backend API
+docker build -t terralens .
+docker run --rm -p 8000:8000 terralens
+```
+Open <http://localhost:8000>. (Stop it with `Ctrl + C`.)
+
+### Alternative: live development mode
+
+To work on the interface with instant reloading (Vite hot module replacement), run the API and the Vite dev server in two terminals:
+
+```bash
+# Terminal 1: the API
 PYTHONPATH=backend .venv/bin/python -m uvicorn terralens.app:app --host 127.0.0.1 --port 8000
 
-# Terminal 2: Start Vite Dev Server (proxies /api to port 8000)
+# Terminal 2: the interface (proxies /api to port 8000)
 npm --prefix frontend run dev
 ```
-Open <http://localhost:5173>.
+Open <http://localhost:5173>. Type-check the interface with `npm --prefix frontend run typecheck`.
+
+### Configuration (optional)
+
+TerraLens works with no configuration. These environment variables exist for special cases:
+
+| Variable | Default | Meaning |
+| :--- | :--- | :--- |
+| `PORT` | `8000` | Port used by `scripts/start.sh` / `start.bat` (the Docker image also reads it). |
+| `TERRALENS_ARTIFACTS` | `./artifacts` | Folder with the fitted models and study results. |
+| `TERRALENS_RUNTIME` | `./runtime` | Where the experiment journal (SQLite) is written. |
+| `TERRALENS_MAX_SAMPLES` | `1500` | Upper bound (200 to 3000) on patches used by live experiments; lower it on a small machine. |
+| `TERRALENS_ORIGINS` | `http://localhost:5173,http://127.0.0.1:5173` | Allowed browser origins when the interface is served separately. |
+
+There are **no API keys**, accounts or outside services: all processing happens on your own machine.
+
+### Troubleshooting
+
+| Problem | Fix |
+| :--- | :--- |
+| `uv: command not found` / `node: command not found` | Close and reopen the terminal after installing (Step 1). On Linux add `~/.local/bin` to your `PATH`. |
+| `npm ci` complains about the Node version | Install Node 20.19 or newer (`node --version`), then run setup again. |
+| *Run ./scripts/setup.sh first* | The virtual environment is missing. Run the setup script (Step 3) in the project folder. |
+| `permission denied` on `setup.sh` / `start.sh` | Run them with `bash scripts/setup.sh`, or `chmod +x scripts/*.sh`. |
+| PowerShell says scripts are disabled | Use `.\scripts\setup.bat` (a batch file, not affected by the PowerShell script policy). |
+| `Address already in use` / port 8000 busy | Start on another port (`PORT=9000 ./scripts/start.sh`) or stop the other program. |
+| Blank page or *Waiting for the observations* | The interface build is missing or the API is not running. Run `npm --prefix frontend run build`, restart, and reload. |
+| `ModuleNotFoundError: terralens` when running by hand | Set `PYTHONPATH=backend` (the start scripts do this for you), or run from the project folder with `python -m pytest`. |
+| Package install fails on a very new Python | Use Python 3.12: install `uv` and rerun the setup script, which downloads 3.12 automatically. |
+| Slow or out of memory | Close other programs and set `TERRALENS_MAX_SAMPLES=600`. |
+
+### Update or remove
+
+```bash
+git pull && ./scripts/setup.sh        # update to the newest version, then restart
+```
+To remove TerraLens, delete the project folder (the virtual environment and `node_modules` live inside it); nothing else was installed.
 
 ---
 
