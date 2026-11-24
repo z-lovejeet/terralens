@@ -724,7 +724,7 @@ def build_pdf():
         ("Q49: What is the future scope of TerraLens?",
          "1. Integrating Sentinel-2's 13 multispectral bands (SWIR/NIR for true NDVI chlorophyll analysis). 2. Spatial block cross-validation across distinct geographic biomes. 3. Exploring foundation model vision embeddings (e.g., SatMAE/Prithvi) within the same evaluation framework."),
         ("Q50: Where can the live application and source code be verified?",
-         "Source code is publicly available at <b>https://github.com/z-lovejeet/terralens</b>, and the live application is deployed at <b>https://terralens-f0sn.onrender.com</b>.")
+         "Source code is publicly available at <b>https://github.com/z-lovejeet/terralens</b>, and the live application is deployed at <b>https://terralens-slek.onrender.com</b>.")
     ]
     for q_text, a_text in final_qs:
         story.append(KeepTogether([

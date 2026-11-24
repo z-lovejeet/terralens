@@ -567,7 +567,7 @@ Ground-truth EuroSAT labels were sealed during all training and opened strictly 
     *A:* "1. Integrating Sentinel-2's 13 multispectral bands (SWIR/NIR). 2. Spatial cross-validation across distinct geographic biomes. 3. Exploring foundation model vision embeddings (e.g., SatMAE/Prithvi) within the same evaluation framework."
 
 50. **Q: Where can the live application and source code be verified?**  
-    *A:* "Source code is publicly available at `https://github.com/z-lovejeet/terralens`, and the live application is deployed at `https://terralens-f0sn.onrender.com`."
+    *A:* "Source code is publicly available at `https://github.com/z-lovejeet/terralens`, and the live application is deployed at `https://terralens-slek.onrender.com`."
 
 ---
 *Manual compiled for B.Tech Capstone Examination — INT396 Unsupervised Learning.*
