@@ -14,13 +14,12 @@ COMPARISON_AUDIT_FILENAME = "comparison-audit.json"
 
 MAX_UPLOAD = 8 * 1024 * 1024
 MAX_UPLOAD_ENVELOPE = MAX_UPLOAD + 256 * 1024
-# Request-body caps for every image-upload route (Crisis Radar sends two images).
+# Request-body caps for every image-upload route.
 UPLOAD_LIMITS = {
     "/api/analyze": MAX_UPLOAD_ENVELOPE,
-    "/api/area-check": MAX_UPLOAD_ENVELOPE,
-    "/api/crisis-scan": MAX_UPLOAD_ENVELOPE,
-    "/api/plant-check": MAX_UPLOAD_ENVELOPE,
-    "/api/change-check": 2 * MAX_UPLOAD + 256 * 1024,
+    "/api/map-regions": MAX_UPLOAD_ENVELOPE,
+    # Sort my photos: the browser shrinks each photo before upload, so a full batch stays small.
+    "/api/sort-photos": 24 * 1024 * 1024,
 }
 MAX_SAMPLES = max(200, min(3000, int(os.getenv("TERRALENS_MAX_SAMPLES", "1500"))))
 MAX_LIVE_TSNE_SAMPLES = 500
