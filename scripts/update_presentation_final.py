@@ -274,7 +274,7 @@ set_title(s, "Individual contributions and completed work", size=32)
 table(s, 64, 115, 1152, 350, [
     ["Member / Registration", "Assigned role & objective", "Key completed deliverables"],
     ["Lovejeet Singh\n12521613\n(Presenter 1)", "ML Architecture & PCA\n[Objectives 1 & 2 · CO2, CO4]", "• Engineered 47 colour descriptors (RGB/HSV moments & circular hue bins)\n• Fitted the 28-PC PCA model (95% variance), <0.75% generalization delta, numerical test suites"],
-    ["Mohammad Asim\n12518421\n(Presenter 2)", "Manifold Learning & Full-Stack\n[Objective 2 · CO4]", "• Engineered 23 texture & 8 edge descriptors; implemented t-SNE (0.771)\n• Built the FastAPI/React platform, Map my image and Sort my photos"],
+    ["Mohammad Asim\n12518421\n(Presenter 2)", "Manifold Learning & Full-Stack\n[Objective 2 · CO4]", "• Engineered 23 texture & 8 edge descriptors; implemented t-SNE (0.968)\n• Built the FastAPI/React platform, Map my image and Sort my photos"],
     ["Reshu Kumar\n12508208\n(Presenter 3)", "Clustering, Validation & Audit\n[Objectives 2 & 3 · CO4, CO5]", "• Implemented the 80/20 protocol and K-Means++ (K=10); post-hoc reference audit\n• Built the 30-group land model, the elbow rule and the region benchmark"],
 ], [250, 300, 602], font_size=15)
 footnote(s, "Equal 33.3% contribution across all phases. Individual contributions are verified and assessed separately.", top=540, size=21)
@@ -334,6 +334,29 @@ for i, (label, url, key) in enumerate(qr_items):
 tb = add_text_box(s, 64, 670, 1152, 25)
 format_tf(tb.text_frame, "Lovely Professional University  ·  INT396 Unsupervised Learning  ·  SIH26142", size=14, color=RGBColor(146, 167, 146), align=PP_ALIGN.CENTER)
 set_notes(s, "[All Presenters] Thank you for your time and evaluation. The three QR codes open the live application, the GitHub repository and the EuroSAT dataset. We are happy to answer any questions.")
+
+# ===== Corrections: bring older slides in line with the saved study results ============================
+SWAPS = {"0.771": "0.968", "across 5 random seeds": "across three random seeds (42, 17, 91)"}
+
+
+def swap_frame(tf):
+    for paragraph in tf.paragraphs:
+        for run in paragraph.runs:
+            for old, new in SWAPS.items():
+                if old in run.text:
+                    run.text = run.text.replace(old, new)
+
+
+for slide_item in prs.slides:
+    for shape in slide_item.shapes:
+        if shape.has_text_frame:
+            swap_frame(shape.text_frame)
+        if getattr(shape, "has_table", False) and shape.has_table:
+            for row in shape.table.rows:
+                for cell in row.cells:
+                    swap_frame(cell.text_frame)
+    if slide_item.has_notes_slide:
+        swap_frame(slide_item.notes_slide.notes_text_frame)
 
 prs.save(PPTX_PATH)
 print(f"Saved {PPTX_PATH}")

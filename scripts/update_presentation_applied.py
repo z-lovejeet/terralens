@@ -222,8 +222,8 @@ for shape in s6.shapes:
     if shape.has_text_frame:
         t = shape.text_frame.text.strip()
         if "Cluster colours come" in t:
-            format_tf(shape.text_frame, "Cluster colours come from retained 28-PC space. PCA captures global variance; t-SNE captures local manifolds with 0.771 trustworthiness.", size=24, color=C_MUTED)
-set_speaker_notes(s6, "[Presenter: Mohammad Asim] Thank you, Lovejeet. Slide 6 demonstrates our dual high-dimensional projections across 1,000 patches. Linear PCA preserves 95% of total variance, capturing continuous physical gradients like surface albedo and vegetation greenness. Nonlinear t-SNE maps dense local neighborhoods using a heavy-tailed Student-t distribution, achieving a high 10-neighbor trustworthiness of 0.771. We cluster in 28-PC Euclidean space because it provides an exact out-of-sample projection matrix, while t-SNE provides non-linear visual verification.")
+            format_tf(shape.text_frame, "Cluster colours come from retained 28-PC space. PCA captures global variance; t-SNE captures local manifolds with 0.968 trustworthiness.", size=24, color=C_MUTED)
+set_speaker_notes(s6, "[Presenter: Mohammad Asim] Thank you, Lovejeet. Slide 6 demonstrates our dual high-dimensional projections across 1,000 patches. Linear PCA preserves 95% of total variance, capturing continuous physical gradients like surface albedo and vegetation greenness. Nonlinear t-SNE maps dense local neighborhoods using a heavy-tailed Student-t distribution, achieving a high 10-neighbor trustworthiness of 0.968. We cluster in 28-PC Euclidean space because it provides an exact out-of-sample projection matrix, while t-SNE provides non-linear visual verification.")
 
 # ==============================================================================
 # SLIDE 07 (Index 6): Operational System Architecture
@@ -371,7 +371,7 @@ set_slide_title(s12, "Individual contributions and completed work", size=32)
 contr_values = [
     ["Member / Registration", "Assigned role & objective", "Key completed deliverables"],
     ["Lovejeet Singh\n12521613\n(Presenter 1)", "ML Architecture & PCA\n[Objectives 1 & 2 · CO2, CO4]", "• Engineered 47 colour descriptors (RGB/HSV moments & circular hue bins)\n• Fitted 28-PC PCA model (95% variance) with <0.75% generalization delta & 29 tests"],
-    ["Mohammad Asim\n12518421\n(Presenter 2)", "Manifold Learning & Full-Stack\n[Objective 2 · CO4]", "• Engineered 23 texture & 8 edge descriptors; implemented t-SNE (0.771)\n• Built FastAPI/React platform, Regional Scene Scanner & Deforestation Tracker"],
+    ["Mohammad Asim\n12518421\n(Presenter 2)", "Manifold Learning & Full-Stack\n[Objective 2 · CO4]", "• Engineered 23 texture & 8 edge descriptors; implemented t-SNE (0.968)\n• Built FastAPI/React platform, Regional Scene Scanner & Deforestation Tracker"],
     ["Reshu Kumar\n12508208\n(Presenter 3)", "Clustering, Validation & Audit\n[Objectives 2 & 3 · CO4, CO5]", "• Implemented 80/20 train/holdout protocol & K-Means++ clustering (K=10)\n• Engineered Spectral Anomaly Radar, Survey Dossier Export & Post-hoc Audit"]
 ]
 add_table(s12, 64, 115, 1152, 350, contr_values, [250, 300, 602], font_size=15)
@@ -406,7 +406,7 @@ link_cards = [
     ], C_FOREST),
     ("GitHub Repository", "Open-Source Codebase & Tests", [
         "• URL: https://github.com/z-lovejeet/terralens",
-        "• Quality: 29 / 29 Pytest unit tests passing (100%)",
+        "• Quality: 52 / 52 Pytest unit tests passing (100%)",
         "• Branch: main (fully reproducible offline & online)",
         "• Architecture: Comprehensive README with SVG diagrams"
     ], C_TEAL),

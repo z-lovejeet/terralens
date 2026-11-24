@@ -167,7 +167,7 @@ await fs.mkdir(BUILD,{recursive:true}); await fs.mkdir(OUT,{recursive:true});
 
 // SLIDE 06"); // SLIDE 06: Dual Projections (PCA vs t-SNE)
 {
-  const q=slide("Dual projections reveal complementary structure",`[Presenter: Mohammad Asim] Thank you, Lovejeet. Both panels display the identical 1,000-patch visual cohort coloured by their 10 discovered groups. Linear PCA preserves 95% of the global variance continuum (albedo and vegetation gradients). Nonlinear t-SNE reveals dense local manifold clusters (isolated water bodies and urban cores) with a trustworthiness of 0.771.`);
+  const q=slide("Dual projections reveal complementary structure",`[Presenter: Mohammad Asim] Thank you, Lovejeet. Both panels display the identical 1,000-patch visual cohort coloured by their 10 discovered groups. Linear PCA preserves 95% of the global variance continuum (albedo and vegetation gradients). Nonlinear t-SNE reveals dense local manifold clusters (isolated water bodies and urban cores) with a trustworthiness of 0.968.`);
   for(const [j,key,title] of [[0,"pca","PCA: PC1 / PC2 (Global Continuum)"],[1,"tsne","t-SNE: Local Manifold Embedding"]]){
     const series=r.clusters.map(cl=>{const pts=s.points.filter(pt=>pt.cluster===cl.id);return{name:`Group ${cl.id+1}`,xValues:pts.map(pt=>pt[key][0]),values:pts.map(pt=>pt[key][1]),marker:{symbol:"circle",size:2,fill:C[cl.id%C.length]},line:{fill:"none",width:0},fill:C[cl.id%C.length]};});
     const xb=key==="pca"?[-12,16]:[-80,80],yb=key==="pca"?[-8,12]:[-60,60];
@@ -178,13 +178,13 @@ await fs.mkdir(BUILD,{recursive:true}); await fs.mkdir(OUT,{recursive:true});
 
 // SLIDE 07"); // SLIDE 07: t-SNE Manifold Learning and Sensitivity
 {
-  const q=slide("t-SNE manifold learning and sensitivity",`[Presenter: Mohammad Asim] Six saved runs test perplexities 10, 30, 50 and seeds 42 and 17. t-SNE resolves high-dimensional crowding using a Student-t distribution in 2D. Perplexity 30 provides optimal neighborhood trustworthiness (0.771). We do not cluster directly in t-SNE because distance geometry is non-Euclidean and lacks an out-of-sample projection matrix.`);
+  const q=slide("t-SNE manifold learning and sensitivity",`[Presenter: Mohammad Asim] Six saved runs test perplexities 10, 30, 50 and seeds 42 and 17. t-SNE resolves high-dimensional crowding using a Student-t distribution in 2D. Perplexity 30 provides optimal neighborhood trustworthiness (0.968). We do not cluster directly in t-SNE because distance geometry is non-Euclidean and lacks an out-of-sample projection matrix.`);
   tab(q,[["Perplexity","Seed","Trustworthiness","Runtime"],...s.tsne_runs.map(x=>[String(x.perplexity),String(x.seed),n(x.trustworthiness),`${n(x.runtime_seconds,1)}s`])],64,160,680,360,[150,110,230,190],22);
   tx(q,"The Crowding Problem & Student-t",780,165,440,35,26,{bold:true});
   lines(q,[
     "• In 78D space, high volume lets points be equidistant; 2D area forces crowding",
     "• Heavy-tailed Student-t (df=1) expands moderate distances into clear 2D gaps",
-    "• Trustworthiness 0.771 confirms high 10-nearest-neighbor fidelity",
+    "• Trustworthiness 0.968 confirms high 10-nearest-neighbor fidelity",
     "• Lack of projection matrix (Z = XV) prevents live inference in t-SNE space"
   ],780,215,440,21,80,INK);
   tx(q,"Clustering is conducted in the 28-PC Euclidean space; t-SNE provides non-linear visual insight.",64,585,1152,40,23,{color:MUTED});
@@ -241,8 +241,8 @@ await fs.mkdir(BUILD,{recursive:true}); await fs.mkdir(OUT,{recursive:true});
   tab(q,[
     ["Member / Registration", "Assigned role & objective", "Key completed deliverables"],
     ["Lovejeet Singh\n12521613\n(Presenter 1)", "ML Architecture & PCA\n[Objectives 1 & 2 · CO2, CO4]", "• Engineered 47 colour descriptors (RGB/HSV moments & circular hue bins)\n• Fitted 28-PC PCA model (95% variance) with <0.75% generalization delta"],
-    ["Mohammad Asim\n12518421\n(Presenter 2)", "Manifold Learning & Full-Stack\n[Objective 2 · CO4]", "• Engineered 23 texture & 8 edge descriptors (GLCM, LBP, Sobel gradients)\n• Implemented t-SNE manifold (trustworthiness 0.771) and FastAPI/React platform"],
-    ["Reshu Kumar\n12508208\n(Presenter 3)", "Clustering, Validation & Audit\n[Objectives 2 & 3 · CO4, CO5]", "• Implemented 80/20 train/holdout protocol & K-Means++ clustering (K=10)\n• Triangulated validation (Silhouette 0.245, DB 1.42) & sealed post-hoc audit"]
+    ["Mohammad Asim\n12518421\n(Presenter 2)", "Manifold Learning & Full-Stack\n[Objective 2 · CO4]", "• Engineered 23 texture & 8 edge descriptors (GLCM, LBP, Sobel gradients)\n• Implemented t-SNE manifold (trustworthiness 0.968) and FastAPI/React platform"],
+    ["Reshu Kumar\n12508208\n(Presenter 3)", "Clustering, Validation & Audit\n[Objectives 2 & 3 · CO4, CO5]", "• Implemented 80/20 train/holdout protocol & K-Means++ clustering (K=10)\n• Triangulated validation (Silhouette 0.175, DB 1.645) & sealed post-hoc audit"]
   ], 64, 155, 1152, 340, [260, 310, 582], 19);
   tx(q, "Equal 33.3% contribution across all phases. Individual contributions are verified and assessed separately.", 64, 550, 1152, 35, 22, {color:MUTED});
 }
@@ -250,7 +250,7 @@ await fs.mkdir(BUILD,{recursive:true}); await fs.mkdir(OUT,{recursive:true});
 // SLIDE 13"); // SLIDE 13: Measured Results and Generalization
 {
   const q=slide("Measured results and generalization",`[Presenter: Reshu Kumar] The 10-group model achieves a retained-space silhouette of ${n(r.metrics.silhouette)} and holdout silhouette of ${n(r.holdout_metrics?.silhouette)}. Mean seed ARI is ${n(r.stability,4)}, indicating high cluster stability. Reconstruction error delta is below 0.75% on unseen data. When audited against EuroSAT's 10 classes, ARI is ${n(a.metrics?.adjusted_rand_index)} and NMI is ${n(a.metrics?.normalized_mutual_information)}.`);
-  tab(q,[["Evaluation metric","Study cohort (21,600)","Holdout (5,400)","Physical & methodological meaning"],["PCA-space silhouette",`${n(r.metrics.silhouette)}`,`${n(r.holdout_metrics?.silhouette)}`,"Retained 28-PC geometry matches across sets"],["Davies-Bouldin index",`${n(r.metrics.davies_bouldin)}`,`${n(r.holdout_metrics?.davies_bouldin)}`,"Stable cluster compactness and separation"],["Reconstruction MSE","0.04899","0.04936","Delta < 0.75% confirms zero overfitting on unseen data"],["Multi-seed stability ARI",n(r.stability,4),"—","High algorithmic reproducibility across 5 random seeds"],["Post-hoc Audit ARI / NMI",`${n(a.metrics?.adjusted_rand_index)} / ${n(a.metrics?.normalized_mutual_information)}`,`${n(a.holdout_metrics?.adjusted_rand_index)} / ${n(a.holdout_metrics?.normalized_mutual_information)}`,"Substantial agreement with EuroSAT classes label-blind"]],64,165,1152,320,[250,230,210,462],21);
+  tab(q,[["Evaluation metric","Study cohort (21,600)","Holdout (5,400)","Physical & methodological meaning"],["PCA-space silhouette",`${n(r.metrics.silhouette)}`,`${n(r.holdout_metrics?.silhouette)}`,"Retained 28-PC geometry matches across sets"],["Davies-Bouldin index",`${n(r.metrics.davies_bouldin)}`,`${n(r.holdout_metrics?.davies_bouldin)}`,"Stable cluster compactness and separation"],["Reconstruction MSE","0.04899","0.04936","Delta < 0.75% confirms zero overfitting on unseen data"],["Multi-seed stability ARI",n(r.stability,4),"—","High algorithmic reproducibility across three random seeds (42, 17, 91)"],["Post-hoc Audit ARI / NMI",`${n(a.metrics?.adjusted_rand_index)} / ${n(a.metrics?.normalized_mutual_information)}`,`${n(a.holdout_metrics?.adjusted_rand_index)} / ${n(a.holdout_metrics?.normalized_mutual_information)}`,"Substantial agreement with EuroSAT classes label-blind"]],64,165,1152,320,[250,230,210,462],21);
   tx(q,"Finding: 10 unsupervised visual groups successfully capture real satellite land cover",64,515,1152,50,28,{bold:true});
   tx(q,"Verification confirms numerical invariants, zero label leakage, and robust out-of-sample generalization",64,585,1152,35,22,{color:MUTED});
 }
@@ -292,7 +292,7 @@ await fs.mkdir(BUILD,{recursive:true}); await fs.mkdir(OUT,{recursive:true});
   tx(q,"1. Lovejeet Singh (12521613) — ML Architecture & Dimensionality Reduction (Slides 01–05)\n2. Mohammad Asim (12518421) — Manifold Learning & Platform Engineering (Slides 06–10)\n3. Reshu Kumar (12508208) — Unsupervised Clustering & Scientific Audit (Slides 11–15)",64,350,1100,100,21,{color:"#CCD8C9"});
 
   tx(q,"Verified Deliverables & Online Verification:",64,475,700,35,23,{bold:true,color:PAPER});
-  tx(q,"• Public GitHub Repository:   https://github.com/z-lovejeet/terralens\n• Live Interactive Web App:   https://terralens-slek.onrender.com\n• Automated Test Suite:        29 / 29 Pytest Tests Passing (100%)\n• Full Academic Dossier:       28-Page Report  ·  14-Page Study Guide  ·  16-Slide Deck",64,510,1100,120,20,{color:"#CCD8C9"});
+  tx(q,"• Public GitHub Repository:   https://github.com/z-lovejeet/terralens\n• Live Interactive Web App:   https://terralens-slek.onrender.com\n• Automated Test Suite:        52 / 52 Pytest Tests Passing (100%)\n• Full Academic Dossier:       35-Page Report  ·  14-Page Study Guide  ·  16-Slide Deck",64,510,1100,120,20,{color:"#CCD8C9"});
 
   tx(q,"Lovely Professional University  ·  SIH26142  ·  CO2, CO4, CO5  ·  10 November 2026",64,670,1152,25,16,{color:"#92A792"});
   q.speakerNotes.text="[All Presenters: Q&A] Thank you for your time and evaluation. The live application is active at terralens-slek.onrender.com and full code with 29 passing tests is on GitHub. We are now happy to answer questions from the evaluation panel.";
