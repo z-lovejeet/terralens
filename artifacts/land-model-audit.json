@@ -1,0 +1,397 @@
+{
+  "run_id": "land-k30-s42",
+  "base_run_id": "pca95-k10-s42",
+  "k": 30,
+  "seed": 42,
+  "mixed_below": 0.5,
+  "disclosure": "Groups were fitted without labels. Reference labels were opened afterwards only to name each group (its most common land type among study patches) and to score the holdout cohort.",
+  "internal_metrics": {
+    "silhouette": 0.16086577148210582,
+    "davies_bouldin": 1.5080956572063247,
+    "calinski_harabasz": 2045.5818819757956,
+    "seed_stability_ari": 0.8107706788489565
+  },
+  "evaluation": {
+    "holdout_patches": 5400,
+    "accuracy_strict": 0.6961111111111111,
+    "named_share": 0.8914814814814814,
+    "accuracy_when_named": 0.7808475280432073,
+    "recall": {
+      "trees": 0.6987654320987654,
+      "farmland": 0.5948509485094851,
+      "water": 0.7656108597285067,
+      "built": 0.7394014962593516
+    },
+    "ari_vs_classes": 0.28478467029258897,
+    "nmi_vs_classes": 0.4877130597937039,
+    "confusion": {
+      "trees": {
+        "trees": 849,
+        "farmland": 204,
+        "water": 33,
+        "built": 65,
+        "mixed": 64
+      },
+      "farmland": {
+        "trees": 227,
+        "farmland": 878,
+        "water": 86,
+        "built": 55,
+        "mixed": 230
+      },
+      "water": {
+        "trees": 66,
+        "farmland": 50,
+        "water": 846,
+        "built": 14,
+        "mixed": 129
+      },
+      "built": {
+        "trees": 37,
+        "farmland": 83,
+        "water": 135,
+        "built": 1186,
+        "mixed": 163
+      }
+    },
+    "reference_10_groups": {
+      "accuracy_strict": 0.5475925925925926,
+      "named_share": 0.7337037037037037,
+      "accuracy_when_named": 0.7463402322059566
+    }
+  },
+  "groups": {
+    "0": {
+      "land_type": "built",
+      "shares": {
+        "trees": 0.0539,
+        "farmland": 0.0165,
+        "water": 0.009,
+        "built": 0.9207
+      },
+      "reliability": 0.9207,
+      "count": 1337
+    },
+    "1": {
+      "land_type": "trees",
+      "shares": {
+        "trees": 0.6868,
+        "farmland": 0.1532,
+        "water": 0.1498,
+        "built": 0.0102
+      },
+      "reliability": 0.6868,
+      "count": 1175
+    },
+    "2": {
+      "land_type": "farmland",
+      "shares": {
+        "trees": 0.2571,
+        "farmland": 0.6018,
+        "water": 0.0696,
+        "built": 0.0714
+      },
+      "reliability": 0.6018,
+      "count": 560
+    },
+    "3": {
+      "land_type": "water",
+      "shares": {
+        "trees": 0.0101,
+        "farmland": 0.1551,
+        "water": 0.5497,
+        "built": 0.285
+      },
+      "reliability": 0.5497,
+      "count": 1186
+    },
+    "4": {
+      "land_type": "farmland",
+      "shares": {
+        "trees": 0.1118,
+        "farmland": 0.8268,
+        "water": 0.0439,
+        "built": 0.0175
+      },
+      "reliability": 0.8268,
+      "count": 912
+    },
+    "5": {
+      "land_type": "farmland",
+      "shares": {
+        "trees": 0.2018,
+        "farmland": 0.6764,
+        "water": 0.0079,
+        "built": 0.1139
+      },
+      "reliability": 0.6764,
+      "count": 887
+    },
+    "6": {
+      "land_type": "mixed",
+      "shares": {
+        "trees": 0.0906,
+        "farmland": 0.3337,
+        "water": 0.2154,
+        "built": 0.3602
+      },
+      "reliability": 0.3602,
+      "count": 1699
+    },
+    "7": {
+      "land_type": "trees",
+      "shares": {
+        "trees": 0.9821,
+        "farmland": 0.0007,
+        "water": 0.0142,
+        "built": 0.003
+      },
+      "reliability": 0.9821,
+      "count": 1340
+    },
+    "8": {
+      "land_type": "water",
+      "shares": {
+        "trees": 0.0111,
+        "farmland": 0.0,
+        "water": 0.9889,
+        "built": 0.0
+      },
+      "reliability": 0.9889,
+      "count": 452
+    },
+    "9": {
+      "land_type": "trees",
+      "shares": {
+        "trees": 0.5075,
+        "farmland": 0.334,
+        "water": 0.0821,
+        "built": 0.0765
+      },
+      "reliability": 0.5075,
+      "count": 536
+    },
+    "10": {
+      "land_type": "built",
+      "shares": {
+        "trees": 0.0,
+        "farmland": 0.0,
+        "water": 0.0,
+        "built": 1.0
+      },
+      "reliability": 1.0,
+      "count": 4
+    },
+    "11": {
+      "land_type": "built",
+      "shares": {
+        "trees": 0.0361,
+        "farmland": 0.0168,
+        "water": 0.0052,
+        "built": 0.9419
+      },
+      "reliability": 0.9419,
+      "count": 775
+    },
+    "12": {
+      "land_type": "water",
+      "shares": {
+        "trees": 0.0533,
+        "farmland": 0.1917,
+        "water": 0.5039,
+        "built": 0.2511
+      },
+      "reliability": 0.5039,
+      "count": 1163
+    },
+    "13": {
+      "land_type": "water",
+      "shares": {
+        "trees": 0.0,
+        "farmland": 0.0,
+        "water": 1.0,
+        "built": 0.0
+      },
+      "reliability": 1.0,
+      "count": 9
+    },
+    "14": {
+      "land_type": "water",
+      "shares": {
+        "trees": 0.0083,
+        "farmland": 0.0464,
+        "water": 0.9454,
+        "built": 0.0
+      },
+      "reliability": 0.9454,
+      "count": 604
+    },
+    "15": {
+      "land_type": "built",
+      "shares": {
+        "trees": 0.1004,
+        "farmland": 0.2602,
+        "water": 0.0,
+        "built": 0.6394
+      },
+      "reliability": 0.6394,
+      "count": 538
+    },
+    "16": {
+      "land_type": "built",
+      "shares": {
+        "trees": 0.0247,
+        "farmland": 0.0318,
+        "water": 0.0432,
+        "built": 0.9003
+      },
+      "reliability": 0.9003,
+      "count": 1133
+    },
+    "17": {
+      "land_type": "farmland",
+      "shares": {
+        "trees": 0.0102,
+        "farmland": 0.8635,
+        "water": 0.0,
+        "built": 0.1263
+      },
+      "reliability": 0.8635,
+      "count": 293
+    },
+    "18": {
+      "land_type": "farmland",
+      "shares": {
+        "trees": 0.0104,
+        "farmland": 0.9417,
+        "water": 0.0187,
+        "built": 0.0291
+      },
+      "reliability": 0.9417,
+      "count": 961
+    },
+    "19": {
+      "land_type": "mixed",
+      "shares": {
+        "trees": 0.1721,
+        "farmland": 0.4452,
+        "water": 0.1679,
+        "built": 0.2148
+      },
+      "reliability": 0.4452,
+      "count": 703
+    },
+    "20": {
+      "land_type": "farmland",
+      "shares": {
+        "trees": 0.3565,
+        "farmland": 0.541,
+        "water": 0.0178,
+        "built": 0.0847
+      },
+      "reliability": 0.541,
+      "count": 1122
+    },
+    "21": {
+      "land_type": "built",
+      "shares": {
+        "trees": 0.1187,
+        "farmland": 0.0186,
+        "water": 0.0,
+        "built": 0.8627
+      },
+      "reliability": 0.8627,
+      "count": 699
+    },
+    "22": {
+      "land_type": "built",
+      "shares": {
+        "trees": 0.0337,
+        "farmland": 0.0176,
+        "water": 0.0016,
+        "built": 0.9471
+      },
+      "reliability": 0.9471,
+      "count": 624
+    },
+    "23": {
+      "land_type": "farmland",
+      "shares": {
+        "trees": 0.3676,
+        "farmland": 0.3824,
+        "water": 0.2206,
+        "built": 0.0294
+      },
+      "reliability": 0.3824,
+      "count": 68
+    },
+    "24": {
+      "land_type": "water",
+      "shares": {
+        "trees": 0.0,
+        "farmland": 0.0,
+        "water": 1.0,
+        "built": 0.0
+      },
+      "reliability": 1.0,
+      "count": 566
+    },
+    "25": {
+      "land_type": "water",
+      "shares": {
+        "trees": 0.0087,
+        "farmland": 0.0104,
+        "water": 0.9792,
+        "built": 0.0017
+      },
+      "reliability": 0.9792,
+      "count": 576
+    },
+    "26": {
+      "land_type": "built",
+      "shares": {
+        "trees": 0.0,
+        "farmland": 0.1111,
+        "water": 0.0,
+        "built": 0.8889
+      },
+      "reliability": 0.8889,
+      "count": 9
+    },
+    "27": {
+      "land_type": "trees",
+      "shares": {
+        "trees": 0.4996,
+        "farmland": 0.396,
+        "water": 0.0476,
+        "built": 0.0568
+      },
+      "reliability": 0.4996,
+      "count": 1409
+    },
+    "28": {
+      "land_type": "farmland",
+      "shares": {
+        "trees": 0.3769,
+        "farmland": 0.5077,
+        "water": 0.0308,
+        "built": 0.0846
+      },
+      "reliability": 0.5077,
+      "count": 130
+    },
+    "29": {
+      "land_type": "trees",
+      "shares": {
+        "trees": 0.9538,
+        "farmland": 0.0077,
+        "water": 0.0077,
+        "built": 0.0308
+      },
+      "reliability": 0.9538,
+      "count": 130
+    }
+  },
+  "land_model_sha256": "6437e7c0a8912cd2ec42f7775256773ea12b962b7102879dd170eb4ebe5c4943",
+  "created_at": "2026-11-24T07:22:10.737805+00:00"
+}
