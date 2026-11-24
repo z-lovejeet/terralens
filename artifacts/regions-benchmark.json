@@ -1,0 +1,27 @@
+{
+  "scenes": 30,
+  "scene": "8 x 8 held-out EuroSAT patches in blobs of 2-5 of: Forest, SeaLake, Residential, AnnualCrop, Industrial; uploaded as JPEG quality 88",
+  "results": {
+    "native": {
+      "ari": 0.5105332299481394,
+      "area_error_points": 10.623456790123452,
+      "regions_minus_true_types": 0.8,
+      "named_share": 0.9180327868852459,
+      "name_accuracy": 1.0,
+      "scenes_by_naming_method": {
+        "land model": 30
+      }
+    },
+    "zoomed_x3": {
+      "ari": 0.5081603135026463,
+      "area_error_points": 11.448881172839505,
+      "regions_minus_true_types": 0.8333333333333334,
+      "named_share": 0.7886178861788617,
+      "name_accuracy": 0.9587628865979382,
+      "scenes_by_naming_method": {
+        "land model": 30
+      }
+    }
+  },
+  "created_at": "2026-11-24T08:51:30.357236+00:00"
+}
