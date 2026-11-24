@@ -106,9 +106,6 @@ small { font-size: var(--text-sm); }
 .mission-copy h2 { color: var(--color-on-forest); font-size: clamp(28px, 2.4vw, 42px); font-weight: 500; line-height: 1.18; letter-spacing: -.05em; margin-top: 20px; }
 .mission-copy p { max-width: 35ch; margin-top: 13px; font-size: 10px; line-height: 1.9; color: var(--color-on-forest-muted); }
 .mission-copy .button { margin-top: 21px; padding-inline: 13px; min-height: 36px; font-size: 9px; }
-.mission-actions { display: flex; flex-wrap: wrap; gap: 0 10px; }
-.button-ghost-light { background: none; color: var(--color-on-forest); border-color: var(--color-forest-light); }
-.button-ghost-light:hover { border-color: var(--color-lime); color: var(--color-lime); }
 .mission-foot { margin-top: 23px; display: flex; align-items: center; gap: 7px; font-size: 8px; color: var(--color-on-forest-muted); }
 .mission-mosaic { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: repeat(4, minmax(0, 1fr)); gap: 3px; position: relative; padding: 0; overflow: clip; background: var(--color-forest-deep); }
 .mission-mosaic > button { border: 0; padding: 0; background: var(--color-forest-deep); min-width: 0; overflow: clip; }
