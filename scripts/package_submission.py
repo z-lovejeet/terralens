@@ -14,7 +14,7 @@ import sys
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-EXCLUDED_PARTS = {".git", ".venv", ".data", ".build", "node_modules", "__pycache__", ".pytest_cache", "runtime", "tmp", ".DS_Store"}
+EXCLUDED_PARTS = {".git", ".venv", ".data", ".build", ".claude", ".hallmark", "node_modules", "__pycache__", ".pytest_cache", "runtime", "tmp", ".DS_Store"}
 
 
 def submission_files():
@@ -94,6 +94,7 @@ def main():
         "artifacts/study.json", "artifacts/model.joblib", "output/pdf/TerraLens_Project_Report.pdf",
         "output/pdf/TerraLens_Study_Guide.pdf",
         "output/presentation/TerraLens_Presentation.pptx", "output/presentation/TerraLens_Presentation.pdf",
+        "output/ieee-paper/TerraLens_IEEE_Paper.pdf",
     ]
     found = {str(relative) for _, relative in files}
     absent = [name for name in required if name not in found]
