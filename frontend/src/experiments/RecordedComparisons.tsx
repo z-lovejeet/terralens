@@ -149,7 +149,7 @@ export default function RecordedComparisons({ study, reference }: { study: Study
           <div className="reference-takeaway-card">
             <CheckCircle size={17} className="check-icon" />
             <p>
-              <strong>Selection Justification:</strong> K=10 strikes the empirical equilibrium between cluster compactness and physical interpretability. Pairwise seed stability ($ARI = 0.824$) proves the groups are not random initialization artifacts.
+              <strong>Selection Justification:</strong> K=10 matches the number of reference categories and gives interpretable groups; it is a modelling choice, not an intrinsic optimum. Pairwise seed stability ($ARI = 0.9986$) proves the groups are not random initialization artifacts.
             </p>
           </div>
         </Panel>
@@ -184,13 +184,13 @@ export default function RecordedComparisons({ study, reference }: { study: Study
                 </p>
                 <ul>
                   <li>
-                    <strong>Common-Space Silhouette Analysis:</strong> Evaluates cluster tightness a(i) versus separation b(i) where s(i) = [b(i) - a(i)] / max(a(i), b(i)). At K=10, the silhouette score maintains an optimal plateau before diminishing returns set in.
+                    <strong>Common-Space Silhouette Analysis:</strong> Evaluates cluster tightness a(i) versus separation b(i) where s(i) = [b(i) - a(i)] / max(a(i), b(i)). The silhouette is highest at K=2 and stays between 0.15 and 0.20 for K&ge;5, so K=10 is a modelling choice rather than an intrinsic optimum.
                   </li>
                   <li>
-                    <strong>Davies-Bouldin Index & Inertia Elbow:</strong> Davies-Bouldin achieves a minimum trade-off (1.42), while the WCSS (Inertia) curve reveals the classic "elbow" bend at K &isin; [8, 10].
+                    <strong>Davies-Bouldin Index & Inertia Elbow:</strong> The selected model has a Davies-Bouldin index of 1.645 (lower is better), and the WCSS (inertia) curve decreases smoothly with no sharp elbow.
                   </li>
                   <li>
-                    <strong>Adjusted Rand Index (ARI) Stability:</strong> Running K-Means with 5 distinct random centroid seeds produces an average pairwise ARI of <strong>0.824</strong> (&gt; 0.80 is universally accepted as highly stable), proving convergence to natural mathematical energy basins.
+                    <strong>Adjusted Rand Index (ARI) Stability:</strong> Running K-Means with three random seeds (42, 17, 91) produces an average pairwise ARI of <strong>0.9986</strong> (above 0.80 is generally considered highly stable), proving convergence to natural mathematical energy basins.
                   </li>
                 </ul>
               </div>

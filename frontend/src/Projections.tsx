@@ -315,7 +315,7 @@ export default function Projections({ study, run, selectPatch }: { study: Study;
                     <strong>Noise Reduction:</strong> The first 28 components capture 95.0% of the structured variance across European land types. The remaining 50 dimensions contribute only 5% of variance, primarily consisting of high-frequency sensor noise, atmospheric haze, and illumination fluctuations.
                   </li>
                   <li>
-                    <strong>Efficiency & Stability:</strong> Pruning 50 dimensions (64% dimensionality reduction) accelerates distance computations by 60% and increases cluster stability across different random seeds (ARI = 0.824).
+                    <strong>Efficiency & Stability:</strong> Pruning 50 dimensions (64% dimensionality reduction) cuts the cost of each distance computation by about 64% and keeps the clusters stable across random seeds (mean ARI = 0.9986).
                   </li>
                 </ul>
               </div>
