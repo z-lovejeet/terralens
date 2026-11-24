@@ -11,6 +11,7 @@ import json
 import math
 from pathlib import Path
 import re
+import sys
 from xml.sax.saxutils import escape
 
 import matplotlib
@@ -31,6 +32,9 @@ from reportlab.platypus import (
 )
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "backend"))
+from terralens.reading import EYE_CHECK  # noqa: E402  (accuracy of colour-and-texture region names)
+
 BUILD = ROOT / ".build" / "deliverables"
 OUT = ROOT / "output" / "pdf"
 FOREST = "#173D31"
@@ -49,6 +53,7 @@ REFERENCES = [
     ("[6]", "van der Maaten, L. and Hinton, G. Visualizing Data using t-SNE. JMLR 9, 2008.", "https://www.jmlr.org/papers/v9/vandermaaten08a.html"),
     ("[7]", "INT396 Unsupervised Learning syllabus, session 2026-27, pp. 1-2. Supplied course document; Units II, IV, VI and CO2, CO4, CO5.", ""),
     ("[8]", "Teacher-provided SIH26142 project statement and UMS submission instructions. Project identity is reproduced as assigned; official SIH portal mapping is not independently asserted.", ""),
+    ("[9]", "EuroSAT RGB dataset (27,000 patches), Kaggle copy shared as the project's dataset link.", "https://www.kaggle.com/datasets/apollo2506/eurosat-dataset"),
 ]
 
 
@@ -303,6 +308,12 @@ def build_report(study, selected, audit, team, links, figures):
     def heading(value):
         return P(value, "TerraH2")
     dataset, split, quality = study["dataset"], study["split"], study["quality"]
+    land_audit = read_json(ROOT / "artifacts" / "land-model-audit.json", {})
+    land_ev = land_audit.get("evaluation", {})
+    land_ref = land_ev.get("reference_10_groups", {})
+    region_bench = read_json(ROOT / "artifacts" / "regions-benchmark.json", {})
+    bench_native = region_bench.get("results", {}).get("native", {})
+    bench_zoomed = region_bench.get("results", {}).get("zoomed_x3", {})
     metrics = selected.get("metrics", {})
     members = team.get("members", [])
     member_rows = [["Group member", "Reg. Number", "Role & Assigned Objective"]]
@@ -332,7 +343,7 @@ def build_report(study, selected, audit, team, links, figures):
         P("Presentation: " + text(team.get("presentation_date", "10 November 2026"))),
         P(text(submission_status), "TerraSmall"),
         Spacer(1, 8), P("Abstract", "TerraH2"),
-        P(f"This capstone project presents TerraLens, an unsupervised machine learning platform for label-free land-cover discovery across 27,000 Sentinel-2 RGB satellite patches (64x64 px, 10 m GSD, 40.96 ha/patch, 1,106.18 km² total European coverage). A deterministic 78-feature representation captures spectral colour moments, GLCM/LBP texture, and Sobel edge statistics. Applying the 95% Scree rule prunes 50 collinear dimensions (64.1% reduction) down to 28 principal components. Top components represent physical remote-sensing attributes: PC1 represents broad surface albedo, PC2 captures photosynthetic greenness vs water absorption, PC3 encodes texture roughness and urban grid density, and PC4 reflects linear transport corridors. Operating under an 80/20 protocol (21,600 study vs. 5,400 holdout patches), the linear projection achieves 0.04899 study MSE and 0.04936 holdout MSE (Δ &lt;0.75%), proving zero overfitting. K=10 natural groups are selected via triangulated validation (common-space silhouette 0.245, Davies-Bouldin 1.42, multi-seed stability ARI = 0.824). A sealed post-selection audit confirms strong alignment with EuroSAT classes (ARI 0.299, NMI 0.429). An interactive research workbench incorporates a 27k Class Distribution ribbon with 80/20 toggle, an enlarged scree plot with real-time HUD telemetry, bespoke UI controls, and a live Patch Analyzer."),
+        P(f"This capstone project presents TerraLens, an unsupervised machine learning platform for label-free land-cover discovery across 27,000 Sentinel-2 RGB satellite patches (64x64 px, 10 m GSD, 40.96 ha/patch, 1,106.18 km² total European coverage). A deterministic 78-feature representation captures spectral colour moments, GLCM/LBP texture, and Sobel edge statistics. Applying the 95% Scree rule prunes 50 collinear dimensions (64.1% reduction) down to 28 principal components. Top components represent physical remote-sensing attributes: PC1 represents broad surface albedo, PC2 captures photosynthetic greenness vs water absorption, PC3 encodes texture roughness and urban grid density, and PC4 reflects linear transport corridors. Operating under an 80/20 protocol (21,600 study vs. 5,400 holdout patches), the linear projection achieves 0.04899 study MSE and 0.04936 holdout MSE (Δ &lt;0.75%), proving zero overfitting. K=10 natural groups are selected via triangulated validation (common-space silhouette 0.245, Davies-Bouldin 1.42, multi-seed stability ARI = 0.824). A sealed post-selection audit confirms strong alignment with EuroSAT classes (ARI 0.299, NMI 0.429). An interactive research workbench incorporates a 27k Class Distribution ribbon with 80/20 toggle, an enlarged scree plot, and a live Patch Analyzer. The same frozen models power two everyday tools: Map my image (one image split into named land regions, ARI 0.51 on 30 test scenes) and Sort my photos (a batch of images grouped with K chosen by the elbow method), backed by a finer 30-group land model (holdout accuracy 69.6% vs 54.8% for 10 groups). No outside API is used."),
     ])
 
     # Page 2: 2. Introduction and Problem Statement
@@ -341,9 +352,9 @@ def build_report(study, selected, audit, team, links, figures):
         para("The project evolved from an initial 2-group binary contrast prototype to a comprehensive 10-group European land-cover architecture. Rather than forcing a high-contrast binary partition, the 10-group model discovers the diverse spectral and textural landscape of the European continent without supervision."),
         para("The assigned problem is to explore land-type grouping of satellite image patches using clustering under problem identifier <b>SIH26142</b> for course <b>INT396 (Unsupervised Learning)</b> mapped to outcomes CO2, CO4, and CO5 across Units II, IV, and VI at Lovely Professional University. [8]"),
         heading("Research questions"),
-        para("1. Which distinct land-cover structures emerge from colour, texture, and edge descriptors when ground-truth categories are sealed?<br/>2. How many principal components are required to capture 95% of numerical descriptor variance, and what are their physical remote-sensing interpretations?<br/>3. How stable is a 10-cluster K-Means partition across different random seed initializations?<br/>4. What are the complementary strengths and limitations of linear PCA versus nonlinear t-SNE projections?<br/>5. Does the frozen unsupervised pipeline generalize to unseen holdout patches without overfitting, and how closely do discovered groups align with annotated land classes in a post-selection audit?"),
+        para("1. Which distinct land-cover structures emerge from colour, texture, and edge descriptors when ground-truth categories are sealed?<br/>2. How many principal components are required to capture 95% of numerical descriptor variance, and what are their physical remote-sensing interpretations?<br/>3. How stable is a 10-cluster K-Means partition across different random seed initializations?<br/>4. What are the complementary strengths and limitations of linear PCA versus nonlinear t-SNE projections?<br/>5. Does the frozen unsupervised pipeline generalize to unseen holdout patches without overfitting, and how closely do discovered groups align with annotated land classes in a post-selection audit?<br/>6. Can the same frozen pipeline split one new image into land regions and sort a folder of images, choosing the number of groups automatically, and how accurate are the results?"),
         heading("Operational scope and success criteria"),
-        para("TerraLens provides a complete, interactive research workbench for collection browsing, patch inspection, bounded experimentation, and live single-patch inference. Success requires an authentic, reproducible unsupervised learning pipeline: mathematical isolation of ground-truth labels during fitting, verified numerical stability, rigorous out-of-sample generalization, and defensible scientific interpretation."),
+        para("TerraLens provides a complete, interactive research workbench for collection browsing, patch inspection, bounded experimentation and live single-patch inference, plus two everyday tools for non-specialists: Map my image (regions of one image) and Sort my photos (groups of many images). Every result is computed by the project's own unsupervised pipeline; no outside API or pretrained model is used. Success requires an authentic, reproducible unsupervised learning pipeline: mathematical isolation of ground-truth labels during fitting, verified numerical stability, rigorous out-of-sample generalization, and defensible scientific interpretation."),
     )
 
     # Page 3: 3. Project Objectives and Need
@@ -355,6 +366,7 @@ def build_report(study, selected, audit, team, links, figures):
             ["Curriculum objective", "Technical requirement & verified submission evidence"],
             ["Objective 1: Data preparation & protocol", "Prepare EuroSAT RGB dataset with labels hidden; engineer 78 deterministic descriptors (47 colour, 23 texture, 8 edge); handle missing values with study-fitted median imputer (0 missing found); enforce 80/20 train/holdout protocol (21,600 study vs 5,400 holdout patches); fit StandardScaler strictly on study cohort."],
             ["Objective 2: Dimensionality reduction & clustering", "Apply IncrementalPCA and non-linear t-SNE; evaluate 95% Scree threshold (78 → 28 PCs, 64.1% reduction); map physical remote sensing loadings; fit K-Means++ clustering (K=10) on 28-PC space; evaluate multi-seed stability (ARI = 0.824); tune t-SNE perplexities (10, 30, 50) and evaluate 10-neighbor trustworthiness (0.771)."],
+            ["Applied extension: everyday tools", "Reuse the frozen scaler and PCA, without refitting them, in Map my image (image segmentation with within-image standardisation, elbow-method K, region naming) and Sort my photos (elbow-method grouping of uploaded images); build a 30-group land model for finer everyday names (holdout strict accuracy 69.6% vs 54.8% for 10 groups); record the measured accuracy of both tools and test that the application uses no network or API key."],
             ["Objective 3: Representation interpretation & audit", "Interpret reduced representations via explained variance, visual separation, and feature contributions; document limitations, sensor bias, and ethical deployment guidelines; conduct sealed post-hoc external audit against EuroSAT classes (ARI 0.299, NMI 0.429)."],
         ], [155, 332], padding=2),
         para("The syllabus explicitly requires dimensionality reduction, dual PCA/t-SNE comparison, clustering model selection, and internal/external validation without label leakage. [7]"),
@@ -376,9 +388,12 @@ def build_report(study, selected, audit, team, links, figures):
             ["Multi-seed partition stability", f"ARI = {fmt(selected.get('stability'), 4)} across 5 random seeds"],
             ["Common-space silhouette", fmt(metrics.get("silhouette_original"))],
             ["Post-hoc external audit", f"ARI = {fmt(audit.get('metrics', {}).get('adjusted_rand_index'))} · NMI = {fmt(audit.get('metrics', {}).get('normalized_mutual_information'))}"],
+            ["30-group land model (holdout)", f"strict accuracy {percent(land_ev.get('accuracy_strict'))} vs {percent(land_ref.get('accuracy_strict'))} for the 10 groups"],
+            ["Map my image (30 test scenes)", f"region agreement ARI {fmt(bench_native.get('ari'), 2)} · area shares ±{fmt(bench_native.get('area_error_points'), 1)} points"],
+            ["Automated tests", "52 pytest tests passing (study invariants, API, land tools, offline check)"],
         ], padding=2),
         heading("Key platform features and working"),
-        para("<b>1. 27k Class Distribution Ribbon:</b> Interactive segmented header bar showing patch counts across all 10 classes with a live 80/20 cohort toggle.<br/><b>2. Dual Linked Projections:</b> Synchronized 2D PCA (global linear variance) and t-SNE (local non-linear manifold) coordinate spaces with real-time crosshair inspection.<br/><b>3. Enlarged PCA Scree Plot:</b> Interactive curve with HUD telemetry displaying explained variance and dimensions pruned.<br/><b>4. Bespoke Custom Controls:</b> Theme-matched dropdown menus styled in deep forest green and ivory.<br/><b>5. Live Patch Analyzer:</b> Drag-and-drop single patch inference evaluating nearest centroids, runner-up margin, and top-5 nearest neighbors."),
+        para("<b>1. 27k Class Distribution Ribbon:</b> Interactive segmented header bar showing patch counts across all 10 classes with a live 80/20 cohort toggle.<br/><b>2. Dual Linked Projections:</b> Synchronized 2D PCA (global linear variance) and t-SNE (local non-linear manifold) coordinate spaces with real-time crosshair inspection.<br/><b>3. Enlarged PCA Scree Plot:</b> Interactive curve with HUD telemetry displaying explained variance and dimensions pruned.<br/><b>4. Live Patch Analyzer:</b> Drag-and-drop single patch inference evaluating nearest centroids, runner-up margin, and top-5 nearest neighbors.<br/><b>5. Map my image:</b> Upload one satellite image; it is split into regions of similar land, each region is named (trees, fields, water, buildings, bare ground) with its share of the image and a confidence note.<br/><b>6. Sort my photos:</b> Drop 4 to 300 satellite images; they are grouped by look with the number of groups chosen by the elbow method, and can also be viewed by land type."),
     )
 
     # Page 5: 5. Tools, Technologies and Frameworks Used
@@ -386,10 +401,10 @@ def build_report(study, selected, audit, team, links, figures):
         para("TerraLens is implemented as a decoupled, full-stack scientific platform. The offline numerical study produces immutable serialized artifacts, while the online application provides responsive exploration, bounded experimentation, and live inference."),
         table([
             ["System tier", "Technologies & frameworks", "Role in project architecture"],
-            ["Numerical & ML", "Python 3.12 · scikit-learn 1.5.2<br/>NumPy 2.1 · SciPy 1.14<br/>scikit-image 0.24 · Pillow 11.0", "Feature extraction (GLCM, LBP, Sobel), IncrementalPCA, t-SNE manifold learning, K-Means++ clustering, and validation metrics."],
-            ["Backend Service", "FastAPI 0.115 · Uvicorn 0.32<br/>Pydantic v2 · SQLite 3<br/>ThreadPoolExecutor", "Asynchronous HTTP REST API, input validation, in-memory image processing, SQLite experiment history journal, and single-patch inference."],
-            ["Frontend UI", "React 18.3 · TypeScript 5.6<br/>Vite 5.4 · Tailwind CSS 3.4<br/>Lucide Icons · Canvas API", "Interactive research workbench: Observatory, Projection Lab, Cluster Atlas, Experiment Bench, and Patch Analyzer with custom controls."],
-            ["Testing & Tooling", "PyTest 8.3 · Chrome CDP<br/>ReportLab 4.2 · PptxGenJS<br/>Docker · uv package manager", "29 automated unit and invariant tests, headless browser screenshot automation, publication-grade PDF/PPTX deliverable builders, and containerization."],
+            ["Numerical & ML", "Python 3.12 · scikit-learn 1.7.2<br/>NumPy 2.3 · SciPy 1.16<br/>scikit-image 0.25 · Pillow 12.0", "Feature extraction (GLCM, LBP, Sobel), PCA, t-SNE manifold learning, K-Means++ clustering, the 30-group land model, elbow-method K selection and validation metrics."],
+            ["Backend Service", "FastAPI 0.121 · Uvicorn 0.38<br/>Pydantic v2 · SQLite 3<br/>ThreadPoolExecutor", "HTTP REST API, input validation, in-memory image processing, SQLite experiment journal, single-patch inference, /api/map-regions and /api/sort-photos."],
+            ["Frontend UI", "React 19.2 · TypeScript 5.9<br/>Vite 7.2 · Phosphor Icons<br/>Canvas API", "Interactive workbench: Observatory, Map my image, Sort my photos, Patch analyzer, Cluster atlas and Model lab (projection lab, experiment bench, reference audit)."],
+            ["Testing & Tooling", "PyTest 8.4 · Chrome CDP<br/>ReportLab 4.4 · python-pptx<br/>Docker · uv package manager", "52 automated tests (including a check that no code uses a network client or API key), headless browser screenshot automation, PDF/PPTX deliverable builders, and containerization."],
         ], [105, 175, 207], padding=3),
         heading("Architectural justification"),
         para("Decoupling offline numerical fitting from online serving guarantees that heavy scientific computations (covariance decomposition, manifold optimization) are executed reproducibly, while the web service remains lightweight, stateless, defensive, and immediately deployable on free cloud infrastructure without external API dependencies."),
@@ -545,14 +560,53 @@ def build_report(study, selected, audit, team, links, figures):
     # Page 16: 6.11 System Architecture, Database Design and REST API
     add_page("6.11 System Architecture, Database Design and REST API",
         WorkflowDiagram(), Spacer(1, 10),
-        table([["System tier", "Component responsibility"], ["Offline study pipeline", "EuroSAT archive validation, 78-feature extraction, PCA fitting, K-Means clustering, and artifact serialization"], ["Model artifacts", "Immutable study JSON, fitted StandardScaler, 28-PC PCA model, K=10 centroids, and thumbnail cache"], ["FastAPI backend", "High-performance API endpoints for study retrieval, bounded runtime experiment execution, and image inference"], ["React / Vite frontend", "Interactive research workbench featuring Observatory, Projection Lab, Cluster Atlas, Bench, and Patch Analyzer"]], [125, 362]),
+        table([["System tier", "Component responsibility"], ["Offline study pipeline", "EuroSAT archive validation, 78-feature extraction, PCA fitting, K-Means clustering, and artifact serialization"], ["Model artifacts", "Immutable study JSON, fitted StandardScaler, 28-PC PCA model, K=10 centroids, and thumbnail cache"], ["FastAPI backend", "High-performance API endpoints for study retrieval, bounded runtime experiment execution, and image inference"], ["React / Vite frontend", "Interactive workbench: Observatory, Map my image, Sort my photos, Patch analyzer, Cluster atlas and Model lab"], ["Land model", "30-group K-Means model in the frozen PCA space, named after fitting, used by Map my image and Sort my photos"]], [125, 362], padding=2),
         heading("Database design & defensive controls"),
         para("An embedded <b>SQLite database</b> (experiments table) records runtime job metadata: job_id, status (queued, running, completed, failed), parameter configuration JSON, metrics JSON, 2D coordinates JSON, and execution timestamps. Uploaded images are limited to 8 MB, verified in memory, and never executed as pickle code."),
         heading("REST API endpoints"),
-        table([["Interface", "Purpose"], ["GET /api/study", "Immutable reference settings, metrics and projections"], ["GET /api/features", "Descriptor definitions and families"], ["GET /api/audit", "Separate frozen-study label audit"], ["POST /api/experiments", "Submit validated bounded settings"], ["GET /api/experiments/{id}", "Poll queued/running/completed/failed jobs"], ["POST /api/analyze", "Apply saved pipeline to an uploaded image"], ["GET /api/export/metrics.csv", "Download recorded values"], ["GET /api/capabilities", "Advertise actual limits and persistence"]], [195, 292]),
+        table([["Interface", "Purpose"], ["GET /api/study", "Immutable reference settings, metrics and projections"], ["GET /api/features", "Descriptor definitions and families"], ["GET /api/audit", "Separate frozen-study label audit"], ["POST /api/experiments", "Submit validated bounded settings"], ["GET /api/experiments/{id}", "Poll queued/running/completed/failed jobs"], ["POST /api/analyze", "Apply saved pipeline to an uploaded image"], ["POST /api/map-regions", "Map my image: split one uploaded image into 2 to 8 named regions"], ["POST /api/sort-photos", "Sort my photos: group 4 to 300 uploaded images with automatic or chosen K"], ["GET /api/export/metrics.csv", "Download recorded values"], ["GET /api/capabilities", "Advertise actual limits and persistence"]], [195, 292], padding=2),
     )
     clusters = selected.get("clusters", [])
-    
+
+    # Page: 6.12 Map my image
+    add_page("6.12 Map my Image: Unsupervised Segmentation of One Image",
+        para("Map my image splits one satellite image into regions of similar-looking land without being told any categories, names each region in plain words (trees, fields, water, buildings, bare ground) and reports how much of the image each region covers. It reuses the study's 78 descriptors and frozen models but clusters the squares of the uploaded image itself."),
+        table([
+            ["Step", "What happens"],
+            ["1. Grid", "The image is scaled to at most 1,024 px and cut into 24 squares along the short side (up to 40 along the long side)."],
+            ["2. Describe", "Every square is described by the 78 colour, texture and edge descriptors."],
+            ["3. Standardise within the image", "Descriptors are z-scored within this image, capped at ±3 standard deviations, then reduced with a PCA fitted to this image's squares (95% of the variance)."],
+            ["4. Cluster", "K-Means++ (10 restarts, seed 42) for K = 2 to 8. On Auto, K is the elbow of the inertia curve: the point farthest below the straight line joining its ends."],
+            ["5. Tidy", "A 3 × 3 majority filter removes lone squares; it never erases a whole region."],
+            ["6. Name", "Each region receives a land-type name (see below), a share of the image and a plain-language description of how it differs from the rest."],
+        ], [120, 367], padding=3),
+        heading("Why the image is standardised on its own"),
+        para("In the study's own space, a detailed close-up (for example a sub-metre village screenshot) produces a few out-of-range squares such as bright roofs. Their extreme coordinates captured whole K-Means clusters and a real test image came out as one 82% region plus slivers. Standardising within the image, with capping, separated the same image into village, gardens and fields and also raised agreement on the benchmark of enlarged images from 0.45 to 0.51. The study's saved scaler, PCA and models are only read, never changed (an automated test checks this)."),
+        heading("How regions are named"),
+        para("<b>Land model (images like the training data):</b> bigger squares (8 along the short side, close to the 64 px training patches) are labelled with the 30-group land model, and a region takes the land type that covers at least half of it, otherwise <i>mixed land</i>. This is used when fewer than 30% of those squares look unfamiliar to the model (at most 8% in the benchmark scenes).<br/><b>Colour and texture (close-up screenshots):</b> screenshots from map applications are sharper and more colourful than the 10 m Sentinel-2 training patches (the village test image had 60% unfamiliar squares), so each region is instead read from measurable cues: greenness (excess-green index), brightness, smoothness (local grey spread, flattest for water), parallel field rows (structure-tensor coherence) and the share of very dark pixels. Water is flat and not vivid green, bare ground is bright and not green, buildings and roads are textured and not green, and green regions are trees when dark, rough and row-free, otherwise fields. Borderline calls are marked <i>best guess</i>. This is an interpretation of the unsupervised clusters, not a trained classifier."),
+        KeepTogether([heading("Measured accuracy"), table([
+            ["Test (30 scenes of 8 × 8 held-out patches, JPEG)", "Region agreement (ARI)", "Area-share error", "Regions named", "Names right"],
+            ["As uploaded", fmt(bench_native.get("ari"), 2), f"±{fmt(bench_native.get('area_error_points'), 1)} pts", percent(bench_native.get("named_share")), percent(bench_native.get("name_accuracy"))],
+            ["Enlarged 3 times (like a close-up)", fmt(bench_zoomed.get("ari"), 2), f"±{fmt(bench_zoomed.get('area_error_points'), 1)} pts", percent(bench_zoomed.get("named_share")), percent(bench_zoomed.get("name_accuracy"))],
+        ], [170, 87, 80, 75, 75], padding=3)]),
+        para(f"For close-up screenshots there is no labelled benchmark, so the colour-and-texture names were checked by eye on {EYE_CHECK['views']} public satellite views (lakes, rivers, a sea front, forests, farms, towns and a desert town): {percent(EYE_CHECK['accuracy'])} of {EYE_CHECK['regions']} clearly identifiable regions were named right ({percent(EYE_CHECK['area_accuracy'])} of the image area and {percent(EYE_CHECK['clear_accuracy'])} of calls not marked best guess). Buildings and water were never named wrongly; trees versus crop fields was the pair most often confused. The thresholds were tuned on the same views, so this figure is likely optimistic."),
+    )
+
+    # Page: 6.13 Land model and Sort my photos
+    add_page("6.13 The 30-Group Land Model and Sort my Photos",
+        para("The 10-group reference model stays the study's headline result. For everyday names a finer grouping was fitted the same unsupervised way: K-Means++ with 30 groups on the 21,600 study patches, in exactly the same frozen 28-component PCA space. Labels are opened only after the 30 groups are fixed, to give each group its most common everyday land type (<i>mixed land</i> when no type reaches half and the group is not mostly vegetation) and to score the untouched holdout cohort."),
+        table([
+            ["Holdout patches (5,400)", "10-group model", "30-group model"],
+            ["Strict accuracy (named type equals true type)", percent(land_ref.get("accuracy_strict")), percent(land_ev.get("accuracy_strict"))],
+            ["Share of patches that receive a name", percent(land_ref.get("named_share")), percent(land_ev.get("named_share"))],
+            ["Accuracy when a name is given", percent(land_ref.get("accuracy_when_named")), percent(land_ev.get("accuracy_when_named"))],
+            ["ARI / NMI against the 10 EuroSAT classes", "0.299 / 0.429", f"{fmt(land_ev.get('ari_vs_classes'), 3)} / {fmt(land_ev.get('nmi_vs_classes'), 3)}"],
+        ], [215, 136, 136], padding=3),
+        heading("Sort my photos"),
+        para("Sort my photos groups 4 to 300 satellite images the user uploads. Each photo is centre-cropped to a square, described by the 78 descriptors, projected with the study's frozen scaler and PCA and clustered with K-Means++. On Auto, every K from 2 to 10 is tried and the elbow of the inertia curve is chosen; the user can also pick 2 to 12 groups. Photos far from their group centre (beyond Q3 + 1.5 × IQR) are flagged as not fitting, and a second view arranges the same photos by the land model's types."),
+        para("<b>Choosing K.</b> The elbow rule was compared with the best-silhouette rule, the gap statistic, Calinski-Harabasz, Davies-Bouldin and GMM-BIC on held-out batches with a known number of land types. The elbow rule was best with mean ARI 0.37 against 0.26 for the best-silhouette rule; knowing the true K would give 0.38.<br/><b>Test folder.</b> examples/sort-my-photos holds 30 held-out patches (six each of forest, lake or sea, houses, crop fields and industry). Auto finds 5 groups that are 83% pure (ARI 0.68); forest and water partly share a group because both look dark and smooth in RGB.<br/><b>Typical behaviour.</b> Photos of clearly different land form groups that are about 76 to 80% pure (ARI 0.52 to 0.60). Broad mixes of similar-looking land (trees, fields, water and buildings together) are only about half pure (ARI about 0.14), because colour and texture alone cannot separate them."),
+    )
+
     # Page 17: 7.1 Discovered Land Types: Groups 01 – 05
     c1_items = []
     for cluster in clusters[:5]:
@@ -602,28 +656,34 @@ def build_report(study, selected, audit, team, links, figures):
     )
 
     shots = [
-        ("observatory", "7.4 Application Screenshot: Observatory", "The overview connects genuine patch imagery with the selected reference study, dataset audit and numerical evidence."),
-        ("projection-lab", "7.5 Application Screenshot: Projection Lab", "Linked patch identity supports comparison of PCA and saved t-SNE views on the same visual cohort. Parameter settings and interpretation cautions are visible."),
-        ("patch-analyzer", "7.6 Application Screenshot: Patch Analyzer", "Applies the fitted 10-group land-type model to a validated upload. The result includes nearest centroid distances, runner-up gap, ranked satellite neighbours, 2D PCA location, and separate category distribution."),
-        ("experiment-bench", "7.7 Application Screenshot: Experiment Bench", "This live 200-patch run fits K=3 with 95% PCA and t-SNE perplexity 30. Both plots share patch IDs and K-Means colours. The interface reports neighbourhood trustworthiness and measured runtime."),
-        ("reference-audit", "7.8 Application Screenshot: Reference Audit", "The separate audit compares the frozen groups with the EuroSAT categories. Its contingency counts and agreement measures describe how the two partitions relate."),
+        ("observatory", "Observatory", "The overview connects genuine patch imagery with the selected reference study, dataset audit and numerical evidence."),
+        ("map-my-image", "Map my image", "A demo scene built from held-out satellite patches is split into four regions, named by the 30-group land model, with each region's share of the image, how sure the name is, and an elbow chart for choosing the number of regions. The map can be coloured by land type or by region."),
+        ("sort-my-photos", "Sort my photos", "The 30 photos of the test folder are sorted into five groups chosen by the elbow method. Each group shows its most typical photo first, a plain description of what sets it apart, its most common land type and any photo that does not fit well."),
+        ("patch-analyzer", "Patch analyzer", "Applies the fitted 10-group land-type model to a validated upload. The result includes nearest centroid distances, runner-up gap, ranked satellite neighbours, 2D PCA location, and separate category distribution."),
+        ("cluster-atlas", "Cluster atlas", "Each of the 10 discovered groups is shown with its nearest patches, its numerical portrait (how its features differ from the study mean) and its location in PCA space. Reference labels stay hidden."),
+        ("model-lab", "Model lab", "The Model lab collects the study's diagnostics: projections (PCA and t-SNE), clustering benchmarks and the methodology and reference audit."),
+        ("projection-lab", "Model lab: Projection Lab", "Linked patch identity supports comparison of PCA and saved t-SNE views on the same visual cohort. Parameter settings and interpretation cautions are visible."),
+        ("experiment-bench", "Model lab: Experiment Bench", "This live 200-patch run fits K=3 with 95% PCA and t-SNE perplexity 30. Both plots share patch IDs and K-Means colours. The interface reports neighbourhood trustworthiness and measured runtime."),
+        ("reference-audit", "Model lab: Reference Audit", "The separate audit compares the frozen groups with the EuroSAT categories. Its contingency counts and agreement measures describe how the two partitions relate."),
     ]
     shot_count = 0
-    for stem, title, caption in shots:
+    section_number = 3
+    for stem, name, caption in shots:
         paths = list((ROOT / "docs" / "screenshots").glob(stem + ".*"))
         if paths:
             shot_count += 1
-            add_page(title, image(paths[0], max_height=460), Spacer(1, 16), para(caption), heading("Relevant functionality"), para("This is a captured application screen, not an illustrative mockup. The study values are supplied by the API. Other application views provide Cluster Atlas, Experiment Bench and Study & Evidence."))
+            section_number += 1
+            add_page(f"7.{section_number} Application Screenshot: {name}", image(paths[0], max_height=460), Spacer(1, 16), para(caption), heading("Relevant functionality"), para("This is a captured application screen, not an illustrative mockup. The application has six pages: Observatory, Map my image, Sort my photos, Patch analyzer, Cluster atlas and Model lab (projection lab, experiment bench and reference audit). Study values are supplied by the API."))
     if not shot_count:
-        add_page("Application overview", para("The six implemented views are Observatory, Projection Lab, Cluster Atlas, Experiment Bench, Patch Analyzer and Study & Evidence. Final screenshots must be captured from the running application and this report regenerated. No mock screenshot is presented as a test result."))
+        add_page("Application overview", para("The six implemented views are Observatory, Map my image, Sort my photos, Patch analyzer, Cluster atlas and Model lab. Final screenshots must be captured from the running application and this report regenerated. No mock screenshot is presented as a test result."))
     verification = read_json(ROOT / "artifacts" / "verification.json", {})
-    add_page("7.9 Verification, Performance and Deployment",
-        para("The verification record covers numerical invariants, saved-model reuse, API validation and interface behaviour. The source includes executable checks."),
+    add_page(f"7.{section_number + 1} Verification, Performance and Deployment",
+        para("The verification record covers numerical invariants, saved-model reuse, API validation and interface behaviour. The source includes executable checks: 52 pytest tests pass, covering study invariants, the API, the 30-group land model, Map my image, Sort my photos and an offline check that no application code imports a network client or reads an API key. The recorded table below was written during the original study verification (29 tests at that time); the suite has since grown to 52."),
         table(verification_rows(verification), [180, 307]),
         heading("Measured reference timings & performance"),
         para(f"The selected clustering run took {fmt(selected.get('runtime_seconds'), 2)} seconds. See the t-SNE sensitivity table for projection timings. Runtime varies with sample size, CPU and host load. Single-patch inference latency is under 45 ms on a modern quad-core machine."),
         heading("Deployment and containerization"),
-        para("The platform is containerized using Docker and deployed on Render cloud hosting (<link href='https://terralens-f0sn.onrender.com' color='#0f766e'>https://terralens-f0sn.onrender.com</link>). The compiled React single-page application is served directly by the production FastAPI application from a single origin, with health monitoring at /api/health."),
+        para("The platform is containerized using Docker and deployed on Render cloud hosting (<link href='https://terralens-slek.onrender.com' color='#0f766e'>https://terralens-slek.onrender.com</link>) on the free tier, so an idle instance sleeps and the first request can take about a minute. The compiled React single-page application is served directly by the production FastAPI application from a single origin, with health monitoring at /api/health. A step-by-step local installation guide for macOS, Linux and Windows is in the repository README."),
     )
     # Section 8: Individual Contributions
     contribution_rows = [["Member & Reg. Number", "Assigned specialization, objective & completed deliverables"]]
@@ -646,10 +706,11 @@ def build_report(study, selected, audit, team, links, figures):
     add_page("9. Limitations, Societal Impact and Future Scope",
         heading("Scientific & sensor limitations"),
         para("RGB descriptors omit shortwave infrared and red-edge Sentinel-2 bands, losing subtle mineral and moisture spectral signatures. Visual appearance can vary with seasonal vegetation cycles, atmospheric haze, and sun elevation angle. PCA preserves variance rather than human semantic meaning. K-Means imposes a spherical Euclidean partition on continuous ecological gradients."),
+        para("<b>Everyday tools.</b> Map my image and Sort my photos group by colour and texture only, so forest and dark water can share a region and the tool tends to find about one region more than there are land types. Names for close-up screenshots are rule-based readings of the clusters, marked best guess when borderline, and trees versus crop fields is the pair most often confused. Their accuracy was measured on synthetic scenes of held-out patches and, for close-ups, by eye on 14 views, not on a labelled close-up benchmark."),
         heading("Practical applications & societal impact"),
-        para("<b>Practical Applications:</b> Autonomous satellite archive triage, agricultural parcel monitoring, disaster response mapping (identifying flooded rivers or destroyed infrastructure), and urban expansion tracking without manual labeling overhead.<br/><b>Societal & Ethical Impact:</b> Unsupervised grouping eliminates human labeling bias in spatial analysis. However, unsupervised outputs must never be used for automated punitive land enforcement, taxation, or eviction without domain-expert verification. Transparent open algorithms protect environmental auditing from opaque commercial black-box models."),
+        para("<b>Practical Applications:</b> Land-cover shares of a farm, town or reservoir from a single image (Map my image), tidy sorting of a pile of satellite images (Sort my photos), satellite archive triage and first-look surveys without manual labelling overhead.<br/><b>Societal & Ethical Impact:</b> Unsupervised grouping eliminates human labeling bias in spatial analysis. However, unsupervised outputs must never be used for automated punitive land enforcement, taxation, or eviction without domain-expert verification. Transparent open algorithms protect environmental auditing from opaque commercial black-box models."),
         heading("Future scope"),
-        para("1. Incorporate 12-band Sentinel-2 multispectral reflectance.<br/>2. Evaluate spatio-temporal holdouts across non-European continents (e.g. India).<br/>3. Benchmark self-supervised foundation model embeddings (e.g. DINOv2).<br/>4. Implement real-time temporal change detection between multi-date acquisitions."),
+        para("1. Incorporate 12-band Sentinel-2 multispectral reflectance.<br/>2. Evaluate spatio-temporal holdouts across non-European continents (e.g. India).<br/>3. Benchmark self-supervised foundation model embeddings (e.g. DINOv2).<br/>4. Revisit temporal change detection between multi-date acquisitions (an earlier prototype was dropped because it needed paired images and its accuracy could not be verified).<br/>5. Build a small labelled benchmark of close-up map screenshots to replace the by-eye check of region names."),
         heading("Conclusion & submission checks"),
         para("TerraLens delivers an inspectable, reproducible unsupervised machine learning platform for satellite land-type grouping. The triangulated validation and sealed post-hoc audit establish that natural visual patterns accurately mirror European land cover completely label-blind. Each student uploads their personal archive (INT396_RegNo.zip) individually to UMS."),
     )
@@ -663,7 +724,7 @@ def build_report(study, selected, audit, team, links, figures):
     add_page("10. References, Resources and Provenance", *ref_items,
         heading("Recorded software environment & links"),
         P(text(json.dumps(versions, sort_keys=True)), "TerraSmall"),
-        P("Verified GitHub: " + text(links.get("github") or "https://github.com/z-lovejeet/terralens") + "<br/>Verified Live Deployment: " + text(links.get("deployment") or "https://terralens-f0sn.onrender.com"), "TerraSmall"),
+        P("Verified GitHub: " + text(links.get("github") or "https://github.com/z-lovejeet/terralens") + "<br/>Verified Live Deployment: " + text(links.get("deployment") or "https://terralens-slek.onrender.com") + "<br/>Dataset: " + text(links.get("dataset") or "https://www.kaggle.com/datasets/apollo2506/eurosat-dataset"), "TerraSmall"),
         P("Reference artifact created: " + text(study.get("provenance", {}).get("created_at", "Not recorded")), "TerraSmall"),
         P("Scientific source of all project measurements: artifacts/study.json and the separate artifacts/audit.json generated by the included preparation script. Source-code commit and final verified live URLs are preserved with the official submission.", "TerraSmall"),
     )
