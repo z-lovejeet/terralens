@@ -15,8 +15,9 @@
 > **Course:** INT396 — Unsupervised Learning | **Project ID:** SIH26142  
 > **Course Outcomes:** CO2, CO4, CO5 | **Syllabus Units:** II, IV, VI  
 > **Institution:** Lovely Professional University (LPU), Punjab, India  
-> **Live Deployment:** [https://terralens-f0sn.onrender.com](https://terralens-f0sn.onrender.com)  
-> **GitHub Repository:** [https://github.com/z-lovejeet/terralens](https://github.com/z-lovejeet/terralens)
+> **Live Deployment:** [https://terralens-slek.onrender.com](https://terralens-slek.onrender.com)  
+> **GitHub Repository:** [https://github.com/z-lovejeet/terralens](https://github.com/z-lovejeet/terralens)  
+> **Dataset:** [EuroSAT RGB on Kaggle](https://www.kaggle.com/datasets/apollo2506/eurosat-dataset)
 
 ---
 
@@ -362,6 +363,10 @@ The TerraLens frontend is a high-performance, single-page application built with
 ### Application 6: Map my image
 *Split one satellite image into regions of similar-looking land.*
 
+![Map my image](docs/screenshots/map-my-image.jpg)
+
+* **Try it:** drop `examples/map-my-image/demo-scene.jpg` (a scene built from held-out satellite patches) into the upload box. Auto finds 4 regions that match its four land types (ARI 0.93); it is the clearest of 40 drawn scenes, so typical results are lower (see the benchmark below).
+
 * **How to use it:** upload a top-down satellite image (at least 128 px on each side). Leave **Number of regions** on *Auto* or choose 2–8.
 * **What it shows:** a colour map of the regions over your image (click a region to highlight it), each region's share of the image, a name for each region with how sure it is (*matches the land model*, *likely* or *best guess*), a land-cover summary such as *70 % fields & farmland, 30 % buildings & roads*, what makes each region look different in plain words (for example *brighter · redder or browner*), a switch to colour the map by land type or by region, an elbow chart for choosing the number of regions, the measured accuracy, and CSV/JSON downloads.
 * **How it works (`backend/terralens/regions.py`):** the image is cut into a grid of squares (24 along the short side, up to 40 along the long side) and each square is described by the 78 descriptors. The descriptors are standardised **within this image**, capped at ±3 standard deviations, and reduced with a PCA fitted to this image's squares (95 % of the variance); the squares are then clustered with K-Means++, with K = 2–8 chosen by the elbow method. A 3 × 3 majority filter tidies lone squares (never erasing a whole region). The study's saved scaler, PCA and land model are only read, never changed: they supply the plain-language descriptions and, when the image resembles the training imagery, the region names.
@@ -394,6 +399,8 @@ The TerraLens frontend is a high-performance, single-page application built with
 
 ### Application 7: Sort my photos
 *Group a batch of your own satellite land images without telling the model any categories.*
+
+![Sort my photos](docs/screenshots/sort-my-photos.jpg)
 
 * **How to use it:** drop 4 to 300 top-down satellite images (or choose a folder). Each photo is shrunk in the browser before upload. Leave the number of groups on *Auto* or pick 2–12.
 * **What it shows:** how many groups were found and how clearly they separate, an elbow chart of the spread inside the groups for every number of groups (click a bar to try it), each group's photos with the most typical one first, a plain description of what sets the group apart (for example *busier, more detailed texture · brighter*), its most common land type, photos that don't fit well, a map of all photos on the first two principal components, and CSV/JSON downloads. A *Land type* view sorts the same photos by the 30-group land model instead.
@@ -555,7 +562,7 @@ Expected: `52 passed`. (The tests use the bundled thumbnails, so they run offlin
 
 | Tool | What to do |
 | :--- | :--- |
-| **Map my image** | Open *Map my image*, drop in any top-down satellite image (a screenshot from a map app works). It is split into regions, each region is named (trees, fields, water, buildings, bare ground) and the share of the image it covers is shown. |
+| **Map my image** | Open *Map my image*, drop in `examples/map-my-image/demo-scene.jpg` (or any top-down satellite image; a screenshot from a map app works). It is split into regions, each region is named (trees, fields, water, buildings, bare ground) and the share of the image it covers is shown. |
 | **Sort my photos** | Open *Sort my photos*, click *Choose a folder* and pick `examples/sort-my-photos/` (30 satellite images with an answer key). Leave the groups on *Auto*. You should get about 5 groups, 83 % pure. |
 | **Patch analyzer** | Open *Patch analyzer* and upload `examples/demo-patch-01.jpg`, or pick one of the bundled test patches. |
 
@@ -675,24 +682,25 @@ PYTHONPATH=backend .venv/bin/python scripts/benchmark_regions.py   # writes arti
 On Windows use `set PYTHONPATH=backend` and `.venv\Scripts\python.exe` in place of the first two parts. Both files are already committed, so you only need this to reproduce them.
 
 ### 4. Automated Screenshot Capture via Chrome DevTools Protocol
-To automatically launch the frontend and capture live high-resolution screenshots of the research views (needs Google Chrome installed at its default macOS path):
+To capture fresh screenshots of the running app (Observatory, Map my image, Sort my photos, Cluster atlas and Model lab) into `docs/screenshots/`, start the app first and run the script (it needs Google Chrome at its default macOS path, or set `CHROME` to another Chrome binary):
 
 ```bash
-node scripts/capture_screenshots.mjs
+node scripts/capture_screenshots.mjs http://127.0.0.1:8000
 ```
 
 ### 5. Build Deliverables (Report, Slides, Study Guide, Submissions)
 Generate the complete suite of academic deliverables:
 
 ```bash
-# 1. Generate 28-Page Academic Project Report PDF
+# 1. Generate the Academic Project Report PDF (35 pages)
 PYTHONPATH=backend .venv/bin/python scripts/build_deliverables.py
 
 # 2. Generate 14-Page Master Viva Study Guide PDF
 PYTHONPATH=backend .venv/bin/python scripts/build_study_guide_pdf.py
 
-# 3. Generate 16-Slide Presentation Deck (PPTX & PDF)
-PYTHONPATH=backend .venv/bin/python scripts/update_presentation_applied.py
+# 3. Bring the 16-slide presentation deck (PPTX & PDF) up to date and add the QR-code closing slide
+#    (edits the existing deck in output/presentation/; needs python-pptx, segno, pymupdf and Keynote on macOS)
+PYTHONPATH=backend .venv/bin/python scripts/update_presentation_final.py
 
 # 4. Package byte-identical submission ZIPs for all 3 teammates
 PYTHONPATH=backend .venv/bin/python scripts/package_submission.py --final
@@ -808,11 +816,13 @@ terralens/
 │   ├── test_browser_workflow.mjs # Chrome DevTools Protocol end-to-end browser test
 │   ├── capture_screenshots.mjs   # Screenshot automation
 │   ├── build_deliverables.py, build_study_guide_pdf.py, build_presentation.mjs,
-│   │   update_presentation_applied.py, export_pdf.py, package_submission.py   # Academic deliverables
+│   │   update_presentation_applied.py (earlier deck edit), update_presentation_final.py (final deck + QR slide),
+│   │   export_pdf.py, package_submission.py   # Academic deliverables
 │   └── generate_readme_diagrams.py # SVG diagram generator for documentation
 ├── artifacts/                    # Committed results: models, study.json, audit.json, 30-group land model,
 │                                 #   land-model-audit.json, regions-benchmark.json, patch thumbnails
 ├── examples/
+│   ├── map-my-image/             # Demo scene (held-out patches) to try Map my image
 │   ├── sort-my-photos/           # 30 held-out satellite images + answer key to try Sort my photos
 │   └── demo-patch-01.jpg, demo-patch-02.jpg   # Sample patches for the Patch analyzer
 ├── docs/
