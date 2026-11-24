@@ -1,0 +1,60 @@
+/* Map my image */
+.map-help h3 { font-size: 12.5px; margin-bottom: 8px; }
+.map-help ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 12.5px; line-height: 1.55; }
+.map-view .scene-run-row { justify-content: space-between; }
+.map-view .group-count { display: grid; gap: 6px; font-size: 11px; font-weight: 700; color: var(--color-ink); }
+
+.map-summary { grid-template-columns: minmax(0, 1fr) minmax(220px, 320px); }
+.share-strip { display: flex; height: 12px; border-radius: 6px; overflow: hidden; margin-top: 16px; background: var(--color-forest-light); }
+.share-strip i { height: 100%; }
+
+.map-body { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.region-frame { position: relative; width: 100%; border-radius: var(--radius-md); overflow: hidden; background: var(--color-paper-3); }
+.region-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; }
+.region-grid { position: absolute; inset: 0; display: grid; grid-auto-rows: 1fr; }
+.region-grid span { transition: background var(--dur-medium) var(--ease-out), opacity var(--dur-medium) var(--ease-out); }
+.region-grid.is-on span { background: color-mix(in oklch, var(--region) 55%, transparent); }
+.region-grid.is-on span.is-faded { background: oklch(15% 0.02 160 / .55); }
+
+.region-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.region-list button { width: 100%; display: flex; gap: 12px; align-items: flex-start; padding: 10px 12px; text-align: left; white-space: normal; background: var(--color-surface); border: 1.5px solid var(--color-rule); border-radius: var(--radius-md); }
+.region-list button:hover { border-color: var(--color-faint); }
+.region-list button.is-active { border-color: var(--color-accent); box-shadow: 0 0 0 3px var(--color-accent-soft); }
+.region-swatch { flex: 0 0 auto; width: 28px; height: 28px; border-radius: 7px; display: grid; place-items: center; color: oklch(99% 0 0); font-family: var(--font-mono); font-weight: 700; font-size: 13px; }
+.region-text { display: grid; gap: 5px; flex: 1; min-width: 0; }
+.region-head { display: flex; justify-content: space-between; align-items: baseline; }
+.region-head strong { color: var(--color-ink); font-size: 13px; }
+.region-head b { font-size: 16px; color: var(--color-ink); font-variant-numeric: tabular-nums; }
+.region-bar { height: 6px; border-radius: 3px; background: var(--color-paper-3); overflow: hidden; }
+.region-bar i { display: block; height: 100%; }
+.region-desc { font-size: 12px; color: var(--color-body); }
+.region-hint { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--color-muted); }
+.region-hint em { font-style: normal; }
+
+.map-view .accuracy-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.map-view .accuracy-list li { display: grid; grid-template-columns: 64px 1fr; gap: 12px; align-items: baseline; }
+.map-view .accuracy-list b { font-size: 20px; letter-spacing: -.02em; color: var(--color-ink); font-variant-numeric: tabular-nums; }
+.map-view .accuracy-list span { font-size: 12.5px; line-height: 1.5; }
+
+@media (max-width: 1000px) {
+  .map-body { grid-template-columns: 1fr; }
+}
+@media (max-width: 860px) {
+  .map-summary { grid-template-columns: 1fr; }
+}
+@media print {
+  .region-grid span, .region-swatch, .share-strip i, .region-bar i { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+/* Land names */
+.cover-legend { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 16px; }
+.cover-legend li { display: inline-flex; align-items: center; gap: 6px; }
+.cover-legend .land-chip { color: inherit; }
+.cover-legend b { font-variant-numeric: tabular-nums; font-size: 12px; }
+.map-tools { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.region-meta { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; color: var(--color-muted); }
+.region-letter { font-family: var(--font-mono); white-space: nowrap; }
+.confidence::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; background: var(--color-faint); }
+.confidence.is-high::before { background: var(--color-accent); }
+.confidence.is-medium::before { background: oklch(70% 0.12 140); }
+.confidence.is-low::before { background: oklch(75% 0.13 75); }
